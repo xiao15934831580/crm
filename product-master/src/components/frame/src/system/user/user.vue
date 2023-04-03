@@ -1,5 +1,6 @@
 <template>
-  <div class="tablestyle">
+<div>
+    <div class="tablestyle">
     <div class="search">
       <el-col :span="3">
         <el-input
@@ -62,7 +63,7 @@
         </template>
       </el-table>
       <div class="demo-pagination-block">
-        <el-pagination
+        <!-- <el-pagination
           v-model:currentPage="state.currentPage"
           v-model:page-size="state.pageSize"
           :page-sizes="[5, 10, 15, 20]"
@@ -73,7 +74,7 @@
           :total="state.Total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-        />
+        /> -->
       </div>
     </div>
   </div>
@@ -136,6 +137,8 @@
         </template>
         </el-dialog>
   </div>
+</div>
+
 </template>
 <script setup>
 import EditUser from "./edituser.vue";

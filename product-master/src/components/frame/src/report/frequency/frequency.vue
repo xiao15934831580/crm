@@ -29,7 +29,7 @@
         </template>
       </el-table>
       <div class="demo-pagination-block">
-        <el-pagination
+        <!-- <el-pagination
           v-model:currentPage="state.currentPage"
           v-model:page-size="state.pageSize"
           :page-sizes="[5, 10, 15, 20]"
@@ -40,7 +40,7 @@
           :total="state.Total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-        />
+        /> -->
       </div>
     </div>
   </div>

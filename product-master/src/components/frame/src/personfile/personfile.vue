@@ -63,9 +63,8 @@
         </template>
     </el-table>
     <div class="demo-pagination-block">
-      <el-pagination
+      <!-- <el-pagination
         v-model:currentPage="state.currentPage"
-        v-model:page-size="state.pageSize"
         :page-sizes="[5,10, 15, 20]"
         :small="small"
         :disabled="disabled"
@@ -74,20 +73,20 @@
         :total="state.Total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-      />
+      /> -->
     </div>
     </div>
     
   </div>
   <!-- 编辑 -->
-  <EditDialog
+  <!-- <EditDialog
     v-model="dialogFormVisible"
     v-if="dialogFormVisible"
     :dialogFormVisible="dialogFormVisible"
     :dialogTitile="dialogTitile"
     :dialogTableValue="dialogTableValue"
     :dropdownValue = 'dropdownValue'
-  ></EditDialog>
+  ></EditDialog> -->
   <!-- 批量导入 -->
   <!-- <div class="lz-dialog">
     <el-dialog

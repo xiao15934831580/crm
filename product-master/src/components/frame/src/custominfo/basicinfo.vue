@@ -2,16 +2,11 @@
   <div class="tablestyle">
     <div class="search">
       <el-col :span="3">
-        <el-select
-          clearable="true"
+        <el-input
+          class="w-10 m-2"
           v-model="searchvalue"
-          placeholder="请选择查询类型"
-        >
-          <el-option label="登录" value="LOGIN" />
-          <el-option label="添加" value="INSERT" />
-          <el-option label="更新" value="UPDATE" />
-          <el-option label="删除" value="DELETE" />
-        </el-select>
+          placeholder="请输入姓名/等级/手机号"
+        />
       </el-col>
 
       <el-button size="small" class="searchbutton" @click="searchbutton"
@@ -20,9 +15,8 @@
     </div>
     <div class="chartstyle">
       <el-table
-        :data="state.tableData1"
+        :data="tableData"
         :header-cell-style="{ background: '#d9ecff' }" 
-        
         border
         style="width: 100%"
       >
@@ -33,63 +27,126 @@
                     }}</span>
               </template>
         </el-table-column>
-        <el-table-column prop="username" label="操作人员" min-width="10%" />
-        <el-table-column prop="requestTime" label="请求时间" min-width="18%" />
-        <el-table-column prop="ipAddr" label="IP地址" min-width="15%" />
+        <el-table-column prop="userName" label="姓名" min-width="10%" />
+        <el-table-column prop="IDNumber" label="证件号" min-width="18%" />
+        <el-table-column prop="phoneNumber" label="手机号" min-width="15%" />
         <!-- :show-overflow-tooltip='true' -->
-        <el-table-column prop="requestMethod" label="请求方法" min-width="15%">
+        <el-table-column prop="customerLevel" label="客户等级" min-width="15%">
           <template #default="requestscope">
             <el-popover
               placement="top-start"
               :width="200"
               trigger="hover"
-              :content="requestscope.row.requestMethod"
+              :content="requestscope.row.customerLevel"
             >
               <template #reference>
                 <span class="elispice">{{
-                  requestscope.row.requestMethod
+                  requestscope.row.customerLevel
                 }}</span>
               </template>
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="requestParam" label="请求参数" min-width="15%">
+        <el-table-column prop="city" label="市" min-width="15%">
           <template #default="scope">
             <el-popover
               placement="top-start"
               :width="200"
               trigger="hover"
-              :content="scope.row.requestParam"
+              :content="scope.row.city"
             >
               <template #reference>
-                <span class="elispice">{{ scope.row.requestParam }}</span>
+                <span class="elispice">{{ scope.row.city }}</span>
               </template>
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="requestDesc" label="请求描述" min-width="10%" >
+        <el-table-column prop="county" label="县" min-width="10%" >
           <template #default="scope">
             <el-popover
               placement="top-start"
               :width="200"
               trigger="hover"
-              :content="scope.row.requestDesc"
+              :content="scope.row.county"
             >
               <template #reference>
-                <span class="elispice">{{ scope.row.requestDesc }}</span>
+                <span class="elispice">{{ scope.row.county }}</span>
               </template>
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="methodType" label="请求类型" min-width="12%" />
+        <el-table-column prop="town" label="镇" min-width="12%" />
+        <el-table-column prop="detailAddress" label="详细地址" min-width="10%" >
+          <template #default="scope">
+            <el-popover
+              placement="top-start"
+              :width="200"
+              trigger="hover"
+              :content="scope.row.detailAddress"
+            >
+              <template #reference>
+                <span class="elispice">{{ scope.row.detailAddress }}</span>
+              </template>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="investmentMethod" label="投资方式" min-width="10%" >
+          <template #default="scope">
+            <el-popover
+              placement="top-start"
+              :width="200"
+              trigger="hover"
+              :content="scope.row.investmentMethod"
+            >
+              <template #reference>
+                <span class="elispice">{{ scope.row.investmentMethod }}</span>
+              </template>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="customerType" label="新/老客户" min-width="10%" >
+          <template #default="scope">
+            <el-popover
+              placement="top-start"
+              :width="200"
+              trigger="hover"
+              :content="scope.row.customerType"
+            >
+              <template #reference>
+                <span class="elispice">{{ scope.row.customerType }}</span>
+              </template>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="installationCapacity" label="安装容量" min-width="10%" >
+          <template #default="scope">
+            <el-popover
+              placement="top-start"
+              :width="200"
+              trigger="hover"
+              :content="scope.row.installationCapacity"
+            >
+              <template #reference>
+                <span class="elispice">{{ scope.row.installationCapacity }}</span>
+              </template>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作列" width="250" min-width="28%">
+          <template #default="scope">
+            <el-button size="small" @click="detail(scope.row.id)"
+              >详情</el-button
+            >
+          </template>
+        </el-table-column>
         <template #empty>
             <el-empty v-loading="isloading"></el-empty>
         </template>
       </el-table>
       <div class="demo-pagination-block">
-        <!-- <el-pagination
-          v-model:currentPage="state.currentPage"
-          v-model:page-size="state.pageSize"
+        <el-pagination
+          :currentPage="state.currentPage"
+          :page-size="state.pageSize"
           :page-sizes="[5, 10, 15, 20]"
           :small="small"
           :disabled="disabled"
@@ -98,10 +155,16 @@
           :total="state.Total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-        /> -->
+        />
       </div>
     </div>
+
   </div>
+    <DiaLog
+        v-model="dialogFormVisible"
+        v-if="dialogFormVisible"
+        :dialogFormVisible="dialogFormVisible"
+    ></DiaLog>
 </template>
 <script setup>
 import { reactive, ref } from "vue";
@@ -109,33 +172,41 @@ import { markRaw, onBeforeMount } from "vue";
 import { getLog as getLog,queryLog as queryLog } from '@/api/index'
 import { ElNotification } from "element-plus";
 import store from '@/store'
+import DiaLog from './dialog.vue'
 const searchvalue = ref("");
 let tableData = [
   {
-    userId: 1235665656,
+    id:'1212',
     userName: "设备副班长",
-    ipAddr: "113.219.138.174",
-    requestMethod:
-      "com.allen.inspection.controller.SysUserController.updateRole",
-    requestTime: "2022-11-16 18:22:30",
-    requestParam: '[{"roleId":7,"username":"17885542585",}]',
-    requestDesc: "更新角色信息",
-    methodType: "UPDATE",
+    IDNumber: "111",
+    phoneNumber:"13456456",
+    customerLevel: "一级",
+    city: '西安',
+    county: "22",
+    town:'11',
+    detailAddress:'45451215',
+    investmentMethod:'5454',
+    customerType: "new",
+    installationCapacity:'545L'
   },
   {
     userId: 1235665656,
-    userName: "点检员",
-    ipAddr: "113.219.138.174",
-    requestMethod:
-      "com.allen.inspection.controller.SysUserController.updateRole",
-    requestTime: "2022-11-16 18:22:30",
-    requestParam: '[{"roleId":7,"username":"17885542585"}]',
-    requestDesc: "更新角色信息",
-    methodType: "INSERT",
+    userName: "设备副班长",
+    IDNumber: "111",
+    phoneNumber:"13456456",
+    customerLevel: "一级",
+    city: '西安',
+    county: "22",
+    town:'11',
+    detailAddress:'45451215',
+    investmentMethod:'5454',
+    customerType: "new",
+    installationCapacity:'545L'
   },
 ];
 let isQuery = ref(false);
 // 分页
+const dialogFormVisible = ref(false)
 const state = reactive({
   tableLoading: false,
   CurrentPage: 1,
@@ -149,15 +220,15 @@ const queryTableData = () => {
     isQuery.value = true;
      isloading.value = true;
     let obj = {
-    limit:state.PageSize,
-    pageNum: state.CurrentPage 
-  }
+        limit:state.PageSize,
+        pageNum: state.CurrentPage 
+    }
   getLog(obj).then((res)=>{
     isloading.value = false;
     if(res.code === 200){
       let data = res.data;
-        state.tableData1=data&&data.records?data.records:[];
-        state.Total = data&&data.total?data.total:0;
+        // state.tableData1=data&&data.records?data.records:[];
+        // state.Total = data&&data.total?data.total:0;
     }else {
              ElNotification({
               title: 'Warning',
@@ -172,7 +243,7 @@ const queryTableData = () => {
 };
 
 onBeforeMount(() => {
-  queryTableData();
+//   queryTableData();
 });
 //查询
 const searchbutton = () => {
@@ -211,6 +282,10 @@ const handleCurrentChange = (val) => {
   state.CurrentPage = val;
   searchvalue.value&&isQuery.value?searchbutton():queryTableData();
 };
+//详情
+const detail = (id)=>{
+    dialogFormVisible.value = true;
+}
 </script>
 <style lang = 'less' scoped>
 .tablestyle {

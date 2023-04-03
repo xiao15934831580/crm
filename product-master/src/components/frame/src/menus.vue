@@ -12,9 +12,10 @@
           @close="handleClose"
           :default-active="defaultMenu"
         >
-          <template v-for="(item) in menulist" :key="item.path">
+          <template v-for="(item) in menulist" >
             <!-- 有二级菜单 -->
             <el-sub-menu
+              :key="item.path"
               v-if="item.children&&item.children.length>0" :index="'/'+item.path"
             > 
               <!-- 一级菜单模板区域 -->
@@ -27,14 +28,14 @@
                 <el-menu-item
                   :index="'/'+subItem.path"
                   :key="subItem.menuName"
-                  v-if="true"
+                  v-if="!subItem.children"
                   @click="savePath(subItem)"
                 >
                   <!-- <el-icon :size="20"><component :is="subItem.icon" /></el-icon> -->
                   <span>{{ subItem.menuName }}</span>
                 </el-menu-item>
                 <!-- 有三级菜单 -->
-                <!-- <template v-else>
+                <template v-else>
                   <el-sub-menu  :index="'/'+subItem.path" :key="subItem.menuName">
                     <template #title>
                       <span>{{ subItem.menuName }}</span>
@@ -48,7 +49,7 @@
                       <span>{{ grandson.menuName }}</span>
                     </el-menu-item>
                   </el-sub-menu>
-                </template> -->
+                </template>
 
                 <!-- </template> -->
               </template>
@@ -73,7 +74,7 @@
 <script >
 import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-// import menulist from '../../../assets/js/menulist';
+import menulist from '../../../assets/js/menulist';
 import { useStore } from 'vuex'
 export default {
   name: "AllMenus",
@@ -81,8 +82,8 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const store = useStore()
-    const list = JSON.parse(localStorage.getItem('userData')) 
-    const menulist = list.authorityList;
+    // const list = JSON.parse(localStorage.getItem('userData')) 
+    // const menulist = list.authorityList;
     console.log(menulist)
     const allRoutes = router.options.routes;
     // const homeRoute = {menuName:'首页',path:'/home'};
