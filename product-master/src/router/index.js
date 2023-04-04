@@ -47,6 +47,16 @@ const routes = [
         name: '黑名单客户信息',
         component: () => import('../components/frame/src/custominfo/blacklist/blacklist.vue'),
       },
+      {
+        path: '/maintain',
+        name: '客户维护与关怀',
+        component: () => import('../components/frame/src/custominfo/maintain/maintain.vue'),
+      },
+      {
+        path: '/powerstationinfo',
+        name: '客户电站信息',
+        component: () => import('../components/frame/src/custominfo/powerstationinfo/powerstationinfo.vue'),
+      },
     ]
   },
 ];

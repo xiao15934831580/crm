@@ -12,43 +12,35 @@
           v-model="searchvalue.phoneNumber"
           placeholder="请输入手机号"
         />
-        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" placeholder="请输入客户等级">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-        
-        <el-select class="w-10 m-2" v-model="searchvalue.city" placeholder="请输入住址（市）">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-         <el-select class="w-10 m-2" v-model="searchvalue.county" placeholder="请输入住址（县）">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
+        <el-input
+          class="w-10 m-2"
+          v-model="searchvalue.customerCode"
+          placeholder="请输入客户编码"
+        />
+         <el-input
+          class="w-10 m-2"
+          v-model="searchvalue.IDNumber"
+          placeholder="请输入证件号"
+        />
       </el-col>
-      <el-button  class="searchbutton mt-16 " @click="searchbutton"
-        >查询</el-button
-      >
+      <div class="searchButtonBox">
+        <el-button  class="searchbutton mt-16 " @click="sendAll"
+            >批量发送短信</el-button>
+        <el-button  class="searchbutton mt-16 " @click="searchbutton"
+            >查询</el-button>
+      </div>
+
     </div>
     <div class="chartstyle">
       <el-table
+        ref="multipleTableRef"
         :data="tableData"
         :header-cell-style="{ background: '#d9ecff' }" 
         border
         style="width: 100%"
+        @selection-change="handleSelectionChange"
       >
+      <el-table-column type="selection" width="55" />
         <el-table-column label="序号" min-width="7%">
           <template #default="requestscope">
                     <span >{{
@@ -56,107 +48,23 @@
                     }}</span>
               </template>
         </el-table-column>
+        <el-table-column prop="customerCode" label="客户编码" min-width="10%" />
         <el-table-column prop="userName" label="姓名" min-width="10%" />
         <el-table-column prop="IDNumber" label="证件号" min-width="18%" />
         <el-table-column prop="phoneNumber" label="手机号" min-width="15%" />
         <!-- :show-overflow-tooltip='true' -->
-        <el-table-column prop="customerLevel" label="客户等级" min-width="15%">
+        <el-table-column prop="maintainType" label="关怀类型" min-width="15%">
           <template #default="requestscope">
             <el-popover
               placement="top-start"
               :width="200"
               trigger="hover"
-              :content="requestscope.row.customerLevel"
+              :content="requestscope.row.maintainType"
             >
               <template #reference>
                 <span class="elispice">{{
-                  requestscope.row.customerLevel
+                  requestscope.row.maintainType
                 }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="city" label="市" min-width="15%">
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.city"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.city }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="county" label="县" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.county"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.county }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="town" label="镇" min-width="12%" />
-        <el-table-column prop="detailAddress" label="详细地址" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.detailAddress"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.detailAddress }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="investmentMethod" label="投资方式" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.investmentMethod"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.investmentMethod }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="customerType" label="新/老客户" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.customerType"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.customerType }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="installationCapacity" label="安装容量" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.installationCapacity"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.installationCapacity }}</span>
               </template>
             </el-popover>
           </template>
@@ -164,7 +72,7 @@
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
             <el-button size="small" @click="detail(scope.row.id)"
-              >详情</el-button
+              >发送短信</el-button
             >
           </template>
         </el-table-column>
@@ -189,49 +97,40 @@
     </div>
 
   </div>
-    <DiaLog
-        v-model="dialogFormVisible"
-        v-if="dialogFormVisible"
-        :dialogFormVisible="dialogFormVisible"
-    ></DiaLog>
 </template>
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
 import { getLog as getLog,queryLog as queryLog } from '@/api/index'
 import { ElNotification } from "element-plus";
+import { ElTable } from 'element-plus'
 import store from '@/store'
-import DiaLog from './dialog.vue'
 const searchvalue = reactive({
   name:'',
   phoneNumber:'',
   customerLevel:'',
-  city:'',
-  county:'',
-  town:''
+  customerCode:'',
+  IDNumber:'',
 });
-
+const multipleSelection=ref ([])
+const multipleTableRef = ref();
 let tableData = [
   {
-    id:'1212',
+    id:'0',
+    customerCode:'11',
     userName: "设备副班长",
     IDNumber: "111",
     phoneNumber:"13456456",
-    customerLevel: "一级",
-    city: '西安',
-    county: "22",
-    town:'11',
+    maintainType: "vip",
     detailAddress:'45451215',
-    investmentMethod:'5454',
-    customerType: "new",
-    installationCapacity:'545L'
   },
   {
+    id:'1',
     userId: 1235665656,
     userName: "设备副班长",
     IDNumber: "111",
     phoneNumber:"13456456",
-    customerLevel: "一级",
+    maintainType: "一级",
     city: '西安',
     county: "22",
     town:'11',
@@ -319,9 +218,21 @@ const handleCurrentChange = (val) => {
   state.CurrentPage = val;
   searchvalue.value&&isQuery.value?searchbutton():queryTableData();
 };
-//详情
-const detail = (id)=>{
-    dialogFormVisible.value = true;
+const  handleSelectionChange=(val)=> {
+        // this.multipleSelection = val;
+        multipleSelection.value = [];
+        val.forEach((item)=>{
+            const id = item.id
+			// 判断数组中是否包含这个 id 
+			if (multipleSelection.value.indexOf(id) == -1) {
+				multipleSelection.value.push(id)
+			}
+        })
+        console.log(multipleSelection)
+      }
+// 批量发送短信
+const sendAll =()=>{
+    console.log(multipleSelection._rawValue)  //当前所选中的用户id
 }
 </script>
 <style lang = 'less' scoped>
@@ -334,7 +245,7 @@ const detail = (id)=>{
     max-width: none;
   }
 }
-.searchbutton{
+.searchButtonBox{
   float: right;
 }
 .chartstyle{

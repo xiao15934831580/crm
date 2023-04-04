@@ -3,25 +3,22 @@
     <div class="searchsize">
       <el-col class="searchBox">
         <el-input
-          class="w-10 m-2"
+          class="w-10 m-2 mr-16"
           v-model="searchvalue.name"
           placeholder="请输入姓名"
         />
         <el-input
-          class="w-10 m-2"
+          class="w-10 m-2 mr-16"
           v-model="searchvalue.phoneNumber"
           placeholder="请输入手机号"
         />
-        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" placeholder="请输入客户等级">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
+        <el-input
+          class="w-10 m-2 mr-16"
+          v-model="searchvalue.IDNumber"
+          placeholder="请输入证件号"
+        />
         
-        <el-select class="w-10 m-2" v-model="searchvalue.city" placeholder="请输入住址（市）">
+        <el-select class="w-10 m-2 mr-16" v-model="searchvalue.city" placeholder="请输入住址（市）">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -29,7 +26,23 @@
             :value="item.value"
           />
         </el-select>
-         <el-select class="w-10 m-2" v-model="searchvalue.county" placeholder="请输入住址（县）">
+         <el-select class="w-10 m-2 mr-16" v-model="searchvalue.county" placeholder="请输入住址（县）">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+        <el-select class="w-10 m-2 mr-16" v-model="searchvalue.investmentMethod" placeholder="请选择投资方式">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+         <el-select class="w-10 m-2" v-model="searchvalue.county" placeholder="请选择产权方">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -56,111 +69,17 @@
                     }}</span>
               </template>
         </el-table-column>
+        <el-table-column prop="customerCode" label="客户编码" min-width="10%" />
         <el-table-column prop="userName" label="姓名" min-width="10%" />
-        <el-table-column prop="IDNumber" label="证件号" min-width="18%" />
+        <el-table-column prop="investmentMethod" label="投资方式" min-width="18%" />
+        <el-table-column prop="installationCapacity" label="安装容量" min-width="18%" />
+        <el-table-column prop="installationAmount" label="投资金额" min-width="18%" />
+        <el-table-column prop="IDNumber" label="证件号码" min-width="18%" />
         <el-table-column prop="phoneNumber" label="手机号" min-width="15%" />
-        <!-- :show-overflow-tooltip='true' -->
-        <el-table-column prop="customerLevel" label="客户等级" min-width="15%">
-          <template #default="requestscope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="requestscope.row.customerLevel"
-            >
-              <template #reference>
-                <span class="elispice">{{
-                  requestscope.row.customerLevel
-                }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="city" label="市" min-width="15%">
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.city"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.city }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="county" label="县" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.county"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.county }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="town" label="镇" min-width="12%" />
-        <el-table-column prop="detailAddress" label="详细地址" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.detailAddress"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.detailAddress }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="investmentMethod" label="投资方式" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.investmentMethod"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.investmentMethod }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="customerType" label="新/老客户" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.customerType"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.customerType }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="installationCapacity" label="安装容量" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.installationCapacity"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.installationCapacity }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
+        <el-table-column prop="powerStationName" label="电站单元名称" min-width="15%" />
+        <el-table-column prop="powerStationScale" label="电站规模" min-width="15%" />
+        <el-table-column prop="moduleType" label="组件型号" min-width="15%" />
+        <el-table-column prop="testRunDate" label="试运行日期" min-width="15%" />
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
             <el-button size="small" @click="detail(scope.row.id)"
@@ -187,7 +106,7 @@
         />
       </div>
     </div>
-
+                                                           
   </div>
     <DiaLog
         v-model="dialogFormVisible"
@@ -205,40 +124,42 @@ import DiaLog from './dialog.vue'
 const searchvalue = reactive({
   name:'',
   phoneNumber:'',
-  customerLevel:'',
+  IDNumber:'',
   city:'',
   county:'',
-  town:''
+  town:'',
+  investmentMethod:'',
+
 });
 
 let tableData = [
   {
     id:'1212',
+    customerCode:'',
     userName: "设备副班长",
     IDNumber: "111",
     phoneNumber:"13456456",
-    customerLevel: "一级",
-    city: '西安',
-    county: "22",
-    town:'11',
-    detailAddress:'45451215',
-    investmentMethod:'5454',
-    customerType: "new",
-    installationCapacity:'545L'
+    investmentMethod: "一级",
+    installationCapacity:'45',
+    installationAmount:'22',
+    powerStationName:'sdfsd',
+    powerStationScale:'sdf',
+    moduleType:'',
+    testRunDate:''
   },
   {
-    userId: 1235665656,
+    id:'1212',
+    customerCode:'',
     userName: "设备副班长",
     IDNumber: "111",
     phoneNumber:"13456456",
-    customerLevel: "一级",
-    city: '西安',
-    county: "22",
-    town:'11',
-    detailAddress:'45451215',
-    investmentMethod:'5454',
-    customerType: "new",
-    installationCapacity:'545L'
+    investmentMethod: "一级",
+    installationCapacity:'45',
+    installationAmount:'22',
+    powerStationName:'sdfsd',
+    powerStationScale:'sdf',
+    moduleType:'',
+    testRunDate:''
   },
 ];
 let isQuery = ref(false);
@@ -333,6 +254,9 @@ const detail = (id)=>{
   ::v-deep .el-col-3 {
     max-width: none;
   }
+}
+.mr-16{
+    margin-right: 16px;
 }
 .searchbutton{
   float: right;

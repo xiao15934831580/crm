@@ -318,7 +318,7 @@ const saveExit = () => {
   }
   .basicinfo {
     font-size: 18px;
-    margin: 16px 0 24px;
+    margin: 24px 0;
     color: #333333;
     border-bottom: 1px solid #cccccc;
     span {

@@ -11,35 +11,47 @@
     >
       <div>
         <!-- 基础信息 -->
-        <p class="basictitle">客户基本信息</p>
+        <p class="basictitle">电站业主信息</p>
         <div>
           <div class="showinfo">
             <p class="showstyle">姓名：{{ formInline.userName }}</p>
-            <p class="showstyle">性别：{{ formInline.sex }}</p>
-            <p class="showstyle">民族：{{ formInline.nation }}</p>
+            <p class="showstyle">身份证号：{{ formInline.IDNumber }}</p>
             <p class="showstyle">手机号码：{{ formInline.phoneNumber }}</p> 
+            <p class="showstyle">产权单位/投资商：{{ formInline.unit }}</p>
+            <p class="showstyle">业务来源：{{ formInline.businessSource }}</p>
           </div>
           <div class="showinfo">
-            <p class="showstyle">证件类型：{{ formInline.IDType }}</p>
-            <p class="showstyle">证件号码：{{ formInline.IDNumber }}</p>
-            <p class="showstyle">客户等级：{{ formInline.customerLevel }}</p> 
-            <p class="showstyle">婚姻状态：{{ formInline.maritalStatus }}</p>
-          </div>
-          <div class="showinfo">
-            <p class="showstyle">教育程度：{{ formInline.educationLevel }}</p>
-            <p class="showstyle">职业：{{ formInline.occupation }}</p>
-            <p class="showstyle">经济：{{ formInline.economy }}</p>
-            <p class="showstyle">资产：{{ formInline.property }}</p>
-          </div>
-          <div class="showinfo">
-            <p class="showstyle">消费习惯与计划：{{ formInline.consumptionHabitsOrPlans }}</p>
             <p class="showstyle">住址：{{ formInline.address }}</p>
           </div>
         </div>
-        <p class="basicinfo"><span>家庭成员信息</span></p>
+        <!-- <p class="basicinfo"><span>电站信息</span></p> -->
+        <p class="basictitle">电站信息</p>
+        <div>
+          <div class="showinfo">
+            <p class="showstyle">电站单元名称：{{ formInline.powerStationName }}</p>
+            <p class="showstyle">组件型号：{{ formInline.moduleType }}</p>
+            <p class="showstyle">设备数量：{{ formInline.devicesNumber }}</p> 
+            <p class="showstyle">并网类型：{{ formInline.gridConnectionType }}</p>
+            <p class="showstyle">投资类型：{{ formInline.investmentType }}</p>
+          </div>
+          <div class="showinfo">
+            <p class="showstyle">电站类型：{{ formInline.powerStationType }}</p>
+            <p class="showstyle">电站地址：{{ formInline.powerStationAddress }}</p> 
+            <p class="showstyle">采集器厂商：{{ formInline.collectorManufacturer }}</p>
+            <p class="showstyle">采集器编号：{{ formInline.collectorNumber }}</p>
+            <p class="showstyle">逆变器功率：{{ formInline.inverterPower }}</p>
+          </div>
+          <div class="showinfo">
+            <p class="showstyle">逆变器厂商：{{ formInline.inverterManufacturer }}</p>
+            <p class="showstyle">逆变器型号：{{ formInline.inverterModel }}</p> 
+            <p class="showstyle">逆变器序列号：{{ formInline.inverterSerialNumber }}</p>
+            <p class="showstyle">电站质保期：{{ formInline.powerStationWarranty }}</p>
+          </div>
+        </div>
+        <p class="basicinfo"><span>安装及维修记录</span></p>
         <div>
           <el-table
-            :data="formInline.familyMember"
+            :data="formInline.installationData"
             :header-cell-style="{ background: 'rgba(64, 158, 255, 0.1)' }"
             border
             style="width: 100%"
@@ -49,24 +61,23 @@
                 <span class="elispice">{{ requestscope.$index + 1 }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="name" label="姓名" min-width="10%"/>
-            <el-table-column prop="sex" label="性别" min-width="10%"/>
-            <el-table-column
-              prop="relation"
-              label="关系"
-              min-width="10%"
-            />
-            <el-table-column
-              prop="occupation"
-              label="职业"
-              min-width="10%"
-            />
+            <el-table-column prop="powerStationName" label="电站单元名称" min-width="10%"/>
+            <el-table-column prop="userName" label="客户名称" min-width="10%"/>
             <el-table-column
               prop="phoneNumber"
-              label="手机号码"
+              label="联系方式"
               min-width="10%"
             />
-            <el-table-column prop="consumptionHabitsOrPlans" label="消费习惯与计划" min-width="10%"/>
+            <el-table-column
+              prop="repairMan"
+              label="维修人员"
+              min-width="10%"
+            />
+            <el-table-column
+              prop="reason"
+              label="原因"
+              min-width="10%"
+            />
           </el-table>
         </div>
       </div>
@@ -112,27 +123,32 @@ let titile = ref("");
 const imageUrl = ref("");
 let formInline = reactive({
     userName:'',
-    sex:'女',
-    nation:'汉',
-    phoneNumber:'142',
-    IDType:'身份证',
-    IDNumber:'125',
-    customerLevel:'421',
-    maritalStatus:'未婚',
-    educationLevel:'dd',
-    occupation:'11',
-    economy:'sdf',
-    property:'sdfas',
-    consumptionHabitsOrPlans:'sdfsd',
-    address:'sdfsf',
-    familyMember:[
+    IDNumber:'',
+    phoneNumber:'手机号码',
+    unit:'产权单位/投资商',
+    businessSource:'业务来源',
+    address:'地址',
+    powerStationName:'电站单元名称',
+    moduleType:'组件型号',
+    devicesNumber:'设备数量',
+    gridConnectionType:'并网类型',
+    investmentType:'投资类型',
+    powerStationType:'电站类型',
+    powerStationAddress:'电站地址',
+    collectorManufacturer:'采集器厂商',
+    collectorNumber:'采集器编号',
+    inverterPower:'逆变器功率',
+    inverterManufacturer:'逆变器厂商',
+    inverterModel:'逆变器型号',
+    inverterSerialNumber:'',//逆变器序列号
+    powerStationWarranty:'', //电站质保期
+    installationData:[ //安装及维修详情
         {
-            name:'ssd',
-            sex:'女',
-            relation:'母亲',
-            occupation:'sdf',
-            phoneNumber:'122',
-            consumptionHabitsOrPlans:'sdfsd'
+            powerStationName:'ssd',
+            userName:'客户名称',
+            phoneNumber:'联系方式',
+            repairMan:'维修人员',
+            reason:'原因',
         }
     ]
 });
@@ -318,7 +334,7 @@ const saveExit = () => {
   }
   .basicinfo {
     font-size: 18px;
-    margin: 16px 0 24px;
+    margin: 24px 0;
     color: #333333;
     border-bottom: 1px solid #cccccc;
     span {
