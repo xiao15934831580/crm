@@ -1,15 +1,40 @@
 <template>
   <div class="tablestyle">
-    <div class="search">
-      <el-col :span="3">
+    <div class="searchsize">
+      <el-col class="searchBox">
         <el-input
           class="w-10 m-2"
           v-model="searchvalue"
-          placeholder="请输入姓名/等级/手机号"
+          placeholder="请输入姓名"
         />
+        <el-input
+          class="w-10 m-2"
+          v-model="searchvalue"
+          placeholder="请输入等级"
+        />
+        <el-input
+          class="w-10 m-2"
+          v-model="searchvalue"
+          placeholder="请输入手机号"
+        />
+        <el-select class="w-10 m-2" v-model="value" placeholder="请输入住址（市）">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+         <el-select class="w-10 m-2" v-model="value" placeholder="请输入住址（县）">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
       </el-col>
-
-      <el-button size="small" class="searchbutton" @click="searchbutton"
+      <el-button  class="searchbutton mt-16 " @click="searchbutton"
         >查询</el-button
       >
     </div>
@@ -297,6 +322,12 @@ const detail = (id)=>{
     max-width: none;
   }
 }
+.searchbutton{
+  float: right;
+}
+.chartstyle{
+  height: calc(100% - 158px);
+}
 .modal {
   position: fixed;
   width: 100%;
@@ -318,6 +349,11 @@ const detail = (id)=>{
     margin: auto;
   }
 }
+.searchBox{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .editinfo {
   width: 30%;
   background-color: orange;
@@ -328,8 +364,14 @@ const detail = (id)=>{
     margin-left: 16px !important;
   }
 }
-.search {
-  position: relative;
+.searchsize {
+    position: relative;
+    width: 100%;
+    height: 114px;
+    border: 1px solid #ecf5ff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0px 0px 6px #d9ecff;
   .batchimport {
     position: absolute;
     right: 24px;

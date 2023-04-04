@@ -40,7 +40,12 @@ const routes = [
       {
         path: '/basicinfo',
         name: '客户基础信息',
-        component: () => import('../components/frame/src/custominfo/basicinfo.vue'),
+        component: () => import('../components/frame/src/custominfo/basic/basicinfo.vue'),
+      },
+      {
+        path: '/blacklist',
+        name: '黑名单客户信息',
+        component: () => import('../components/frame/src/custominfo/blacklist/blacklist.vue'),
       },
     ]
   },

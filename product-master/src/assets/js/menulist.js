@@ -13,15 +13,15 @@ const menulist = [
                         menuName: '客户基础信息',
                     },
                     {
-                        path: 'maintenance',
+                        path: 'blacklist',
                         menuName: '黑名单客户信息',
                     },
                     {
-                        path: 'maintenance',
+                        path: 'maintain',
                         menuName: '客户维护与关怀',
                     },
                     {
-                        path: 'maintenance',
+                        path: 'powerstationinfo',
                         menuName: '客户电站信息',
                     }
                 ]
