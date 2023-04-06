@@ -57,6 +57,41 @@ const routes = [
         name: '客户电站信息',
         component: () => import('../components/frame/src/custominfo/powerstationinfo/powerstationinfo.vue'),
       },
+      {
+        path: '/insurancelist',
+        name: '电站保险与理赔',
+        component: () => import('../components/frame/src/powerInsurance/insurancelist/insurancelist.vue'),
+      },
+      {
+        path: '/policyremind',
+        name: '保单提醒',
+        component: () => import('../components/frame/src/powerInsurance/policyremind/policyremind.vue'),
+      },
+      {
+        path: '/claimsprocess',
+        name: '电站理赔流程',
+        component: () => import('../components/frame/src/powerInsurance/claimsprocess/claimsprocess.vue'),
+      },
+      {
+        path: '/businessexpansion',
+        name: '电商拓展',
+        component: () => import('../components/frame/src/businessexpansion/businessexpansion.vue'),
+      },
+      {
+        path: '/unaudited',
+        name: '未审核工单',
+        component: () => import('../components/frame/src/wokeorder/unaudited/unaudited.vue'),
+      },
+      {
+        path: '/approved',
+        name: '已审核工单',
+        component: () => import('../components/frame/src/wokeorder/approved/approved.vue'),
+      },
+      {
+        path: '/completed',
+        name: '已完成工单',
+        component: () => import('../components/frame/src/wokeorder/completed/completed.vue'),
+      },
     ]
   },
 ];

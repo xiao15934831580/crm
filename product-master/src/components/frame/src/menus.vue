@@ -23,11 +23,11 @@
                 <span>{{ item.menuName }}</span>
               </template>
               <!-- <template v-if="item.children && item.children.length > 0"> -->
-              <template v-for="(subItem) in item.children">
+              <template v-for="(subItem) in item.children" >
                 <!-- 只有二级菜单 -->
                 <el-menu-item
                   :index="'/'+subItem.path"
-                  :key="subItem.menuName"
+                  :key="subItem.path"
                   v-if="!subItem.children"
                   @click="savePath(subItem)"
                 >
@@ -36,14 +36,14 @@
                 </el-menu-item>
                 <!-- 有三级菜单 -->
                 <template v-else>
-                  <el-sub-menu  :index="'/'+subItem.path" :key="subItem.menuName">
+                  <el-sub-menu  :index="'/'+subItem.path" :key="subItem.path">
                     <template #title>
                       <span>{{ subItem.menuName }}</span>
                     </template>
                     <el-menu-item
-                      v-for="(grandson,number) in subItem.children"
+                      v-for="(grandson) in subItem.children"
                       :index="'/'+grandson.path"
-                      :key="number"
+                      :key="grandson.path"
                       @click="savePath(grandson)"
                     >
                       <span>{{ grandson.menuName }}</span>
