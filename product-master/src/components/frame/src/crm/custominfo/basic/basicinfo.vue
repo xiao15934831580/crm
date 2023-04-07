@@ -1,23 +1,46 @@
 <template>
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col :span="10" class="searchBox">
+      <el-col class="searchBox">
         <el-input
-          class="w-10 m-2 mr-16"
+          class="w-10 m-2"
           v-model="searchvalue.name"
-          placeholder="请输入客户名称"
+          placeholder="请输入姓名"
         />
         <el-input
           class="w-10 m-2"
           v-model="searchvalue.phoneNumber"
           placeholder="请输入手机号"
         />
+        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" placeholder="请输入客户等级">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+        
+        <el-select class="w-10 m-2" v-model="searchvalue.city" placeholder="请输入住址（市）">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+         <el-select class="w-10 m-2" v-model="searchvalue.county" placeholder="请输入住址（县）">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
       </el-col>
-      <el-col :span="10">
-        <el-button  class="searchbutton " @click="searchbutton"
-        >查询</el-button>
-        </el-col>
-      
+      <el-button  class="searchbutton mt-16 " @click="searchbutton"
+        >查询</el-button
+      >
     </div>
     <div class="chartstyle">
       <el-table
@@ -33,61 +56,116 @@
                     }}</span>
               </template>
         </el-table-column>
-        <el-table-column prop="upperUser" label="上层用户" min-width="10%" />
-        <el-table-column prop="userName" label="客户名称" min-width="18%" />
-        <el-table-column prop="phoneNumber" label="联系方式" min-width="15%" />
+        <el-table-column prop="userName" label="姓名" min-width="10%" />
+        <el-table-column prop="IDNumber" label="证件号" min-width="18%" />
+        <el-table-column prop="phoneNumber" label="手机号" min-width="15%" />
         <!-- :show-overflow-tooltip='true' -->
-        <el-table-column prop="powerStationTitle" label="电站名称" min-width="15%">
+        <el-table-column prop="customerLevel" label="客户等级" min-width="15%">
           <template #default="requestscope">
             <el-popover
               placement="top-start"
               :width="200"
               trigger="hover"
-              :content="requestscope.row.powerStationTitle"
+              :content="requestscope.row.customerLevel"
             >
               <template #reference>
                 <span class="elispice">{{
-                  requestscope.row.powerStationTitle
+                  requestscope.row.customerLevel
                 }}</span>
               </template>
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="powerStationName" label="电站单元名称" min-width="15%">
+        <el-table-column prop="city" label="市" min-width="15%">
           <template #default="scope">
             <el-popover
               placement="top-start"
               :width="200"
               trigger="hover"
-              :content="scope.row.powerStationName"
+              :content="scope.row.city"
             >
               <template #reference>
-                <span class="elispice">{{ scope.row.powerStationName }}</span>
+                <span class="elispice">{{ scope.row.city }}</span>
               </template>
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="commission" label="佣金" min-width="10%" >
+        <el-table-column prop="county" label="县" min-width="10%" >
           <template #default="scope">
             <el-popover
               placement="top-start"
               :width="200"
               trigger="hover"
-              :content="scope.row.commission"
+              :content="scope.row.county"
             >
               <template #reference>
-                <span class="elispice">{{ scope.row.commission }}</span>
+                <span class="elispice">{{ scope.row.county }}</span>
+              </template>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="town" label="镇" min-width="12%" />
+        <el-table-column prop="detailAddress" label="详细地址" min-width="10%" >
+          <template #default="scope">
+            <el-popover
+              placement="top-start"
+              :width="200"
+              trigger="hover"
+              :content="scope.row.detailAddress"
+            >
+              <template #reference>
+                <span class="elispice">{{ scope.row.detailAddress }}</span>
+              </template>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="investmentMethod" label="投资方式" min-width="10%" >
+          <template #default="scope">
+            <el-popover
+              placement="top-start"
+              :width="200"
+              trigger="hover"
+              :content="scope.row.investmentMethod"
+            >
+              <template #reference>
+                <span class="elispice">{{ scope.row.investmentMethod }}</span>
+              </template>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="customerType" label="新/老客户" min-width="10%" >
+          <template #default="scope">
+            <el-popover
+              placement="top-start"
+              :width="200"
+              trigger="hover"
+              :content="scope.row.customerType"
+            >
+              <template #reference>
+                <span class="elispice">{{ scope.row.customerType }}</span>
+              </template>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="installationCapacity" label="安装容量" min-width="10%" >
+          <template #default="scope">
+            <el-popover
+              placement="top-start"
+              :width="200"
+              trigger="hover"
+              :content="scope.row.installationCapacity"
+            >
+              <template #reference>
+                <span class="elispice">{{ scope.row.installationCapacity }}</span>
               </template>
             </el-popover>
           </template>
         </el-table-column>
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-              >拉新</el-button
+            <el-button size="small" @click="detail(scope.row.id)"
+              >详情</el-button
             >
-            <el-button size="small" @click="detail(scope.$index, scope.row)"
-              >详情</el-button>
           </template>
         </el-table-column>
         <template #empty>
@@ -115,18 +193,16 @@
         v-model="dialogFormVisible"
         v-if="dialogFormVisible"
         :dialogFormVisible="dialogFormVisible"
-        :dialogTableValue="dialogTableValue"
-        :dialogTitile="dialogTitile"
     ></DiaLog>
-
 </template>
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-import { getLog as getLog,queryLog as queryLog } from '@/api/index'
+import { getAllUserList as getAllUserList } from '@/api/index'
 import { ElNotification } from "element-plus";
 import store from '@/store'
 import DiaLog from './dialog.vue'
+import axios from "axios"
 const searchvalue = reactive({
   name:'',
   phoneNumber:'',
@@ -135,16 +211,21 @@ const searchvalue = reactive({
   county:'',
   town:''
 });
-let dialogTableValue = reactive({});
+
 let tableData = [
   {
     id:'1212',
-    upperUser:'上层用户',
-    userName: "客户名称",
-    phoneNumber:'联系方式',
-    powerStationTitle:'电站名称',
-    powerStationName: "电站单元名称",
-    commission:"佣金",
+    userName: "设备副班长",
+    IDNumber: "111",
+    phoneNumber:"13456456",
+    customerLevel: "一级",
+    city: '西安',
+    county: "22",
+    town:'11',
+    detailAddress:'45451215',
+    investmentMethod:'5454',
+    customerType: "new",
+    installationCapacity:'545L'
   },
   {
     userId: 1235665656,
@@ -172,36 +253,37 @@ const state = reactive({
   TotalList: [],
   tableData1: [],
 });
-let dialogTitile = ref("编辑");
 const isloading = ref('false')
 const queryTableData = () => {
+  console.log('11111')
     isQuery.value = true;
      isloading.value = true;
     let obj = {
-        limit:state.PageSize,
-        pageNum: state.CurrentPage 
+    "pageindex":1,
+    "pagesize":10
     }
-  getLog(obj).then((res)=>{
-    isloading.value = false;
-    if(res.code === 200){
-      let data = res.data;
-        // state.tableData1=data&&data.records?data.records:[];
-        // state.Total = data&&data.total?data.total:0;
-    }else {
-             ElNotification({
-              title: 'Warning',
-              message: res.msg,
-              type: 'warning',
-            })
-            if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-    }
-  })
+    getAllUserList(obj).then((res)=>{
+      console.log('11111',res)
+      isloading.value = false;
+      if(res.code === 200){
+        let data = res.data;
+          // state.tableData1=data&&data.records?data.records:[];
+          // state.Total = data&&data.total?data.total:0;
+      }else {
+              //  ElNotification({
+              //   title: 'Warning',
+              //   message: res.msg,
+              //   type: 'warning',
+              // })
+              // if(res.msg.indexOf('token已过期')>-1  ){
+              //         store.dispatch('app/logout')
+              //     }
+      }
+    })
 };
 
 onBeforeMount(() => {
-//   queryTableData();
+  queryTableData();
 });
 //查询
 const searchbutton = () => {
@@ -240,55 +322,10 @@ const handleCurrentChange = (val) => {
   state.CurrentPage = val;
   searchvalue.value&&isQuery.value?searchbutton():queryTableData();
 };
-//新建
-const handleBuild = () => {
-  dialogTitile.value = "新建";
-  dialogFormVisible.value = true;
-};
 //详情
-const detail = (index, row)=>{
-    dialogTitile.value = "查看";
-    dialogTableValue.value = JSON.parse(JSON.stringify(row));
+const detail = (id)=>{
     dialogFormVisible.value = true;
 }
-//编辑
-const handleEdit = (index, row) => {
-  dialogTitile.value = "编辑";
-  dialogTableValue.value = JSON.parse(JSON.stringify(row));
-  dialogFormVisible.value = true;
-};
-//删除
-const handleDelete = (index, row) => {
-  ElMessageBox.confirm("你确定删除此人员信息吗?", "删除", {
-    type: "warning",
-    icon: markRaw(Delete),
-  })
-    .then(() => {
-      // deleteCar(row.id).then((res)=>{
-      //   if(res.code === 200){
-      //       state.tableData1.splice(index, 1);
-      //       if(state.tableData1.length === 0&& state.CurrentPage>1){
-      //         state.CurrentPage = state.CurrentPage -1;
-      //       }
-      //       searchvalue.value&&isQuery.value?searchCarData():queryTableData();
-      //       console.log('111111')
-      //       ElMessage({
-      //         type: "success",
-      //         message: "删除成功",
-      //       });
-      //   }else{
-      //       ElNotification({
-      //         title: 'Warning',
-      //         message: res.msg,
-      //         type: 'warning',
-      //       })
-      //        if(res.msg.indexOf('token已过期')>-1  ){
-      //               store.dispatch('app/logout')
-      //           }
-      //   }
-      // })
-      })
-};
 </script>
 <style lang = 'less' scoped>
 .tablestyle {
@@ -304,7 +341,7 @@ const handleDelete = (index, row) => {
   float: right;
 }
 .chartstyle{
-  height: calc(100% - 76px);
+  height: calc(100% - 124px);
 }
 .modal {
   position: fixed;
@@ -328,9 +365,9 @@ const handleDelete = (index, row) => {
   }
 }
 .searchBox{
-  // display: flex;
-  // align-items: center;
-  // justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .editinfo {
   width: 30%;
@@ -345,13 +382,11 @@ const handleDelete = (index, row) => {
 .searchsize {
     position: relative;
     width: 100%;
-    // height: 114px;
+    height: 114px;
     border: 1px solid #ecf5ff;
     border-radius: 8px;
     padding: 16px;
     box-shadow: 0px 0px 6px #d9ecff;
-    display: flex;
-    justify-content: space-between;
   .batchimport {
     position: absolute;
     right: 24px;

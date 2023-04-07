@@ -5,18 +5,17 @@
         <el-input
           class="w-10 m-2 mr-16"
           v-model="searchvalue.name"
-          placeholder="请输入工单编号"
+          placeholder="请输入客户名称"
         />
         <el-input
           class="w-10 m-2"
           v-model="searchvalue.phoneNumber"
-          placeholder="请输入工单名称"
+          placeholder="请输入手机号"
         />
       </el-col>
       <el-col :span="10">
         <el-button  class="searchbutton " @click="searchbutton"
         >查询</el-button>
-        <el-button  class="searchbutton mr-16"  @click="handleBuild">新建</el-button>
         </el-col>
       
     </div>
@@ -34,9 +33,9 @@
                     }}</span>
               </template>
         </el-table-column>
-        <el-table-column prop="wokeOrderCode" label="工单编号" min-width="10%" />
+        <el-table-column prop="upperUser" label="上层用户" min-width="10%" />
         <el-table-column prop="userName" label="客户名称" min-width="18%" />
-        <el-table-column prop="phoneNumber" label="客户电话" min-width="15%" />
+        <el-table-column prop="phoneNumber" label="联系方式" min-width="15%" />
         <!-- :show-overflow-tooltip='true' -->
         <el-table-column prop="powerStationTitle" label="电站名称" min-width="15%">
           <template #default="requestscope">
@@ -68,48 +67,27 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="policyAddress" label="电站地址" min-width="15%">
+        <el-table-column prop="commission" label="佣金" min-width="10%" >
           <template #default="scope">
             <el-popover
               placement="top-start"
               :width="200"
               trigger="hover"
-              :content="scope.row.policyAddress"
+              :content="scope.row.commission"
             >
               <template #reference>
-                <span class="elispice">{{ scope.row.policyAddress }}</span>
+                <span class="elispice">{{ scope.row.commission }}</span>
               </template>
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="problem" label="问题描述" min-width="15%">
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.problem"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.problem }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="wokeOrderStatus" label="工单状态" min-width="15%" />
-        <el-table-column prop="handlePerson" label="处理人" min-width="15%" />
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
-          <el-button  v-if="scope.row.wokeOrderStatus !=='待派单'" size="small" @click="handleEdit(scope.$index, scope.row)"
-              >转派</el-button>
-              <!-- 工单状态为待派单状态下显示 -->
-            <el-button
-              size="small"
-              v-if="scope.row.wokeOrderStatus ==='待派单'"
-              @click="handleDelete(scope.$index, scope.row)"
-              >派单</el-button>
+          <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
+              >拉新</el-button
+            >
             <el-button size="small" @click="detail(scope.$index, scope.row)"
-              >查看</el-button>
+              >详情</el-button>
           </template>
         </el-table-column>
         <template #empty>
@@ -140,38 +118,7 @@
         :dialogTableValue="dialogTableValue"
         :dialogTitile="dialogTitile"
     ></DiaLog>
-    <!-- 派单 -->
-    <div>
-    <el-dialog
-      ref="exitRef"
-      :model-value="dialogExitVisible"
-      title="用户评价"
-      :before-close="closeExit"
-      width="40%"
-      :close-on-click-modal="false"
-      draggable
-    >
-      <div class="mlr-24">
-        派单人员
-        <el-input
-          style="width:80%"
-          class="w-10 m-2"
-          v-model="exitvalue"
-          placeholder="请选择评价"
-        />
-      </div>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button class="btn-mixins-clear-default" @click="saveExit"
-            >确定</el-button
-          >
-          <el-button class="btn-mixins-clear-default" @click="closeExit"
-            >返回</el-button
-          >
-        </span>
-      </template>
-    </el-dialog>
-  </div>
+
 </template>
 <script setup>
 import { reactive, ref } from "vue";
@@ -179,7 +126,7 @@ import { markRaw, onBeforeMount } from "vue";
 import { getLog as getLog,queryLog as queryLog } from '@/api/index'
 import { ElNotification } from "element-plus";
 import store from '@/store'
-import DiaLog from '../dialog.vue'
+import DiaLog from '../custominfo/basic/dialog.vue'
 const searchvalue = reactive({
   name:'',
   phoneNumber:'',
@@ -192,15 +139,12 @@ let dialogTableValue = reactive({});
 let tableData = [
   {
     id:'1212',
-    wokeOrderCode:'工单编号',
+    upperUser:'上层用户',
     userName: "客户名称",
-    phoneNumber:'客户电话',
+    phoneNumber:'联系方式',
     powerStationTitle:'电站名称',
     powerStationName: "电站单元名称",
-    policyAddress:"电站地址",
-    problem:'问题描述',
-    wokeOrderStatus:'待派单',
-    handlePerson:'处理人'
+    commission:"佣金",
   },
   {
     userId: 1235665656,

@@ -150,7 +150,7 @@ import { markRaw, onBeforeMount } from "vue";
 import { getLog as getLog,queryLog as queryLog } from '@/api/index'
 import { ElNotification } from "element-plus";
 import store from '@/store'
-import DiaLog from './dialog.vue'
+import DiaLog from '../dialog.vue'
 const searchvalue = reactive({
   name:'',
   phoneNumber:'',

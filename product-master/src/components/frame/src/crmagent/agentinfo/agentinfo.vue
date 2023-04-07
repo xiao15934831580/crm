@@ -10,26 +10,9 @@
         <el-input
           class="w-10 m-2"
           v-model="searchvalue.phoneNumber"
-          placeholder="请输入手机号"
+          placeholder="请输入区域"
         />
-        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" placeholder="请输入客户等级">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-        
-        <el-select class="w-10 m-2" v-model="searchvalue.city" placeholder="请输入住址（市）">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-         <el-select class="w-10 m-2" v-model="searchvalue.county" placeholder="请输入住址（县）">
+        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" placeholder="请选择代理商级别">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -56,11 +39,11 @@
                     }}</span>
               </template>
         </el-table-column>
-        <el-table-column prop="userName" label="姓名" min-width="10%" />
-        <el-table-column prop="IDNumber" label="证件号" min-width="18%" />
-        <el-table-column prop="phoneNumber" label="手机号" min-width="15%" />
+        <el-table-column prop="userName" label="代理商名称" min-width="10%" />
+        <el-table-column prop="IDNumber" label="联系方式" min-width="18%" />
+        <el-table-column prop="phoneNumber" label="负责区域" min-width="15%" />
         <!-- :show-overflow-tooltip='true' -->
-        <el-table-column prop="customerLevel" label="客户等级" min-width="15%">
+        <el-table-column prop="customerLevel" label="代理商级别" min-width="15%">
           <template #default="requestscope">
             <el-popover
               placement="top-start"
@@ -76,7 +59,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="city" label="市" min-width="15%">
+        <el-table-column prop="city" label="信用级别" min-width="15%">
           <template #default="scope">
             <el-popover
               placement="top-start"
@@ -90,81 +73,13 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="county" label="县" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.county"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.county }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="town" label="镇" min-width="12%" />
-        <el-table-column prop="detailAddress" label="详细地址" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.detailAddress"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.detailAddress }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="investmentMethod" label="投资方式" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.investmentMethod"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.investmentMethod }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="customerType" label="新/老客户" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.customerType"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.customerType }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="installationCapacity" label="安装容量" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.installationCapacity"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.installationCapacity }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
             <el-button size="small" @click="detail(scope.row.id)"
               >详情</el-button
+            >
+            <el-button size="small" @click="handleEdit(scope.row.id)"
+              >编辑</el-button
             >
           </template>
         </el-table-column>
@@ -189,19 +104,20 @@
     </div>
 
   </div>
-    <DiaLog
+    <!-- <DiaLog
         v-model="dialogFormVisible"
         v-if="dialogFormVisible"
         :dialogFormVisible="dialogFormVisible"
-    ></DiaLog>
+    ></DiaLog> -->
 </template>
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-import { getLog as getLog,queryLog as queryLog } from '@/api/index'
+import { getAllUserList as getAllUserList } from '@/api/index'
 import { ElNotification } from "element-plus";
 import store from '@/store'
-import DiaLog from './dialog.vue'
+// import DiaLog from './dialog.vue'
+import axios from "axios"
 const searchvalue = reactive({
   name:'',
   phoneNumber:'',
@@ -254,33 +170,35 @@ const state = reactive({
 });
 const isloading = ref('false')
 const queryTableData = () => {
+  console.log('11111')
     isQuery.value = true;
      isloading.value = true;
     let obj = {
-        limit:state.PageSize,
-        pageNum: state.CurrentPage 
+        "pageindex":1,
+        "pagesize":10
     }
-  getLog(obj).then((res)=>{
-    isloading.value = false;
-    if(res.code === 200){
-      let data = res.data;
-        // state.tableData1=data&&data.records?data.records:[];
-        // state.Total = data&&data.total?data.total:0;
-    }else {
-             ElNotification({
-              title: 'Warning',
-              message: res.msg,
-              type: 'warning',
-            })
-            if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-    }
-  })
+    getAllUserList(obj).then((res)=>{
+      console.log('11111',res)
+      isloading.value = false;
+      if(res.code === 200){
+        let data = res.data;
+          // state.tableData1=data&&data.records?data.records:[];
+          // state.Total = data&&data.total?data.total:0;
+      }else {
+              //  ElNotification({
+              //   title: 'Warning',
+              //   message: res.msg,
+              //   type: 'warning',
+              // })
+              // if(res.msg.indexOf('token已过期')>-1  ){
+              //         store.dispatch('app/logout')
+              //     }
+      }
+    })
 };
 
 onBeforeMount(() => {
-//   queryTableData();
+  queryTableData();
 });
 //查询
 const searchbutton = () => {

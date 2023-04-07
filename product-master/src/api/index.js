@@ -25,6 +25,20 @@ export const getAllUserInfo = (params) => {
         method: 'GET',
     })
 }
+
+/**
+ * 获取用户基础信息
+ * @param {*} params 
+ * @returns 
+ */
+ export const getAllUserList = (data) => {
+    return http({
+        url: '/User/getUserList',
+        method: 'POST',
+        data
+    })
+}
+
 /**
  * 保存用户数据
  * @returns 

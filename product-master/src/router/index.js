@@ -5,17 +5,17 @@ import ManageMent from '../components/management.vue';
 const routes = [
   {
     path: '/',
-    redirect: '/login',
+    redirect: '/manageMent',
   },
-  {
-    path: '/login',
-    name: 'Login',
-    meta: {
-      title: '登录',
-      requiresAuth: false, // false表示不需要登录
-      },
-    component: () => import('../components/frame/src/login/login.vue'),
-  },
+  // {
+  //   path: '/login',
+  //   name: 'Login',
+  //   meta: {
+  //     title: '登录',
+  //     requiresAuth: false, // false表示不需要登录
+  //     },
+  //   component: () => import('../components/frame/src/login/login.vue'),
+  // },
   {
     path: '/manageMent',
     name: 'manageMent',
@@ -40,42 +40,42 @@ const routes = [
       {
         path: '/basicinfo',
         name: '客户基础信息',
-        component: () => import('../components/frame/src/custominfo/basic/basicinfo.vue'),
+        component: () => import('../components/frame/src/crm/custominfo/basic/basicinfo.vue'),
       },
       {
         path: '/blacklist',
         name: '黑名单客户信息',
-        component: () => import('../components/frame/src/custominfo/blacklist/blacklist.vue'),
+        component: () => import('../components/frame/src/crm/custominfo/blacklist/blacklist.vue'),
       },
       {
         path: '/maintain',
         name: '客户维护与关怀',
-        component: () => import('../components/frame/src/custominfo/maintain/maintain.vue'),
+        component: () => import('../components/frame/src/crm/custominfo/maintain/maintain.vue'),
       },
       {
         path: '/powerstationinfo',
         name: '客户电站信息',
-        component: () => import('../components/frame/src/custominfo/powerstationinfo/powerstationinfo.vue'),
+        component: () => import('../components/frame/src/crm/custominfo/powerstationinfo/powerstationinfo.vue'),
       },
       {
         path: '/insurancelist',
         name: '电站保险与理赔',
-        component: () => import('../components/frame/src/powerInsurance/insurancelist/insurancelist.vue'),
+        component: () => import('../components/frame/src/crm/powerInsurance/insurancelist/insurancelist.vue'),
       },
       {
         path: '/policyremind',
         name: '保单提醒',
-        component: () => import('../components/frame/src/powerInsurance/policyremind/policyremind.vue'),
+        component: () => import('../components/frame/src/crm/powerInsurance/policyremind/policyremind.vue'),
       },
       {
         path: '/claimsprocess',
         name: '电站理赔流程',
-        component: () => import('../components/frame/src/powerInsurance/claimsprocess/claimsprocess.vue'),
+        component: () => import('../components/frame/src/crm/powerInsurance/claimsprocess/claimsprocess.vue'),
       },
       {
         path: '/businessexpansion',
         name: '电商拓展',
-        component: () => import('../components/frame/src/businessexpansion/businessexpansion.vue'),
+        component: () => import('../components/frame/src/crm/businessexpansion/businessexpansion.vue'),
       },
       {
         path: '/unaudited',
@@ -91,6 +91,16 @@ const routes = [
         path: '/completed',
         name: '已完成工单',
         component: () => import('../components/frame/src/wokeorder/completed/completed.vue'),
+      },
+      {
+        path: '/agentinfo',
+        name: '代理商信息',
+        component: () => import('../components/frame/src/crmagent/agentinfo/agentinfo.vue'),
+      },
+      {
+        path: '/ratingmodel',
+        name: '评级模型设置',
+        component: () => import('../components/frame/src/crmagent/ratingmodel/ratingmodel.vue'),
       },
     ]
   },

@@ -1,9 +1,9 @@
 import axios from 'axios'
 const http = axios.create({
-  baseURL: '/repair', //process.env.VUE_APP_BASE_API
+  baseURL: '/elephone', //process.env.VUE_APP_BASE_API
   // timeout: 1800000,
 })
-http.defaults.headers.post["loginClient"] = "pc";
+// http.defaults.headers.post["loginClient"] = "pc";
 //请求拦截
 http.interceptors.request.use(
   (config) => {
@@ -17,8 +17,8 @@ http.interceptors.request.use(
       console.log('服务端异常！');
       return Promise.reject(config)
     }
-    config.headers.loginClient = 'pc'
-    config.headers.Authorization = localStorage.getItem('token')
+    // config.headers.loginClient = 'pc'
+    // config.headers.Authorization = localStorage.getItem('token')
     return config
   },
   (error) => {

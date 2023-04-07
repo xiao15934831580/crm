@@ -72,6 +72,20 @@ const menulist = [
                 menuName: '已完成工单',
             },
         ]
+    },
+    {
+        path: 'agent',
+        menuName: 'CRM管理-代理商',
+        children: [
+            {
+                path: 'agentinfo',
+                menuName: '代理商信息',
+            },
+            {
+                path: 'ratingmodel',
+                menuName: '评级模型设置',
+            },
+        ]
     }
 
 ]
