@@ -125,7 +125,7 @@ import { useStore } from 'vuex';
 import { reactive, ref, getCurrentInstance } from "vue";
 import store from '@/store'
 import { ElNotification } from "element-plus";
-import { loginOut as exit,updatePassword as updatePassword,getUserInfo as getUserInfo } from '@/api/index'
+// import { loginOut as exit,updatePassword as updatePassword,getUserInfo as getUserInfo } from '@/api/index'
     const message = '港口流动机械维修保养综合管理数字化平台'
     const {proxy} = getCurrentInstance();
     const passwordform = ref('');

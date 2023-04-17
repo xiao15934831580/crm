@@ -1,10 +1,11 @@
 <template>
+<div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
       <el-col class="searchBox">
         <el-input
           class="w-10 m-2"
-          v-model="searchvalue.name"
+          v-model="searchvalue.userName"
           placeholder="请输入姓名"
         />
         <el-input
@@ -12,12 +13,12 @@
           v-model="searchvalue.phoneNumber"
           placeholder="请输入手机号"
         />
-        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" placeholder="请输入客户等级">
+        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" clearable placeholder="请输入客户等级">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="item in customerDropdown.value"
+            :key="item.numb"
+            :label="item.dataName"
+            :value="item.numb"
           />
         </el-select>
         
@@ -26,19 +27,14 @@
           v-model="searchvalue.customerCode"
           placeholder="请输入客户编码"
         />
-         <el-input
-          class="w-10 m-2"
-          v-model="searchvalue.IDNumber"
-          placeholder="请输入证件号"
-        />
       </el-col>
-      <el-button  class="searchbutton mt-16 " @click="searchbutton"
+      <el-button  class="searchbutton mt-16 " @click="queryTableData"
         >查询</el-button
       >
     </div>
     <div class="chartstyle">
       <el-table
-        :data="tableData"
+        :data="state.tableData1"
         :header-cell-style="{ background: '#d9ecff' }" 
         border
         style="width: 100%"
@@ -106,21 +102,22 @@
     </div>
 
   </div>
+</div>
 </template>
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-import { getLog as getLog,queryLog as queryLog } from '@/api/index'
+import { getAllUserList as getAllUserList} from '@/api/index'
+import { getCustomerLevel as getCustomerLevel} from '@/api/common'
 import { ElNotification } from "element-plus";
 import store from '@/store'
 const searchvalue = reactive({
-  name:'',
+  userName:'',
   phoneNumber:'',
   customerLevel:'',
   customerCode:'',
-  IDNumber:'',
 });
-
+let customerDropdown=reactive([])
 let tableData = [
   {
     id:'1212',
@@ -158,19 +155,36 @@ const state = reactive({
   tableData1: [],
 });
 const isloading = ref('false')
+const getCustomerLevelFun = () => {
+  getCustomerLevel().then((res)=>{
+    if (res.code === 200) {
+      customerDropdown.value = res.body;
+    }else {
+      ElNotification({
+                title: 'Warning',
+                message: res.msg,
+                type: 'warning',
+              })
+              if(res.msg.indexOf('token已过期')>-1  ){
+                      store.dispatch('app/logout')
+                  }
+    }
+  })
+}
 const queryTableData = () => {
     isQuery.value = true;
      isloading.value = true;
-    let obj = {
-        limit:state.PageSize,
-        pageNum: state.CurrentPage 
-    }
-  getLog(obj).then((res)=>{
+     let obj = JSON.parse(JSON.stringify(searchvalue));
+     obj.pageindex = state.CurrentPage;
+     obj.pagesize = state.PageSize;
+     obj.blacklist = 1;
+  getAllUserList(obj).then((res)=>{
     isloading.value = false;
     if(res.code === 200){
-      let data = res.data;
-        // state.tableData1=data&&data.records?data.records:[];
-        // state.Total = data&&data.total?data.total:0;
+          let data = res.body;
+          state.tableData1=data&&data.data?data.data:[];
+          console.log(state.tableData)
+          state.Total = data&&data.total?data.total:0;
     }else {
              ElNotification({
               title: 'Warning',
@@ -185,7 +199,8 @@ const queryTableData = () => {
 };
 
 onBeforeMount(() => {
-//   queryTableData();
+  queryTableData();
+  getCustomerLevelFun()
 });
 //查询
 const searchbutton = () => {

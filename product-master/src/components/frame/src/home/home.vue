@@ -74,7 +74,7 @@
 <script setup>
 import { onMounted, ref, getCurrentInstance } from "vue";
 import store from "@/store";
-import { getHome as getHome } from "@/api/index";
+// import { getHome as getHome } from "@/api/index";
 import { ElNotification, formatter } from "element-plus";
 const carCount = ref("4");
 const repairCount = ref("5");

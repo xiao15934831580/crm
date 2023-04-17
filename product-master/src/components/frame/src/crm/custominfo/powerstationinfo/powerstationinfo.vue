@@ -1,10 +1,11 @@
 <template>
+<div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
       <el-col class="searchBox">
         <el-input
           class="w-10 m-2 mr-16"
-          v-model="searchvalue.name"
+          v-model="searchvalue.userName"
           placeholder="请输入姓名"
         />
         <el-input
@@ -12,52 +13,54 @@
           v-model="searchvalue.phoneNumber"
           placeholder="请输入手机号"
         />
-        <el-input
-          class="w-10 m-2 mr-16"
-          v-model="searchvalue.IDNumber"
-          placeholder="请输入证件号"
-        />
-        
-        <el-select class="w-10 m-2 mr-16" v-model="searchvalue.city" placeholder="请输入住址（市）">
+        <el-select class="w-10 m-2 mr-16" clearable  v-model="searchvalue.city" placeholder="请输入住址（市）">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="item in cityDropdown.value"
+            :key="item.code"
+            :label="item.name"
+            :value="item.code"
           />
         </el-select>
-         <el-select class="w-10 m-2 mr-16" v-model="searchvalue.county" placeholder="请输入住址（县）">
+         <el-select class="w-10 m-2 mr-16" @visible-change ='showCounty' clearable  v-model="searchvalue.county" placeholder="请输入住址（县）">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="item in countyDropdown.value"
+            :key="item.code"
+            :label="item.name"
+            :value="item.code"
           />
         </el-select>
-        <el-select class="w-10 m-2 mr-16" v-model="searchvalue.investmentMethod" placeholder="请选择投资方式">
+         <el-select class="w-10 m-2" @visible-change ='showTown' clearable  v-model="searchvalue.town" placeholder="请输入住址（镇）">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="item in townDropdown.value"
+            :key="item.code"
+            :label="item.name"
+            :value="item.code"
           />
         </el-select>
-         <el-select class="w-10 m-2" v-model="searchvalue.county" placeholder="请选择产权方">
+        <el-select class="w-10 m-2 mr-16" v-model="searchvalue.investmentMethod" clearable  placeholder="请选择投资方式">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="item in investmentDropdown.value"
+            :key="item.numb"
+            :label="item.dataName"
+            :value="item.numb"
+          />
+        </el-select>
+         <el-select class="w-10 m-2" v-model="searchvalue.unit" clearable  placeholder="请选择产权方">
+          <el-option
+            v-for="item in unitDropdown.value"
+            :key="item.numb"
+            :label="item.dataName"
+            :value="item.numb"
           />
         </el-select>
       </el-col>
-      <el-button  class="searchbutton mt-16 " @click="searchbutton"
+      <el-button  class="searchbutton mt-16 " @click="queryTableData"
         >查询</el-button
       >
     </div>
     <div class="chartstyle">
       <el-table
-        :data="tableData"
+        :data="state.tableData1"
         :header-cell-style="{ background: '#d9ecff' }" 
         border
         style="width: 100%"
@@ -82,7 +85,7 @@
         <el-table-column prop="testRunDate" label="试运行日期" min-width="15%" />
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
-            <el-button size="small" @click="detail(scope.row.id)"
+            <el-button size="small" @click="detail(scope.row.pid)"
               >详情</el-button
             >
           </template>
@@ -112,26 +115,34 @@
         v-model="dialogFormVisible"
         v-if="dialogFormVisible"
         :dialogFormVisible="dialogFormVisible"
+        :dataId = 'dataId'
     ></DiaLog>
+</div>
 </template>
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-import { getLog as getLog,queryLog as queryLog } from '@/api/index'
+import { getUserPowers as getUserPowers} from '@/api/index'
+import { getCitys as getCitys,getCountys as getCountys,getTowns as getTowns,getInvestmentTemplate as getInvestmentTemplate, getUnit as getUnit} from '@/api/common'
 import { ElNotification } from "element-plus";
 import store from '@/store'
 import DiaLog from './dialog.vue'
+let cityDropdown = reactive([])
+let countyDropdown = reactive([])
+let townDropdown = reactive([])
+let investmentDropdown =  reactive([])
+let unitDropdown = reactive([])
 const searchvalue = reactive({
   name:'',
   phoneNumber:'',
-  IDNumber:'',
+  idNumber:'',
   city:'',
   county:'',
   town:'',
   investmentMethod:'',
-
+  unit:''
 });
-
+let dataId = ref()
 let tableData = [
   {
     id:'1212',
@@ -147,22 +158,7 @@ let tableData = [
     moduleType:'',
     testRunDate:''
   },
-  {
-    id:'1212',
-    customerCode:'',
-    userName: "设备副班长",
-    IDNumber: "111",
-    phoneNumber:"13456456",
-    investmentMethod: "一级",
-    installationCapacity:'45',
-    installationAmount:'22',
-    powerStationName:'sdfsd',
-    powerStationScale:'sdf',
-    moduleType:'',
-    testRunDate:''
-  },
 ];
-let isQuery = ref(false);
 // 分页
 const dialogFormVisible = ref(false)
 const state = reactive({
@@ -174,75 +170,104 @@ const state = reactive({
   tableData1: [],
 });
 const isloading = ref('false')
-const queryTableData = () => {
-    isQuery.value = true;
-     isloading.value = true;
-    let obj = {
-        limit:state.PageSize,
-        pageNum: state.CurrentPage 
+const showCity = ()=>{
+  let obj={
+    code:'370'
     }
-  getLog(obj).then((res)=>{
-    isloading.value = false;
+  getCitys(obj).then((res)=>{
     if(res.code === 200){
-      let data = res.data;
-        // state.tableData1=data&&data.records?data.records:[];
-        // state.Total = data&&data.total?data.total:0;
-    }else {
-             ElNotification({
-              title: 'Warning',
-              message: res.msg,
-              type: 'warning',
-            })
-            if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
+      cityDropdown.value = res.body;
+      console.log(cityDropdown.value)
     }
   })
-};
-
-onBeforeMount(() => {
-//   queryTableData();
-});
-//查询
-const searchbutton = () => {
-  isloading.value = true;
-  let parmes = {
-    condition: searchvalue.value,
-    limit:state.PageSize,
-    pageNum:state.CurrentPage,
+}
+const showCounty=(val)=>{
+  console.log(val)
+  if(searchvalue.city!=''&&val){
+        getCountys(searchvalue.city).then((res)=>{
+          if (res.code === 200) {
+            countyDropdown.value = res.body;
+          }
+        })
   }
-  queryLog(parmes).then((res)=>{
-    isloading.value = false;
-    if(res.code === 200){
-          let data = res.data;
-          state.tableData1=data&&data.records?data.records:[];
-          state.Total = data&&data.total?data.total:0;
-      } else{
-        ElNotification({
+}
+const showTown =(val)=>{
+    if(searchvalue.county!=''&&val){
+        getTowns(searchvalue.county).then((res)=>{
+          if (res.code === 200) {
+            townDropdown.value = res.body;
+          }
+        })
+  }
+}
+const getInvestmentTemplateFun =(val)=>{
+      getInvestmentTemplate().then((res)=>{
+        if (res.code === 200) {
+          investmentDropdown.value = res.body;
+        }
+      })
+}
+const getUnitFun =(val)=>{
+      getUnit().then((res)=>{
+        if (res.code === 200) {
+          unitDropdown.value = res.body;
+        }
+      })
+}
+const queryTableData = () => {
+     isloading.value = true;
+     let obj = JSON.parse(JSON.stringify(searchvalue));
+     obj.pageindex = state.CurrentPage;
+     obj.pagesize = state.PageSize;
+    getUserPowers(obj).then((res)=>{
+      isloading.value = false;
+      if(res.code === 200){
+            let data = res.body;
+            state.tableData1=data&&data.data?data.data:[];
+            state.tableData1.forEach((item)=>{
+              item.testRunDate = getymd(item.testRunDate)
+            })
+            state.Total = data&&data.total?data.total:0;
+      }else {
+              ElNotification({
                 title: 'Warning',
                 message: res.msg,
                 type: 'warning',
               })
               if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
+                      store.dispatch('app/logout')
+                  }
       }
-  })
+    })
 };
 
+onBeforeMount(() => {
+  queryTableData();
+  showCity();
+  getInvestmentTemplateFun();
+  getUnitFun()
+
+});
+
+const getymd = (dateStr) => {
+    let d = new Date(dateStr);
+    let resDate = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()+' '+ d.getHours() + ": " + d.getMinutes() + " :" + d.getSeconds();
+    return resDate;
+}
 //切换一页显示多少条数据
 const handleSizeChange = (val) => {
   state.PageSize = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData()
 };
 // 点击跳转到第几页
 const handleCurrentChange = (val) => {
   state.CurrentPage = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
 //详情
 const detail = (id)=>{
     dialogFormVisible.value = true;
+    dataId.value = id;
 }
 </script>
 <style lang = 'less' scoped>

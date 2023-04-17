@@ -1,4 +1,5 @@
 <template>
+<div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
       <el-col :span="10" class="searchBox">
@@ -170,6 +171,7 @@
       </template>
     </el-dialog>
   </div>
+</div>
 </template>
 <script setup>
 import { reactive, ref } from "vue";
@@ -387,9 +389,7 @@ const saveExit = () => {
 .searchbutton{
   float: right;
 }
-.chartstyle{
-  height: calc(100% - 76px);
-}
+
 .modal {
   position: fixed;
   width: 100%;

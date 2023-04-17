@@ -1,27 +1,35 @@
 <template>
-<div>
+<div class="totalStyle">
     <div class="tablestyle">
-    <div class="search">
-      <el-col :span="3">
+    <div class="searchsize">
+      <el-col :span="10" class="searchBox">
+        <el-input
+          class="w-10 m-2 mr-16"
+          v-model="searchvalue.name"
+          placeholder="请输入工单编号"
+        />
         <el-input
           class="w-10 m-2"
-          v-model="searchvalue"
-          placeholder="请输入用户名/姓名/账号状态"
+          v-model="searchvalue.phoneNumber"
+          placeholder="请输入工单名称"
         />
       </el-col>
-      <el-button size="small" class="searchbutton" @click="searchUserData">查询</el-button>
-      <el-button size="small" @click="handleBuild">新建</el-button>
+      <el-col :span="10">
+        <el-button  class="searchbutton " @click="searchbutton"
+        >查询</el-button>
+        <el-button  class="searchbutton mr-16"  @click="handleBuild">新建</el-button>
+      </el-col>
+      
     </div>
     <div class="chartstyle">
       <el-table
         :data="state.tableData1"
         :header-cell-style="{ background: '#d9ecff' }" 
-        
         border
         style="width: 100%"
-      >
+      > 
         <el-table-column label="序号" min-width="7%">
-          <template #default="requestscope">
+              <template #default="requestscope">
                     <span >{{
                       requestscope.$index+1 + (state.PageSize*(state.CurrentPage-1))
                     }}</span>
@@ -63,9 +71,9 @@
         </template>
       </el-table>
       <div class="demo-pagination-block">
-        <!-- <el-pagination
-          v-model:currentPage="state.currentPage"
-          v-model:page-size="state.pageSize"
+        <el-pagination
+          :currentPage="state.currentPage"
+          :page-size="state.pageSize"
           :page-sizes="[5, 10, 15, 20]"
           :small="small"
           :disabled="disabled"
@@ -74,7 +82,7 @@
           :total="state.Total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-        /> -->
+        />
       </div>
     </div>
   </div>
@@ -147,7 +155,7 @@ import { reactive, ref, markRaw } from "vue";
 import { ElMessage, ElMessageBox,ElNotification } from "element-plus";
 import { Delete } from "@element-plus/icons-vue";
 import store from '@/store'
-import { getAllUserInfo as getAllUserInfo,resetPassword as resetPassword ,queryUser as queryUser ,deleteUser as deleteUser} from '@/api/index'
+// import { getUserInfo as getUserInfo,resetPassword as resetPassword ,queryUser as queryUser ,deleteUser as deleteUser} from '@/api/index'
 const {proxy} = getCurrentInstance();
 const searchvalue = ref("");
 const dialogFormVisible = ref(false);
@@ -165,13 +173,33 @@ let formPassword = reactive({
 const rules = reactive({
   new: [{  required: true, message: "密码必须是6-12位，不能有连续或者重复的字母或者数字并且大小写字母,数字,特殊符号必须包含两种以上",  trigger: "blur" }],
   confirm: [{ required: true, message: "密码必须是6-12位，不能有连续或者重复的字母或者数字并且大小写字母,数字,特殊符号必须包含两种以上",trigger: "blur" }],
-});
+});  
 let state = reactive({
             tableLoading: false,
             CurrentPage: 1,
             PageSize: 10,
             Total:0,
-            tableData1: [],
+            tableData1: [
+              {
+                  "createdDate": null,
+                  "creator": "",
+                  "id": "5001",
+                  "loginClient": "ALL",
+                  "loginClientLbl": "全部",
+                  "phoneNum": "15555555555",
+                  "realName": "超级管理员1",
+                  "role": "JS002",
+                  "roleLbl": "操作司机",
+                  "sex": "WOMAN",
+                  "sexLbl": "女",
+                  "status": "ENABLE",
+                  "statusLbl": "启用",
+                  "updatedDate": null,
+                  "updater": "",
+                  "username": "admin1",
+                  "version": 1
+              }
+            ],
           });
 const isloading = ref('false')
 const queryTableData = () => {
@@ -180,7 +208,7 @@ const queryTableData = () => {
     limit:state.PageSize,
     pageNum:state.CurrentPage,
   }
-  getAllUserInfo(parms)
+  getUserInfo(parms)
     .then((res)=>{
       isloading.value = false;
       if(res.code === 200){
@@ -205,7 +233,7 @@ watch(
     () => dialogFormVisible.value,
     () => {
       if(!dialogFormVisible.value){
-        queryTableData();
+        // queryTableData();
       }
     },
     { deep: true, immediate: true }
@@ -332,19 +360,34 @@ const closePassword = ()=>{
 }
 </script>
 <style  lang = 'less' scoped>
-/deep/ .el-table--fit{
+:deep(.el-table--fit){
   height:100%;
 }
-/deep/ .el-table__body-wrapper{
+:deep(.el-table__body-wrapper) {
   overflow-y: auto;
 }
 .tablestyle {
   position: relative;
-  /deep/ .el-table__header thead tr {
+  :deep(.el-table__header thead tr) {
     background-color: rgba(64, 158, 255, 0.1);
   }
-  /deep/ .el-col-3 {
+  :deep(.el-col-3 ){
     max-width: none;
+  }
+}
+.searchsize {
+    position: relative;
+    width: 100%;
+    // height: 114px;
+    border: 1px solid #ecf5ff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0px 0px 6px #d9ecff;
+    display: flex;
+    justify-content: space-between;
+  .batchimport {
+    position: absolute;
+    right: 24px;
   }
 }
 .demo-pagination-block {
@@ -376,16 +419,16 @@ const closePassword = ()=>{
       display: block;
     }
   }
-  /deep/ .el-dialog__footer {
+  :deep(.el-dialog__footer) {
     padding-top: 16px;
   }
-  /deep/ .el-dialog__body {
+  :deep(.el-dialog__body) {
     padding: 0;
     max-height: 550px;
     overflow-y: auto;
     overflow-x: hidden;
   }
-  /deep/ .el-dialog__header {
+  :deep(.el-dialog__header) {
     border-bottom: 1px solid #cccccc;
     padding: 0;
     margin-right: 0;
@@ -394,17 +437,17 @@ const closePassword = ()=>{
     align-items: center;
     margin-bottom: 48px;
   }
-  /deep/ .el-dialog__title {
+  :deep(.el-dialog__title) {
     color: #409eff;
     font-size: 20px;
     height: 40px;
     width: 120px;
     border-bottom: 4px solid #409eff;
   }
-  /deep/ .el-dialog {
+  :deep(.el-dialog ){
     padding: 24px;
   }
-  /deep/ .el-dialog__headerbtn {
+  :deep(.el-dialog__headerbtn) {
     position: static;
     top: 0px;
     right: 0;
@@ -412,9 +455,12 @@ const closePassword = ()=>{
     width: auto;
     height: auto;
   }
-  /deep/ .userPassword .el-form--inline .el-form-item{
+  :deep(.userPassword .el-form--inline .el-form-item){
     margin-left: 32px;
     margin-bottom: 48px;
   }
+}
+.searchbutton{
+  float: right;
 }
 </style>

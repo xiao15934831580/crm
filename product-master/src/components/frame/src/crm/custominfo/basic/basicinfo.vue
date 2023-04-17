@@ -1,10 +1,11 @@
 <template>
+<div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
       <el-col class="searchBox">
         <el-input
           class="w-10 m-2"
-          v-model="searchvalue.name"
+          v-model="searchvalue.userName"
           placeholder="请输入姓名"
         />
         <el-input
@@ -12,39 +13,47 @@
           v-model="searchvalue.phoneNumber"
           placeholder="请输入手机号"
         />
-        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" placeholder="请输入客户等级">
+        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" clearable placeholder="请输入客户等级">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="item in customerDropdown.value"
+            :key="item.numb"
+            :label="item.dataName"
+            :value="item.numb"
           />
         </el-select>
         
-        <el-select class="w-10 m-2" v-model="searchvalue.city" placeholder="请输入住址（市）">
+        <el-select class="w-10 m-2"  v-model="searchvalue.city" clearable placeholder="请输入住址（市）">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="item in cityDropdown.value"
+            :key="item.code"
+            :label="item.name"
+            :value="item.code"
           />
         </el-select>
-         <el-select class="w-10 m-2" v-model="searchvalue.county" placeholder="请输入住址（县）">
+         <el-select class="w-10 m-2" @visible-change ='showCounty' clearable v-model="searchvalue.county" placeholder="请输入住址（县）">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="item in countyDropdown.value"
+            :key="item.code"
+            :label="item.name"
+            :value="item.code"
+          />
+        </el-select>
+        <el-select class="w-10 m-2" @visible-change ='showTown' clearable v-model="searchvalue.town" placeholder="请输入住址（镇）">
+          <el-option
+            v-for="item in townDropdown.value"
+            :key="item.code"
+            :label="item.name"
+            :value="item.code"
           />
         </el-select>
       </el-col>
-      <el-button  class="searchbutton mt-16 " @click="searchbutton"
+      <el-button  class="searchbutton mt-16 " @click="queryTableData"
         >查询</el-button
       >
     </div>
     <div class="chartstyle">
       <el-table
-        :data="tableData"
+        :data="state.tableData1"
         :header-cell-style="{ background: '#d9ecff' }" 
         border
         style="width: 100%"
@@ -193,25 +202,33 @@
         v-model="dialogFormVisible"
         v-if="dialogFormVisible"
         :dialogFormVisible="dialogFormVisible"
+        :dataId = 'dataId'
     ></DiaLog>
+</div>
 </template>
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-import { getAllUserList as getAllUserList } from '@/api/index'
+import { getAllUserList as getAllUserList, getAllUserInfo as getAllUserInfo } from '@/api/index'
+import { getCitys as getCitys,getCountys as getCountys,getTowns as getTowns,getCustomerLevel as getCustomerLevel} from '@/api/common'
 import { ElNotification } from "element-plus";
 import store from '@/store'
 import DiaLog from './dialog.vue'
 import axios from "axios"
-const searchvalue = reactive({
-  name:'',
+let searchvalue = reactive({
+  userName:'',
   phoneNumber:'',
   customerLevel:'',
   city:'',
   county:'',
-  town:''
+  town:'',
+  pageindex:'',
+  pagesize:''
 });
-
+let customerDropdown=reactive([])
+let cityDropdown = reactive([])
+let countyDropdown = reactive([])
+let townDropdown = reactive([])
 let tableData = [
   {
     id:'1212',
@@ -243,6 +260,7 @@ let tableData = [
   },
 ];
 let isQuery = ref(false);
+let dataId = ref()
 // 分页
 const dialogFormVisible = ref(false)
 const state = reactive({
@@ -254,77 +272,98 @@ const state = reactive({
   tableData1: [],
 });
 const isloading = ref('false')
+const showCity = ()=>{
+  let obj={
+    code:'370'
+    }
+  getCitys(obj).then((res)=>{
+    if(res.code === 200){
+      cityDropdown.value = res.body;
+      console.log(cityDropdown.value)
+    }
+  })
+}
+const showCounty=(val)=>{
+  console.log(val)
+  if(searchvalue.city!=''&&val){
+        getCountys(searchvalue.city).then((res)=>{
+          if (res.code === 200) {
+            countyDropdown.value = res.body;
+          }
+        })
+  }
+}
+const showTown =(val)=>{
+    if(searchvalue.county!=''&&val){
+        getTowns(searchvalue.county).then((res)=>{
+          if (res.code === 200) {
+            townDropdown.value = res.body;
+          }
+        })
+  }
+}
 const queryTableData = () => {
-  console.log('11111')
     isQuery.value = true;
      isloading.value = true;
-    let obj = {
-    "pageindex":1,
-    "pagesize":10
-    }
+     let obj = JSON.parse(JSON.stringify(searchvalue));
+     obj.pageindex = state.CurrentPage;
+     obj.pagesize = state.PageSize;
     getAllUserList(obj).then((res)=>{
       console.log('11111',res)
       isloading.value = false;
       if(res.code === 200){
-        let data = res.data;
-          // state.tableData1=data&&data.records?data.records:[];
-          // state.Total = data&&data.total?data.total:0;
+        let data = res.body;
+          state.tableData1=data&&data.data?data.data:[];
+          state.Total = data&&data.total?data.total:0;
       }else {
-              //  ElNotification({
-              //   title: 'Warning',
-              //   message: res.msg,
-              //   type: 'warning',
-              // })
-              // if(res.msg.indexOf('token已过期')>-1  ){
-              //         store.dispatch('app/logout')
-              //     }
+               ElNotification({
+                title: 'Warning',
+                message: res.msg,
+                type: 'warning',
+              })
+              if(res.msg.indexOf('token已过期')>-1  ){
+                      store.dispatch('app/logout')
+                  }
       }
     })
 };
 
 onBeforeMount(() => {
   queryTableData();
+  showCity();
+  getCustomerLevelFun()
 });
-//查询
-const searchbutton = () => {
-  isloading.value = true;
-  let parmes = {
-    condition: searchvalue.value,
-    limit:state.PageSize,
-    pageNum:state.CurrentPage,
-  }
-  queryLog(parmes).then((res)=>{
-    isloading.value = false;
-    if(res.code === 200){
-          let data = res.data;
-          state.tableData1=data&&data.records?data.records:[];
-          state.Total = data&&data.total?data.total:0;
-      } else{
-        ElNotification({
+const getCustomerLevelFun = () => {
+  getCustomerLevel().then((res)=>{
+    if (res.code === 200) {
+      customerDropdown.value = res.body;
+    }else {
+      ElNotification({
                 title: 'Warning',
                 message: res.msg,
                 type: 'warning',
               })
               if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-      }
+                      store.dispatch('app/logout')
+                  }
+    }
   })
-};
-
+}
 //切换一页显示多少条数据
 const handleSizeChange = (val) => {
   state.PageSize = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData()
 };
 // 点击跳转到第几页
 const handleCurrentChange = (val) => {
   state.CurrentPage = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData()
 };
 //详情
 const detail = (id)=>{
+  console.log(id)
     dialogFormVisible.value = true;
+    dataId.value = id;
 }
 </script>
 <style lang = 'less' scoped>

@@ -14,14 +14,14 @@
         <p class="basictitle">电站业主信息</p>
         <div>
           <div class="showinfo">
-            <p class="showstyle">姓名：{{ formInline.userName }}</p>
+            <p class="showstyle">姓名：{{ formInline.data.userName }}</p>
             <p class="showstyle">身份证号：{{ formInline.IDNumber }}</p>
             <p class="showstyle">手机号码：{{ formInline.phoneNumber }}</p> 
             <p class="showstyle">产权单位/投资商：{{ formInline.unit }}</p>
             <p class="showstyle">业务来源：{{ formInline.businessSource }}</p>
           </div>
           <div class="showinfo">
-            <p class="showstyle">住址：{{ formInline.address }}</p>
+            <p class="showstyle">住址：{{ formInline.data.address }}</p>
           </div>
         </div>
         <!-- <p class="basicinfo"><span>电站信息</span></p> -->
@@ -97,7 +97,7 @@ import { defineProps, ref } from "vue";
 import { reactive, watch, defineEmits } from "vue";
 import { ElMessage ,ElNotification} from "element-plus";
 import store from '@/store'
-import { saveRepDatails as saveRepDatails,saveInspector as saveInspector,saveGoback as saveGoback} from '@/api/index'
+import { getUserPowerInfo as getUserPowerInfo} from '@/api/index'
 const emits = defineEmits(["update:modelValue"]);
 const addform = ref();
 const formLabelWidth = "70%";
@@ -107,9 +107,8 @@ let props = defineProps({
   dialogFormVisible: {
     type: Boolean,
   },
-//   dialogTitile: {
-//     type: String,
-//   },
+  dataId: {
+  },
 //   dialogTableValue: {
 //     type: Object,
 //     default: () => {},
@@ -122,35 +121,36 @@ let props = defineProps({
 let titile = ref("");
 const imageUrl = ref("");
 let formInline = reactive({
-    userName:'',
-    IDNumber:'',
-    phoneNumber:'手机号码',
-    unit:'产权单位/投资商',
-    businessSource:'业务来源',
-    address:'地址',
-    powerStationName:'电站单元名称',
-    moduleType:'组件型号',
-    devicesNumber:'设备数量',
-    gridConnectionType:'并网类型',
-    investmentType:'投资类型',
-    powerStationType:'电站类型',
-    powerStationAddress:'电站地址',
-    collectorManufacturer:'采集器厂商',
-    collectorNumber:'采集器编号',
-    inverterPower:'逆变器功率',
-    inverterManufacturer:'逆变器厂商',
-    inverterModel:'逆变器型号',
-    inverterSerialNumber:'',//逆变器序列号
-    powerStationWarranty:'', //电站质保期
-    installationData:[ //安装及维修详情
-        {
-            powerStationName:'ssd',
-            userName:'客户名称',
-            phoneNumber:'联系方式',
-            repairMan:'维修人员',
-            reason:'原因',
-        }
-    ]
+  data:{}
+    // userName:'',
+    // IDNumber:'',
+    // phoneNumber:'手机号码',
+    // unit:'产权单位/投资商',
+    // businessSource:'业务来源',
+    // address:'地址',
+    // powerStationName:'电站单元名称',
+    // moduleType:'组件型号',
+    // devicesNumber:'设备数量',
+    // gridConnectionType:'并网类型',
+    // investmentType:'投资类型',
+    // powerStationType:'电站类型',
+    // powerStationAddress:'电站地址',
+    // collectorManufacturer:'采集器厂商',
+    // collectorNumber:'采集器编号',
+    // inverterPower:'逆变器功率',
+    // inverterManufacturer:'逆变器厂商',
+    // inverterModel:'逆变器型号',
+    // inverterSerialNumber:'',//逆变器序列号
+    // powerStationWarranty:'', //电站质保期
+    // installationData:[ //安装及维修详情
+    //     {
+    //         powerStationName:'ssd',
+    //         userName:'客户名称',
+    //         phoneNumber:'联系方式',
+    //         repairMan:'维修人员',
+    //         reason:'原因',
+    //     }
+    // ]
 });
 const inspector = ref("");
 const exitvalue = ref("");
@@ -161,6 +161,21 @@ watch(
   () => {
     titile.value = '查看';
     // formInline = props.dialogTableValue.value;
+    getUserPowerInfo(props.dataId).then((res)=>{
+      if(res.code === 200){
+        formInline.data = res.body;
+        console.log(formInline.data)
+      }else {
+        ElNotification({
+                title: 'Warning',
+                message: res.msg,
+                type: 'warning',
+              })
+              if(res.msg.indexOf('token已过期')>-1  ){
+                      store.dispatch('app/logout')
+                  }
+      }
+    })
   },
   { deep: true, immediate: true }
 );

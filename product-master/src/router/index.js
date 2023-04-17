@@ -19,24 +19,13 @@ const routes = [
   {
     path: '/manageMent',
     name: 'manageMent',
-    redirect: '/home',
+    redirect: '/basicinfo',
     component: ManageMent,
     meta: {
-      title: '首页',
+      title: '客户基础信息',
       requiresAuth: true, // true表示需要登录
     },
     children: [
-      {
-        path: '/home',
-        name: '首页',
-        component: () => import('../components/frame/src/home/home.vue'),
-      },
-      {
-        path: '/repair',
-        name: '维修人员档案',
-        icon: 'location',
-        component: () => import('../components/frame/src/personfile/personfile.vue'),
-      },
       {
         path: '/basicinfo',
         name: '客户基础信息',
@@ -101,6 +90,36 @@ const routes = [
         path: '/ratingmodel',
         name: '评级模型设置',
         component: () => import('../components/frame/src/crmagent/ratingmodel/ratingmodel.vue'),
+      },
+      {
+        path: '/account',
+        name: '客户账户管理',
+        component: () => import('../components/frame/src/customerassets/photovoltaicloan/account/account.vue'),
+      },
+      {
+        path: '/income',
+        name: '电站收益',
+        component: () => import('../components/frame/src/customerassets/photovoltaicloan/income/income.vue'),
+      },
+      {
+        path: '/managelist',
+        name: '返还金管理列表',
+        component: () => import('../components/frame/src/customerassets/rent/managelist/managelist.vue'),
+      },
+      {
+        path: '/statistics',
+        name: '返还金发放统计',
+        component: () => import('../components/frame/src/customerassets/rent/statistics/statistics.vue'),
+      },
+      {
+        path: '/user',
+        name: '用户管理',
+        component: () => import('../components/frame/src/system/user/user.vue'),
+      },
+      {
+        path: '/role',
+        name: '角色管理',
+        component: () => import('../components/frame/src/system/role/role.vue'),
       },
     ]
   },

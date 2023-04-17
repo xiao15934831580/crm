@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.10",
+    "@neysf/qiyu-web-sdk": "^1.1.1",
     "axios": "^1.1.3",
     "core-js": "^3.8.3",
     "echarts": "^5.4.0",

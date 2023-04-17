@@ -86,7 +86,56 @@ const menulist = [
                 menuName: '评级模型设置',
             },
         ]
-    }
+    },
+    {
+        path: 'customerassets',
+        menuName: '客户资产',
+        children: [
+            {
+                path: 'photovoltaicloan',
+                menuName: '光伏贷客户',
+                children:[
+                    {
+                        path: 'account',
+                        menuName: '客户账户管理',
+                    },
+                    {
+                        path: 'income',
+                        menuName: '电站收益',
+                    }
+                ]
+            },
+            {
+                path: 'rent',
+                menuName: '租赁客户',
+                children:[
+                    {
+                        path: 'managelist',
+                        menuName: '返还金管理列表',
+                    },
+                    {
+                        path: 'statistics',
+                        menuName: '返还金发放统计',
+                    }
+                ]
+            },
+        ]
+    },
+        // 系统管理
+    {
+            path: 'system',
+            menuName: '系统管理',
+            children: [
+                {
+                    path: 'user',
+                    menuName: '用户管理',
+                },
+                {
+                    path: 'role',
+                    menuName: '角色管理',
+                },
+            ]
+        },
 
 ]
 export default menulist;

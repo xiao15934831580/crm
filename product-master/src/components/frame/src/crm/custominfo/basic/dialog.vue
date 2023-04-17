@@ -14,32 +14,32 @@
         <p class="basictitle">客户基本信息</p>
         <div>
           <div class="showinfo">
-            <p class="showstyle">姓名：{{ formInline.userName }}</p>
-            <p class="showstyle">性别：{{ formInline.sex }}</p>
-            <p class="showstyle">民族：{{ formInline.nation }}</p>
-            <p class="showstyle">手机号码：{{ formInline.phoneNumber }}</p> 
+            <p class="showstyle">姓名：{{ formInline.data.userName }}</p>
+            <p class="showstyle">性别：{{ formInline.data.sex }}</p>
+            <p class="showstyle">民族：{{ formInline.data.nation }}</p>
+            <p class="showstyle">手机号码：{{ formInline.data.phoneNumber }}</p> 
           </div>
           <div class="showinfo">
-            <p class="showstyle">证件类型：{{ formInline.IDType }}</p>
-            <p class="showstyle">证件号码：{{ formInline.IDNumber }}</p>
-            <p class="showstyle">客户等级：{{ formInline.customerLevel }}</p> 
-            <p class="showstyle">婚姻状态：{{ formInline.maritalStatus }}</p>
+            <p class="showstyle">证件类型：{{ formInline.data.IDType }}</p>
+            <p class="showstyle">证件号码：{{ formInline.data.IDNumber }}</p>
+            <p class="showstyle">客户等级：{{ formInline.data.customerLevel }}</p> 
+            <p class="showstyle">婚姻状态：{{ formInline.data.maritalStatus }}</p>
           </div>
           <div class="showinfo">
-            <p class="showstyle">教育程度：{{ formInline.educationLevel }}</p>
-            <p class="showstyle">职业：{{ formInline.occupation }}</p>
-            <p class="showstyle">经济：{{ formInline.economy }}</p>
-            <p class="showstyle">资产：{{ formInline.property }}</p>
+            <p class="showstyle">教育程度：{{ formInline.data.educationLevel }}</p>
+            <p class="showstyle">职业：{{ formInline.data.occupation }}</p>
+            <p class="showstyle">经济：{{ formInline.data.economy }}</p>
+            <p class="showstyle">资产：{{ formInline.data.property }}</p>
           </div>
           <div class="showinfo">
-            <p class="showstyle">消费习惯与计划：{{ formInline.consumptionHabitsOrPlans }}</p>
-            <p class="showstyle">住址：{{ formInline.address }}</p>
+            <p class="showstyle">消费习惯与计划：{{ formInline.data.consumptionHabitsOrPlans }}</p>
+            <p class="showstyle">住址：{{ formInline.data.address }}</p>
           </div>
         </div>
         <p class="basicinfo"><span>家庭成员信息</span></p>
         <div>
           <el-table
-            :data="formInline.familyMember"
+            :data="formInline.data.familyMember"
             :header-cell-style="{ background: 'rgba(64, 158, 255, 0.1)' }"
             border
             style="width: 100%"
@@ -86,7 +86,7 @@ import { defineProps, ref } from "vue";
 import { reactive, watch, defineEmits } from "vue";
 import { ElMessage ,ElNotification} from "element-plus";
 import store from '@/store'
-import { saveRepDatails as saveRepDatails,saveInspector as saveInspector,saveGoback as saveGoback} from '@/api/index'
+import {getAllUserInfo as getAllUserInfo } from '@/api/index'
 const emits = defineEmits(["update:modelValue"]);
 const addform = ref();
 const formLabelWidth = "70%";
@@ -96,211 +96,44 @@ let props = defineProps({
   dialogFormVisible: {
     type: Boolean,
   },
-//   dialogTitile: {
-//     type: String,
-//   },
-//   dialogTableValue: {
-//     type: Object,
-//     default: () => {},
-//   },
-//   dropdownValue:{
-//     type: Object,
-//     default: () => {},
-//   },
+  dataId: {
+  },
 });
 let titile = ref("");
 const imageUrl = ref("");
 let formInline = reactive({
-    userName:'',
-    sex:'女',
-    nation:'汉',
-    phoneNumber:'142',
-    IDType:'身份证',
-    IDNumber:'125',
-    customerLevel:'421',
-    maritalStatus:'未婚',
-    educationLevel:'dd',
-    occupation:'11',
-    economy:'sdf',
-    property:'sdfas',
-    consumptionHabitsOrPlans:'sdfsd',
-    address:'sdfsf',
-    familyMember:[
-        {
-            name:'ssd',
-            sex:'女',
-            relation:'母亲',
-            occupation:'sdf',
-            phoneNumber:'122',
-            consumptionHabitsOrPlans:'sdfsd'
-        }
-    ]
+    data:{}
 });
 const inspector = ref("");
 const exitvalue = ref("");
 const isinspector = ref(false);
-// let dowpdown = props.dropdownValue.value
 watch(
   () => props,
   () => {
     titile.value = '查看';
-    // formInline = props.dialogTableValue.value;
+    getAllUserInfo(props.dataId).then((res)=>{
+      if(res.code === 200){
+        formInline.data = res.body;
+      }else {
+        ElNotification({
+                title: 'Warning',
+                message: res.msg,
+                type: 'warning',
+              })
+              if(res.msg.indexOf('token已过期')>-1  ){
+                      store.dispatch('app/logout')
+                  }
+      }
+    })
   },
   { deep: true, immediate: true }
 );
 const close = () => {
-  // addform.value.resetFields();
   emits("update:modelValue", false);
 };
-const isvoild = () => {
-  let isclick = ref(true);
-  if (formInline.repairDetails.length == 0) {
-    isclick.value = false;
-  }
-  formInline.repairDetails.forEach((item, index) => {
-    if (!item.faultType || !item.faultPart || !item.faultSituation||!item.urgencyLevel) {
-      isclick.value = false;
-    }
-  });
-  return isclick;
-};
-const savebutton = () => {
-  let isclick = isvoild();
-  if(isclick.value){
-    saveRepDatails(JSON.parse(JSON.stringify(formInline)).repairDetails).then((res)=>{
-     if(res.code ===200){
-        close();
-     }else{
-       ElNotification({
-              title: 'Warning',
-              message: res.msg,
-              type: 'warning',
-            })
-        if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-     }
-    })
-  }else{
-    alert("请检查故障明细是否有未选择的故障");
-  }
-};
 
-const handleRemove = (index) => {
-  formInline.repairDetails.splice(index, 1);
-};
-const addcolum = () => {
-  console.log(formInline.repairDetails);
-  let obj = {
-    faultType: "",
-    faultPart: "",
-    faultSituation: "",
-    otherDesc: "",
-    urgencyLevel: "",
-    billMainId:JSON.parse(JSON.stringify(formInline)).id,
-    faultTypeOption: formInline.faultTypeOption,
-    faultPartOption: formInline.faultPartOption,
-    faultSituationOption: formInline.faultSituationOption,
-  };
-  formInline.repairDetails.push(obj);
-};
-
-const distribution = () => {
-  let voild = isvoild();
-  console.log(voild);
-  if (voild.value) {
-    saveRepDatails(JSON.parse(JSON.stringify(formInline)).repairDetails).then((res)=>{
-     if(res.code ===200){
-        dialogInspectorVisible.value = true;
-     }else{
-       ElNotification({
-              title: 'Warning',
-              message: res.msg,
-              type: 'warning',
-            })
-        if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-     }
-    })
-    
-  } else {
-    alert("请检查故障明细是否有未选择的故障");
-  }
-};
-const closeInspector = () => {
-  dialogInspectorVisible.value = false;
-};
-const saveInspectorbutton = () => {
-  if (inspector.value !== "") {
-    saveInspector(JSON.parse(JSON.stringify(formInline)).id,inspector.value).then((res)=>{
-      if(res.code ===200){
-        emits("update:modelValue", false);
-     }else{
-       ElNotification({
-              title: 'Warning',
-              message: res.msg,
-              type: 'warning',
-            })
-        if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-     }
-    })
-    
-  } else {
-    alert("请选择点检员");
-  }
-};
-const exit = () => {
-  let voild = isvoild();
-  if (voild.value) {
-    saveRepDatails(JSON.parse(JSON.stringify(formInline)).repairDetails).then((res)=>{
-     if(res.code ===200){
-        dialogExitVisible.value = true
-     }else{
-       ElNotification({
-              title: 'Warning',
-              message: res.msg,
-              type: 'warning',
-            })
-        if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-     }
-    })
-    ;
-  } else {
-    alert("请检查故障明细是否有未选择的故障");
-  }
-};
 const closeExit = () => {
   dialogExitVisible.value = false;
-};
-const saveExit = () => {
-  if(exitvalue.value!==''){
-    let params={
-      billMainId:JSON.parse(JSON.stringify(formInline)).id,
-      desc:exitvalue.value
-    }
-    saveGoback(params).then((res)=>{
-       if(res.code ===200){
-         emits("update:modelValue", false);
-     }else{
-       ElNotification({
-              title: 'Warning',
-              message: res.msg,
-              type: 'warning',
-            })
-        if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-     }
-    })
-  } else {
-    alert("请输入退回说明");
-  }
- 
 };
 </script>
 

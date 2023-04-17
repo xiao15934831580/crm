@@ -11,78 +11,18 @@
       <div>
         <!-- 基础信息 -->
         <!-- <p class="basicinfo"><span>车辆信息</span></p> -->
-        <div style="margin-top:24px;">
-          <el-form
-            :model="formInline"
-            :inline="true"
-            label-width="160px"
-            :rules="rules"
-            ref="addform"
-            require-asterisk-position="left"
-            size="default"
-            scroll-to-error="true"
-          >
-            <div class="basicstyle">
-              <el-form-item label="保单编号" prop="policyNo" required>
-                <el-input
-                  placeholder="请输入保单编号"
-                  :disabled="titile === '查看'"
-                  v-model="formInline.policyNo"
-                />
-              </el-form-item>
-              <el-form-item label="电站单元名称" prop="powerStationName" required>
-                 <el-input
-                  placeholder="请输入电站单元名称"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.powerStationName"
-                />
-              </el-form-item>
-              <el-form-item label="电站业主名称" prop="userName" required>
-                <el-input
-                  placeholder="请输入电站业主名称"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.userName"
-                />
-              </el-form-item>
-              <el-form-item label="保单金额" prop="policyAmount" required>
-                      <el-input
-                  placeholder="请输入保单金额"
-                  :disabled="titile === '查看'"
-                  v-model="formInline.policyAmount"
-                />
-              </el-form-item>
-              <el-form-item label="保单生效日期" prop="policyEffectiveDate" required>
-                 <el-date-picker
-                  :disabled="titile === '查看'"
-                  placeholder="请选择保单生效日期"
-                  v-model="formInline.policyEffectiveDate"
-                  type="date"
-                />
-              </el-form-item>
-              <el-form-item label="保单失效日期" prop="policyExpirationDate" required>
-                <el-date-picker
-                  :disabled="titile === '查看'"
-                  placeholder="请选择保单失效日期"
-                  v-model="formInline.policyExpirationDate"
-                  type="date"
-                />
-              </el-form-item>
-               <el-form-item label="保单地址" prop="policyAddress" required>
-                <el-input
-                  placeholder="请输入保单地址"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.powerStationAddress"
-                />
-              </el-form-item> 
-               <el-form-item label="保单客户经理" prop="policyAccountManager" required>
-                <el-input
-                  placeholder="请输入保单客户经理"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.policyAccountManager"
-                />
-              </el-form-item> 
+        <div style="margin:24px 48px">
+            <div class="remainder">余额：<span class="numStyle">{{formInline.remainder}}</span> = 入账：<span class="numStyle">{{formInline.enterAccount}}</span> - 出账：<span class="numStyle">{{formInline.outerAccount}}</span></div>
+            <div class="remainder mt-16">当前公司利率：<span class="numStyle">{{formInline.rate}}</span></div>
+            <div class="remainder mt-16">
+              <span class="remarkStyle">备注：余额计算方式</span>
+               <div class="remark">
+                 <!-- <p>余额计算方式</p> -->
+                 <p class="remarkStyle">余额为正时：余额 = 入账 - 出账</p>
+                 <p class="remarkStyle">余额为负时：余额 = (入账 - 出账) - 利息(本金*公司利率*天数)</p>
+                 <p class="remarkStyle">如果余额为负时,则在一定的期限内公司不收取利息,超出期限后按天数计算利息</p>
+               </div> 
             </div>
-          </el-form>
         </div>
       </div>
       <template #footer>
@@ -97,14 +37,12 @@
             v-if="titile !== '查看'"
             class="btn-mixins dia-suc"
             @click="success(addform)"
-            >保存</el-button
-          >
+            >保存</el-button>
           <el-button
             v-if="titile === '查看'"
             class="btn-mixins dia-suc"
             @click="surelook"
-            >确定</el-button
-          >
+            >确定</el-button>
         </span>
       </template>
     </el-dialog>
@@ -118,7 +56,8 @@ import { ElNotification  } from "element-plus";
 import store from '@/store'
 const emits = defineEmits(["update:modelValue"]);
 const addform = ref();
-const formLabelWidth = "60%";
+const formLabelWidth = "30%";
+
 let props = defineProps({
   dialogFormVisible: {
     type: Boolean,
@@ -191,16 +130,12 @@ let formInline = reactive({
 watch(
   () => props,
   () => {
-    titile.value = props.dialogTitile;
-    if (titile.value === "编辑" || titile.value === "查看"){
-        formInline = props.dialogTableValue.value;
-    }
-      
+    titile.value = '余额详情';
+    formInline = props.dialogTableValue.value;
   },
   { deep: true, immediate: true }
 );
 const close = () => {
-  addform.value.resetFields();
   emits("update:modelValue", false);
 };
 const getymd = (dateStr) => {
@@ -209,7 +144,6 @@ const getymd = (dateStr) => {
     return resDate;
 }
 const success = (addform) => {
-  console.log(getymd(formInline.policyExpirationDate))
   if (!addform) return;
   addform.validate(async (valid) => {
     if (valid) {
@@ -386,5 +320,15 @@ const surelook = () => {
     position: absolute;
     margin-top: 5px;
   }
+}
+.remarkStyle{
+  color: #8c939d;
+}
+.remark{
+  margin-left: 42px;
+}
+.numStyle{
+    color: #000000;
+    font-size: 15px;
 }
 </style>

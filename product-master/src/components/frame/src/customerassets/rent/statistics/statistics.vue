@@ -2,18 +2,13 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col :span="11" class="searchBox">
+      <el-col :span="10" class="searchBox">
         <el-input
           class="w-10 m-2 mr-16"
           v-model="searchvalue.name"
-          placeholder="请输入姓名"
+          placeholder="请输入客户名称"
         />
-        <el-input
-          class="w-10 m-2  mr-16"
-          v-model="searchvalue.phoneNumber"
-          placeholder="请输入区域"
-        />
-        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" placeholder="请选择代理商级别">
+        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" placeholder="请选择年度">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -22,8 +17,12 @@
           />
         </el-select>
       </el-col>
-      <el-button  class="searchbutton " @click="searchbutton"
+      <el-col :span="10">
+        <el-button  class="searchbutton " @click="searchbutton"
         >查询</el-button>
+        <el-button  class="searchbutton mr-16"  @click="handleBuild">导出</el-button>
+        </el-col>
+      
     </div>
     <div class="chartstyle">
       <el-table
@@ -39,48 +38,16 @@
                     }}</span>
               </template>
         </el-table-column>
-        <el-table-column prop="agentName" label="代理商名称" min-width="10%" />
-        <el-table-column prop="phoneNumber" label="联系方式" min-width="18%" />
-        <el-table-column prop="responsibleArea" label="负责区域" min-width="15%" />
-        <!-- :show-overflow-tooltip='true' -->
-        <el-table-column prop="agentLevel" label="代理商级别" min-width="15%">
-          <template #default="requestscope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="requestscope.row.agentLevel"
-            >
-              <template #reference>
-                <span class="elispice">{{
-                  requestscope.row.agentLevel
-                }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="creditLevel" label="信用级别" min-width="15%">
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.creditLevel"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.creditLevel }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
+        <el-table-column prop="userName" label="客户名称" min-width="10%" />
+        <el-table-column prop="powerStationName" label="电站单元名称" min-width="18%" />
+        <el-table-column prop="powerStationTitle" label="电站名称" min-width="15%" />
+        <el-table-column prop="powerStationAddress" label="电站地址" min-width="15%" />
+        <el-table-column prop="year" label="年度" min-width="15%" />
+        <el-table-column prop="distributionAmount" label="发放金额" min-width="15%" />
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
             <el-button size="small" @click="detail(scope.$index, scope.row)"
-              >详情</el-button
-            >
-            <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-              >编辑</el-button
-            >
+              >明细</el-button>
           </template>
         </el-table-column>
         <template #empty>
@@ -109,18 +76,16 @@
         v-if="dialogFormVisible"
         :dialogFormVisible="dialogFormVisible"
         :dialogTitile="dialogTitile"
-        :dialogTableValue="dialogTableValue"
     ></DiaLog>
-    </div>
+</div>
 </template>
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-import { getAllUserList as getAllUserList } from '@/api/index'
+import { getLog as getLog,queryLog as queryLog } from '@/api/index'
 import { ElNotification } from "element-plus";
 import store from '@/store'
 import DiaLog from './dialog.vue'
-import axios from "axios"
 const searchvalue = reactive({
   name:'',
   phoneNumber:'',
@@ -129,15 +94,16 @@ const searchvalue = reactive({
   county:'',
   town:''
 });
-
+let dialogTableValue = reactive({});
 let tableData = [
   {
     id:'1212',
-    agentName: "代理商名称",
-    phoneNumber: "联系方式",
-    agentLevel:"代理商级别",
-    responsibleArea: "负责区域",
-    creditLevel:'信用级别'
+    userName: "客户名称",
+    powerStationTitle:'电站名称',
+    powerStationName: "电站单元名称",
+    policyAddress:"电站地址",
+    year:'年度',
+    distributionAmount:'发放金额',
   },
   {
     userId: 1235665656,
@@ -154,11 +120,10 @@ let tableData = [
     installationCapacity:'545L'
   },
 ];
-let dialogTitile = ref("编辑");
 let isQuery = ref(false);
 // 分页
 const dialogFormVisible = ref(false)
-let dialogTableValue = reactive({});
+let dialogExitVisible = ref(false);
 const state = reactive({
   tableLoading: false,
   CurrentPage: 1,
@@ -167,37 +132,36 @@ const state = reactive({
   TotalList: [],
   tableData1: [],
 });
+let dialogTitile = ref("编辑");
 const isloading = ref('false')
 const queryTableData = () => {
-  console.log('11111')
     isQuery.value = true;
      isloading.value = true;
     let obj = {
-        "pageindex":1,
-        "pagesize":10
+        limit:state.PageSize,
+        pageNum: state.CurrentPage 
     }
-    getAllUserList(obj).then((res)=>{
-      console.log('11111',res)
-      isloading.value = false;
-      if(res.code === 200){
-        let data = res.data;
-          // state.tableData1=data&&data.records?data.records:[];
-          // state.Total = data&&data.total?data.total:0;
-      }else {
-              //  ElNotification({
-              //   title: 'Warning',
-              //   message: res.msg,
-              //   type: 'warning',
-              // })
-              // if(res.msg.indexOf('token已过期')>-1  ){
-              //         store.dispatch('app/logout')
-              //     }
-      }
-    })
+  getLog(obj).then((res)=>{
+    isloading.value = false;
+    if(res.code === 200){
+      let data = res.data;
+        // state.tableData1=data&&data.records?data.records:[];
+        // state.Total = data&&data.total?data.total:0;
+    }else {
+             ElNotification({
+              title: 'Warning',
+              message: res.msg,
+              type: 'warning',
+            })
+            if(res.msg.indexOf('token已过期')>-1  ){
+                    store.dispatch('app/logout')
+                }
+    }
+  })
 };
 
 onBeforeMount(() => {
-  queryTableData();
+//   queryTableData();
 });
 //查询
 const searchbutton = () => {
@@ -236,18 +200,83 @@ const handleCurrentChange = (val) => {
   state.CurrentPage = val;
   searchvalue.value&&isQuery.value?searchbutton():queryTableData();
 };
+//新建
+const handleBuild = () => {
+  dialogTitile.value = "新建";
+  dialogFormVisible.value = true;
+};
 //详情
-const detail = (index,row)=>{
-  dialogTitile.value = "查看";
-  dialogTableValue.value = JSON.parse(JSON.stringify(row));
+const detail = (index, row)=>{
+    dialogTitile.value = "查看";
     dialogFormVisible.value = true;
 }
 //编辑
-const handleEdit = (index,row)=>{
-    dialogTitile.value = "编辑";
-    dialogTableValue.value = JSON.parse(JSON.stringify(row));
-    dialogFormVisible.value = true;
-}
+const handleEdit = (index, row) => {
+  dialogTitile.value = "编辑";
+  dialogTableValue.value = JSON.parse(JSON.stringify(row));
+  dialogFormVisible.value = true;
+};
+//评价
+const appraise = (index, row) => {
+    dialogExitVisible.value = true;
+//   ElMessageBox.confirm("你确定删除此人员信息吗?", "删除", {
+//     type: "warning",
+//     icon: markRaw(Delete),
+//   })
+//     .then(() => {
+      // deleteCar(row.id).then((res)=>{
+      //   if(res.code === 200){
+      //       state.tableData1.splice(index, 1);
+      //       if(state.tableData1.length === 0&& state.CurrentPage>1){
+      //         state.CurrentPage = state.CurrentPage -1;
+      //       }
+      //       searchvalue.value&&isQuery.value?searchCarData():queryTableData();
+      //       console.log('111111')
+      //       ElMessage({
+      //         type: "success",
+      //         message: "删除成功",
+      //       });
+      //   }else{
+      //       ElNotification({
+      //         title: 'Warning',
+      //         message: res.msg,
+      //         type: 'warning',
+      //       })
+      //        if(res.msg.indexOf('token已过期')>-1  ){
+      //               store.dispatch('app/logout')
+      //           }
+      //   }
+      // })
+    //   })
+};
+const closeExit = () => {
+  dialogExitVisible.value = false;
+};
+const saveExit = () => {
+//   if(exitvalue.value!==''){
+//     let params={
+//       billMainId:JSON.parse(JSON.stringify(formInline)).id,
+//       desc:exitvalue.value
+//     }
+//     saveGoback(params).then((res)=>{
+//        if(res.code ===200){
+//          emits("update:modelValue", false);
+//      }else{
+//        ElNotification({
+//               title: 'Warning',
+//               message: res.msg,
+//               type: 'warning',
+//             })
+//         if(res.msg.indexOf('token已过期')>-1  ){
+//                     store.dispatch('app/logout')
+//                 }
+//      }
+//     })
+//   } else {
+//     alert("请输入退回说明");
+//   }
+ 
+};
 </script>
 <style lang = 'less' scoped>
 .tablestyle {
@@ -287,9 +316,9 @@ const handleEdit = (index,row)=>{
   }
 }
 .searchBox{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  // display: flex;
+  // align-items: center;
+  // justify-content: space-between;
 }
 .editinfo {
   width: 30%;
@@ -304,6 +333,7 @@ const handleEdit = (index,row)=>{
 .searchsize {
     position: relative;
     width: 100%;
+    // height: 114px;
     border: 1px solid #ecf5ff;
     border-radius: 8px;
     padding: 16px;

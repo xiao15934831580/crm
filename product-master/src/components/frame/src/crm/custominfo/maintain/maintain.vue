@@ -1,4 +1,5 @@
 <template>
+<div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
       <el-col class="searchBox">
@@ -39,8 +40,9 @@
         border
         style="width: 100%"
         @selection-change="handleSelectionChange"
+        :row-key="getRowKeys"
       >
-      <el-table-column type="selection" width="55" />
+      <el-table-column type="selection" width="55" :reserve-selection="true"/>
         <el-table-column label="序号" min-width="7%">
           <template #default="requestscope">
                     <span >{{
@@ -71,9 +73,10 @@
         </el-table-column>
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
-            <el-button size="small" @click="detail(scope.row.id)"
-              >发送短信</el-button
-            >
+            <el-button size="small" @click="sendMsg(scope.row)"
+              >发送短信</el-button>
+              <el-button size="small" @click="callPhone(scope.row)"
+              >呼叫</el-button>
           </template>
         </el-table-column>
         <template #empty>
@@ -97,14 +100,20 @@
     </div>
 
   </div>
+  </div>
 </template>
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-import { getLog as getLog,queryLog as queryLog } from '@/api/index'
+// import { getLog as getLog,queryLog as queryLog } from '@/api/index'
 import { ElNotification } from "element-plus";
 import { ElTable } from 'element-plus'
+import {smsGetTowns as smsGetTowns, sendSmsList as sendSmsList} from '@/api/common'
 import store from '@/store'
+import YSF from '@neysf/qiyu-web-sdk';
+// const { APIs } = window.SoftPhoneSDK;
+// const { SoftPhone } = window.SoftPhoneSDK;
+// const softPhone = SoftPhone.getInstance();
 const searchvalue = reactive({
   name:'',
   phoneNumber:'',
@@ -120,7 +129,7 @@ let tableData = [
     customerCode:'11',
     userName: "设备副班长",
     IDNumber: "111",
-    phoneNumber:"13456456",
+    phoneNumber:"18729538420",
     maintainType: "vip",
     detailAddress:'45451215',
   },
@@ -129,7 +138,7 @@ let tableData = [
     userId: 1235665656,
     userName: "设备副班长",
     IDNumber: "111",
-    phoneNumber:"13456456",
+    phoneNumber:"18729538420",
     maintainType: "一级",
     city: '西安',
     county: "22",
@@ -180,6 +189,17 @@ const queryTableData = () => {
 
 onBeforeMount(() => {
 //   queryTableData();
+  // YSF.init('6e03e391cbb9e26e1cdb868f15de52e9');
+  // YSF.init('6c5351b62b27bf83cd30a533652d315f', {
+  //       templateId: 123, // templateId表示自定义会话邀请的模板标识
+  //       shuntId: 123, // shuntId表示访客选择多入口分流模版id
+  //       sessionInvite: false, // sessionInvite表示是否开启会话邀请设置
+  //       hidden: 1 // hidden表示是否隐藏访客端默认入口
+  //   }).then(ysf => {
+  //       ysf('open');
+  //   }).catch(error => {
+  //       console.log('sdk加载失败---', error);
+  //   });
 });
 //查询
 const searchbutton = () => {
@@ -218,22 +238,41 @@ const handleCurrentChange = (val) => {
   state.CurrentPage = val;
   searchvalue.value&&isQuery.value?searchbutton():queryTableData();
 };
+const getRowKeys=(row)=> {
+    return row.code;
+}
 const  handleSelectionChange=(val)=> {
         // this.multipleSelection = val;
         multipleSelection.value = [];
         val.forEach((item)=>{
             const id = item.id
 			// 判断数组中是否包含这个 id 
-			if (multipleSelection.value.indexOf(id) == -1) {
-				multipleSelection.value.push(id)
-			}
+          if (multipleSelection.value.indexOf(id) == -1) {
+            multipleSelection.value.push(id)
+          }
         })
         console.log(multipleSelection)
       }
 // 批量发送短信
 const sendAll =()=>{
+    
     console.log(multipleSelection._rawValue)  //当前所选中的用户id
+    console.log(multipleSelection)
+    sendSmsList()
 }
+//发送短信
+const sendMsg = (item)=>{
+  // let obj={
+  //   phone:item.phoneNumber
+  // }
+  smsGetTowns(item.phoneNumber).then((res)=>{
+    console.log(res)
+  })
+}
+const callPhone = (item)=>{
+  
+}
+
 </script>
 <style lang = 'less' scoped>
 .tablestyle {

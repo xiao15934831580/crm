@@ -23,64 +23,37 @@
             scroll-to-error="true"
           >
             <div class="basicstyle">
-              <el-form-item label="保单编号" prop="policyNo" required>
+              <el-form-item label="代理商名称" prop="agentName" required>
                 <el-input
-                  placeholder="请输入保单编号"
+                  placeholder="请输入代理商名称"
                   :disabled="titile === '查看'"
-                  v-model="formInline.policyNo"
+                  v-model="formInline.agentName"
                 />
               </el-form-item>
-              <el-form-item label="电站单元名称" prop="powerStationName" required>
+              <el-form-item label="联系方式" prop="phoneNumber" required>
                  <el-input
-                  placeholder="请输入电站单元名称"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.powerStationName"
+                  placeholder="请输入联系方式"
+                  :disabled="titile === '查看'"
+                  v-model="formInline.phoneNumber"
                 />
               </el-form-item>
-              <el-form-item label="电站业主名称" prop="userName" required>
-                <el-input
-                  placeholder="请输入电站业主名称"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.userName"
-                />
+              <el-form-item label="代理商级别" prop="agentLevel" required>
+                <el-select
+                  :disabled="titile === '查看'"
+                  v-model="formInline.agentLevel"
+                  placeholder="请选择代理商级别"
+                >
+                  <el-option v-for="item in dowpdown" :key="item.label" :label="item.label" :value="item.value" required>
+                    </el-option>
+                </el-select>
               </el-form-item>
-              <el-form-item label="保单金额" prop="policyAmount" required>
+              <el-form-item label="信用级别" prop="creditLevel" required>
                       <el-input
-                  placeholder="请输入保单金额"
+                  placeholder="请选择信用级别"
                   :disabled="titile === '查看'"
-                  v-model="formInline.policyAmount"
+                  v-model="formInline.creditLevel"
                 />
               </el-form-item>
-              <el-form-item label="保单生效日期" prop="policyEffectiveDate" required>
-                 <el-date-picker
-                  :disabled="titile === '查看'"
-                  placeholder="请选择保单生效日期"
-                  v-model="formInline.policyEffectiveDate"
-                  type="date"
-                />
-              </el-form-item>
-              <el-form-item label="保单失效日期" prop="policyExpirationDate" required>
-                <el-date-picker
-                  :disabled="titile === '查看'"
-                  placeholder="请选择保单失效日期"
-                  v-model="formInline.policyExpirationDate"
-                  type="date"
-                />
-              </el-form-item>
-               <el-form-item label="保单地址" prop="policyAddress" required>
-                <el-input
-                  placeholder="请输入保单地址"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.powerStationAddress"
-                />
-              </el-form-item> 
-               <el-form-item label="保单客户经理" prop="policyAccountManager" required>
-                <el-input
-                  placeholder="请输入保单客户经理"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.policyAccountManager"
-                />
-              </el-form-item> 
             </div>
           </el-form>
         </div>
@@ -97,14 +70,12 @@
             v-if="titile !== '查看'"
             class="btn-mixins dia-suc"
             @click="success(addform)"
-            >保存</el-button
-          >
+            >保存</el-button>
           <el-button
             v-if="titile === '查看'"
             class="btn-mixins dia-suc"
             @click="surelook"
-            >确定</el-button
-          >
+            >确定</el-button>
         </span>
       </template>
     </el-dialog>
@@ -118,7 +89,8 @@ import { ElNotification  } from "element-plus";
 import store from '@/store'
 const emits = defineEmits(["update:modelValue"]);
 const addform = ref();
-const formLabelWidth = "60%";
+const formLabelWidth = "40%";
+
 let props = defineProps({
   dialogFormVisible: {
     type: Boolean,
@@ -209,7 +181,6 @@ const getymd = (dateStr) => {
     return resDate;
 }
 const success = (addform) => {
-  console.log(getymd(formInline.policyExpirationDate))
   if (!addform) return;
   addform.validate(async (valid) => {
     if (valid) {

@@ -1,11 +1,19 @@
 <template>
+<div class="totalStyle">
   <div class="tablestyle">
-    <div class="search">
+    <div class="searchsize">
+      <el-col :span="10" class="searchBox">
+        <el-input
+          class="w-10 m-2 mr-16"
+          v-model="searchvalue"
+          placeholder="请输入角色名称"
+        />
+      </el-col>
       <el-button size="small" @click="handleBuild">新建</el-button>
     </div>
     <div class="chartstyle">
       <el-table
-        :data="state.tableData1"
+        :data="tableData"
         :header-cell-style="{ background: '#d9ecff' }" 
         
         border
@@ -40,11 +48,11 @@
               placement="top-start"
               :width="200"
               trigger="hover"
-              :content="menuLblScope.row.menuLbl.toString()"
+              :content="menuLblScope.row.menuLbl"
             >
               <template #reference>
                 <span class="elispice">{{
-                  menuLblScope.row.menuLbl.toString()}}</span>
+                  menuLblScope.row.menuLbl}}</span>
               </template>
             </el-popover>
           </template>
@@ -79,8 +87,8 @@
       </el-table>
       <div class="demo-pagination-block">
         <el-pagination
-          v-model:currentPage="state.currentPage"
-          v-model:page-size="state.pageSize"
+          :currentPage="state.currentPage"
+          :page-size="state.pageSize"
           :page-sizes="[5, 10, 15, 20]"
           :small="small"
           :disabled="disabled"
@@ -102,6 +110,7 @@
     :dialogTableValue="dialogTableValue"
     :dropdownValue = 'dropdownValue'
   ></RoleDialog>
+</div>
 </template>
 <script setup>
 import RoleDialog from "./roledialog.vue";
@@ -110,12 +119,13 @@ import { reactive, ref, markRaw } from "vue";
 import { ElMessage, ElMessageBox,ElNotification } from "element-plus";
 import { Delete } from "@element-plus/icons-vue";
 import store from '@/store'
-import { getAllRole as getAllRole,deleteRole as deleteRole } from '@/api/index'
+// import { getAllRole as getAllRole,deleteRole as deleteRole } from '@/api/index'
 const searchvale = ref("");
 const dialogFormVisible = ref(false);
 let dialogTitile = ref("编辑");
 let dialogTableValue = reactive({});
 let dropdownValue =  reactive({});
+const searchvalue = ref()
 //分页
 let tableData = [
   {
@@ -176,7 +186,7 @@ watch(
     () => dialogFormVisible.value,
     () => {
       if(!dialogFormVisible.value){
-        queryTableData();
+        // queryTableData();
       }
     },
     { deep: true, immediate: true }
@@ -272,5 +282,20 @@ const handleDelete = (index, row) => {
 }
 /deep/ .el-table__body-wrapper{
   overflow-y: auto;
+}
+.searchsize {
+    position: relative;
+    width: 100%;
+    // height: 114px;
+    border: 1px solid #ecf5ff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0px 0px 6px #d9ecff;
+    display: flex;
+    justify-content: space-between;
+  .batchimport {
+    position: absolute;
+    right: 24px;
+  }
 }
 </style>

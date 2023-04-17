@@ -37,13 +37,13 @@
                 />
               </el-form-item>
               <el-form-item label="性别" required >
-                <el-select
+                <!-- <el-select
                   v-model="formInline.sex"
                   placeholder="请选择性别"
                 >
                   <el-option v-for="item in dowpdown.sex" :key="item.label" :label="item.label" :value="item.value" required>
                     </el-option>
-                </el-select>
+                </el-select> -->
               </el-form-item>
               <el-form-item label="手机号码" prop="phoneNum" required>
                 <el-input
@@ -52,31 +52,31 @@
                 />
               </el-form-item>
               <el-form-item label="角色" prop="role" required>
-                <el-select
+                <!-- <el-select
                   v-model="formInline.role"
                   placeholder="请选择角色"
                 >
                   <el-option v-for="item in dowpdown.role" :key="item.label" :label="item.label" :value="item.value" required>
                     </el-option>
-                </el-select>
+                </el-select> -->
               </el-form-item>
               <el-form-item label="登录设备" prop="loginClient" required>
-                <el-select
+                <!-- <el-select
                   v-model="formInline.loginClient"
                   placeholder="请选择登录设备"
                 >
                    <el-option v-for="item in dowpdown.loginClient" :key="item.label" :label="item.label" :value="item.value" required>
                     </el-option>
-                </el-select>
+                </el-select> -->
               </el-form-item>
               <el-form-item label="账号状态" prop="status" required>
-                <el-select
+                <!-- <el-select
                   v-model="formInline.status"
                   placeholder="请选择账号状态"
                 >
                    <el-option v-for="item in dowpdown.status" :key="item.label" :label="item.label" :value="item.value" required>
                     </el-option>
-                </el-select>
+                </el-select> -->
               </el-form-item>
             </div>
           </el-form>
