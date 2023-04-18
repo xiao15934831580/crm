@@ -99,7 +99,7 @@
 import { defineProps, ref } from "vue";
 import { reactive, watch, defineEmits } from "vue";
 import { ElMessage } from "element-plus";
-import { saveOrUpdateUser as saveOrUpdateUser } from '@/api/index'
+// import { saveOrUpdateUser as saveOrUpdateUser } from '@/api/index'
 import { ElNotification } from "element-plus";
 import store from '@/store'
 const emits = defineEmits(['update:modelValue','inituserlist']);

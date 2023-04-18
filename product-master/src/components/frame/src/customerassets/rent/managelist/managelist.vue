@@ -25,9 +25,9 @@
             >一键外呼</el-button>
         <el-button  class="searchbutton" @click="sendAll"
             >一键发送</el-button>
-            <el-button  class="searchbutton " @click="sendAll"
+            <el-button  class="searchbutton " @click="importXlsx"
             >导入</el-button>
-            <el-button  class="searchbutton " @click="sendAll"
+            <el-button  class="searchbutton " @click="exportXlsx"
             >导出</el-button>
             <el-button  class="searchbutton" @click="addButton"
             >新建</el-button>
@@ -94,11 +94,12 @@
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-import { getLog as getLog,queryLog as queryLog } from '@/api/index'
+// import { getLog as getLog,queryLog as queryLog } from '@/api/index'
 import { ElNotification } from "element-plus";
 import { ElTable } from 'element-plus'
 import store from '@/store'
 import DiaLog from './dialog.vue'
+import * as XLSX from 'xlsx' 
 const searchvalue = reactive({
   name:'',
   phoneNumber:'',
@@ -112,19 +113,19 @@ const dialogTitile = ref('')
 let tableData = [
   {
     id:'0',
-    userName: "客户名称",
-    powerStationName: "电站单元名称",
-    powerStationAddress:"电站地址",
-    refundAmount: "返还金额",
-    returnStatus:'返还状态',
+    userName: "张三",
+    powerStationName: "电站",
+    powerStationAddress:"三峡",
+    refundAmount: "100",
+    returnStatus:'已返还',
   },
   {
-    id:'1',
-    userName: "用户名称",
-    customerAccount: "客户账号",
-    enterAccount:"入账",
-    outerAccount: "出账",
-    remainder:'余额',
+    id:'0',
+    userName: "李四",
+    powerStationName: "一号电站",
+    powerStationAddress:"三峡",
+    refundAmount: "200",
+    returnStatus:'未返还',
   },
 ];
 let isQuery = ref(false);
@@ -230,6 +231,34 @@ const showRemainder=(index,row)=>{
   console.log('1111122')
   dialogTableValue.value = row.remainder
   dialogFormVisible.value = true
+}
+
+const exportXlsx = ()=>{
+   // 创建工作表
+   let head = {
+      userName: "客户名称",
+      powerStationName: "电站单元名称",
+      powerStationAddress:"电站地址",
+      refundAmount: "返还金额",
+      returnStatus:'返还状态',
+    }
+    const list = tableData.map(item => {
+      const obj = {}
+      for (const k in item) {
+        if (head[k]) {
+          obj[head[k]] = item[k]
+        } 
+      }
+      return obj
+    })
+  const data = XLSX.utils.json_to_sheet(list)
+
+  // 创建工作簿
+  const wb = XLSX.utils.book_new()
+  // 将工作表放入工作簿中
+  XLSX.utils.book_append_sheet(wb, data, '返还金管理列表')
+  // 生成文件并下载
+  XLSX.writeFile(wb, '返还金管理列表.xlsx')
 }
 </script>
 <style lang = 'less' scoped>
