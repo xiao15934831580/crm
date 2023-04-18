@@ -5,25 +5,24 @@
       <el-col :span="10" class="searchBox">
         <el-input
           class="w-10 m-2 mr-16"
-          v-model="searchvalue.name"
+          v-model="searchvalue.policyNum"
           placeholder="请输入保单编码"
         />
         <el-input
           class="w-10 m-2"
-          v-model="searchvalue.phoneNumber"
+          v-model="searchvalue.powerNum"
           placeholder="请输入电站单元名称"
         />
       </el-col>
       <el-col :span="10">
-        <el-button  class="searchbutton " @click="searchbutton"
+        <el-button  class="searchbutton " @click="queryTableData();"
         >查询</el-button>
         <el-button  class="searchbutton mr-16"  @click="handleBuild">新建</el-button>
         </el-col>
-      
     </div>
     <div class="chartstyle">
       <el-table
-        :data="tableData"
+        :data="state.tableData1"
         :header-cell-style="{ background: '#d9ecff' }" 
         border
         style="width: 100%"
@@ -37,7 +36,7 @@
         </el-table-column>
         <el-table-column prop="userName" label="电站业主" min-width="10%" />
         <el-table-column prop="powerStationName" label="电站单元名称" min-width="18%" />
-        <el-table-column prop="policyAddress" label="电站地址" min-width="15%" />
+        <el-table-column prop="powerAddress" label="电站地址" min-width="15%" />
         <!-- :show-overflow-tooltip='true' -->
         <el-table-column prop="policyNo" label="保单编号" min-width="15%">
           <template #default="requestscope">
@@ -87,14 +86,12 @@
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
           <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-              >编辑</el-button
-            >
+              >编辑</el-button>
             <el-button
               size="small"
               type="danger"
               @click="handleDelete(scope.$index, scope.row)"
-              >删除</el-button
-            >
+              >删除</el-button>
             <el-button size="small" @click="detail(scope.$index, scope.row)"
               >详情</el-button>
           </template>
@@ -124,7 +121,7 @@
         v-model="dialogFormVisible"
         v-if="dialogFormVisible"
         :dialogFormVisible="dialogFormVisible"
-            :dialogTableValue="dialogTableValue"
+        :dialogTableValue="dialogTableValue"
         :dialogTitile="dialogTitile"
     ></DiaLog>
 </div>
@@ -132,17 +129,15 @@
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-// import { getLog as getLog,queryLog as queryLog } from '@/api/index'
+import { getPolicy as getPolicy,deletePolicy as deletePolicy } from '@/api/index'
 import { ElNotification } from "element-plus";
 import store from '@/store'
 import DiaLog from './dialog.vue'
 const searchvalue = reactive({
-  name:'',
-  phoneNumber:'',
-  customerLevel:'',
-  city:'',
-  county:'',
-  town:''
+  policyNum:'',
+  powerNum:'',
+  pageindex:'',
+  pagesize:''
 });
 let dialogTableValue = reactive({});
 let tableData = [
@@ -150,7 +145,7 @@ let tableData = [
     id:'1212',
     userName: "电站业主",
     powerStationName: "电站单元名称",
-    policyAddress:"电站地址",
+    powerAddress:"电站地址",
     policyNo: "保单编号",
     policyAmount: '保单金额',
     policyEffectiveDate: "生效日期",
@@ -188,23 +183,22 @@ const isloading = ref('false')
 const queryTableData = () => {
     isQuery.value = true;
      isloading.value = true;
-    let obj = {
-        limit:state.PageSize,
-        pageNum: state.CurrentPage 
-    }
-  getLog(obj).then((res)=>{
+     let obj = JSON.parse(JSON.stringify(searchvalue));
+     obj.pageindex = state.CurrentPage;
+     obj.pagesize = state.PageSize;
+  getPolicy(obj).then((res)=>{
     isloading.value = false;
     if(res.code === 200){
-      let data = res.data;
-        // state.tableData1=data&&data.records?data.records:[];
-        // state.Total = data&&data.total?data.total:0;
+      let data = res.body;
+          state.tableData1=data&&data.data?data.data:[];
+          state.Total = data&&data.total?data.total:0;
     }else {
              ElNotification({
               title: 'Warning',
               message: res.msg,
               type: 'warning',
             })
-            if(res.msg.indexOf('token已过期')>-1  ){
+            if(res.msg.indexOf('token已过期')>-1){
                     store.dispatch('app/logout')
                 }
     }
@@ -212,44 +206,18 @@ const queryTableData = () => {
 };
 
 onBeforeMount(() => {
-//   queryTableData();
+  queryTableData();
 });
-//查询
-const searchbutton = () => {
-  isloading.value = true;
-  let parmes = {
-    condition: searchvalue.value,
-    limit:state.PageSize,
-    pageNum:state.CurrentPage,
-  }
-  queryLog(parmes).then((res)=>{
-    isloading.value = false;
-    if(res.code === 200){
-          let data = res.data;
-          state.tableData1=data&&data.records?data.records:[];
-          state.Total = data&&data.total?data.total:0;
-      } else{
-        ElNotification({
-                title: 'Warning',
-                message: res.msg,
-                type: 'warning',
-              })
-              if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-      }
-  })
-};
 
 //切换一页显示多少条数据
-const handleSizeChange = (val) => {
+const handleSizeChange = (val) => { 
   state.PageSize = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
 // 点击跳转到第几页
 const handleCurrentChange = (val) => {
   state.CurrentPage = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
 //新建
 const handleBuild = () => {
@@ -275,29 +243,29 @@ const handleDelete = (index, row) => {
     icon: markRaw(Delete),
   })
     .then(() => {
-      // deleteCar(row.id).then((res)=>{
-      //   if(res.code === 200){
-      //       state.tableData1.splice(index, 1);
-      //       if(state.tableData1.length === 0&& state.CurrentPage>1){
-      //         state.CurrentPage = state.CurrentPage -1;
-      //       }
-      //       searchvalue.value&&isQuery.value?searchCarData():queryTableData();
-      //       console.log('111111')
-      //       ElMessage({
-      //         type: "success",
-      //         message: "删除成功",
-      //       });
-      //   }else{
-      //       ElNotification({
-      //         title: 'Warning',
-      //         message: res.msg,
-      //         type: 'warning',
-      //       })
-      //        if(res.msg.indexOf('token已过期')>-1  ){
-      //               store.dispatch('app/logout')
-      //           }
-      //   }
-      // })
+      deletePolicy(row.id).then((res)=>{
+        if(res.code === 200){
+            state.tableData1.splice(index, 1);
+            if(state.tableData1.length === 0&& state.CurrentPage>1){
+              state.CurrentPage = state.CurrentPage -1;
+            }
+            queryTableData();
+            console.log('111111')
+            ElMessage({
+              type: "success",
+              message: "删除成功",
+            });
+        }else{
+            ElNotification({
+              title: 'Warning',
+              message: res.msg,
+              type: 'warning',
+            })
+             if(res.msg.indexOf('token已过期')>-1  ){
+                    store.dispatch('app/logout')
+                }
+        }
+      })
       })
 };
 </script>

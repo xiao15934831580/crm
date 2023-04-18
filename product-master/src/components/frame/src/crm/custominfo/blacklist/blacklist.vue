@@ -143,7 +143,6 @@ let tableData = [
     installationCapacity:'545L'
   },
 ];
-let isQuery = ref(false);
 // 分页
 const dialogFormVisible = ref(false)
 const state = reactive({
@@ -172,7 +171,6 @@ const getCustomerLevelFun = () => {
   })
 }
 const queryTableData = () => {
-    isQuery.value = true;
      isloading.value = true;
      let obj = JSON.parse(JSON.stringify(searchvalue));
      obj.pageindex = state.CurrentPage;
@@ -202,47 +200,18 @@ onBeforeMount(() => {
   queryTableData();
   getCustomerLevelFun()
 });
-//查询
-const searchbutton = () => {
-  isloading.value = true;
-  let parmes = {
-    condition: searchvalue.value,
-    limit:state.PageSize,
-    pageNum:state.CurrentPage,
-  }
-  queryLog(parmes).then((res)=>{
-    isloading.value = false;
-    if(res.code === 200){
-          let data = res.data;
-          state.tableData1=data&&data.records?data.records:[];
-          state.Total = data&&data.total?data.total:0;
-      } else{
-        ElNotification({
-                title: 'Warning',
-                message: res.msg,
-                type: 'warning',
-              })
-              if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-      }
-  })
-};
 
 //切换一页显示多少条数据
 const handleSizeChange = (val) => {
   state.PageSize = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
 // 点击跳转到第几页
 const handleCurrentChange = (val) => {
   state.CurrentPage = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
-//详情
-const detail = (id)=>{
-    dialogFormVisible.value = true;
-}
+
 </script>
 <style lang = 'less' scoped>
 .tablestyle {

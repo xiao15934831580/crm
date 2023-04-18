@@ -35,8 +35,8 @@
       </el-table>
       <div class="demo-pagination-block">
         <el-pagination
-          v-model:currentPage="state.currentPage"
-          v-model:page-size="state.pageSize"
+          :currentPage="state.currentPage"
+          :page-size="state.pageSize"
           :page-sizes="[5, 10, 15, 20]"
           :small="small"
           :disabled="disabled"

@@ -17,8 +17,7 @@
       <el-col :span="10">
         <el-button  class="searchbutton " @click="searchbutton"
         >查询</el-button>
-        </el-col>
-      
+      </el-col>
     </div>
     <div class="chartstyle">
       <el-table

@@ -144,6 +144,7 @@ const searchvalue = reactive({
 });
 let dataId = ref()
 let tableData = [
+  
   {
     id:'1212',
     customerCode:'',

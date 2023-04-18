@@ -27,7 +27,7 @@
       <div class="searchButtonBox">
         <el-button  class="searchbutton mt-16 " @click="sendAll"
             >批量发送短信</el-button>
-        <el-button  class="searchbutton mt-16 " @click="searchbutton"
+        <el-button  class="searchbutton mt-16 " @click="queryTableData"
             >查询</el-button>
       </div>
 
@@ -35,7 +35,7 @@
     <div class="chartstyle">
       <el-table
         ref="multipleTableRef"
-        :data="tableData"
+        :data="state.tableData1"
         :header-cell-style="{ background: '#d9ecff' }" 
         border
         style="width: 100%"
@@ -105,7 +105,7 @@
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-// import { getLog as getLog,queryLog as queryLog } from '@/api/index'
+import { userCare as userCare } from '@/api/index'
 import { ElNotification } from "element-plus";
 import { ElTable } from 'element-plus'
 import {smsGetTowns as smsGetTowns, sendSmsList as sendSmsList} from '@/api/common'
@@ -115,11 +115,20 @@ import YSF from '@neysf/qiyu-web-sdk';
 // const { SoftPhone } = window.SoftPhoneSDK;
 // const softPhone = SoftPhone.getInstance();
 const searchvalue = reactive({
-  name:'',
+  userName:'',
   phoneNumber:'',
-  customerLevel:'',
-  customerCode:'',
-  IDNumber:'',
+  // customerLevel:'',
+  // customerCode:'',
+  // IDNumber:'',
+  "pageindex": 0,
+  "pagesize": 0,
+  //   "birthday": "string",
+  // "careType": 0,
+  // "county": "string",
+  // "idCardNumber": "string",
+
+  // "phoneNumber": "string",
+  // "userName": "string"
 });
 const multipleSelection=ref ([])
 const multipleTableRef = ref();
@@ -149,7 +158,6 @@ let tableData = [
     installationCapacity:'545L'
   },
 ];
-let isQuery = ref(false);
 // 分页
 const dialogFormVisible = ref(false)
 const state = reactive({
@@ -162,18 +170,18 @@ const state = reactive({
 });
 const isloading = ref('false')
 const queryTableData = () => {
-    isQuery.value = true;
      isloading.value = true;
-    let obj = {
-        limit:state.PageSize,
-        pageNum: state.CurrentPage 
-    }
-  getLog(obj).then((res)=>{
+     let obj = JSON.parse(JSON.stringify(searchvalue));
+     obj.pageindex = state.CurrentPage;
+     obj.pagesize = state.PageSize;
+     obj.blacklist = 1;
+  userCare(obj).then((res)=>{
     isloading.value = false;
     if(res.code === 200){
-      let data = res.data;
-        // state.tableData1=data&&data.records?data.records:[];
-        // state.Total = data&&data.total?data.total:0;
+          let data = res.body;
+          state.tableData1=data&&data.data?data.data:[];
+          console.log(state.tableData)
+          state.Total = data&&data.total?data.total:0;
     }else {
              ElNotification({
               title: 'Warning',
@@ -188,7 +196,7 @@ const queryTableData = () => {
 };
 
 onBeforeMount(() => {
-//   queryTableData();
+  queryTableData();
   // YSF.init('6e03e391cbb9e26e1cdb868f15de52e9');
   // YSF.init('6c5351b62b27bf83cd30a533652d315f', {
   //       templateId: 123, // templateId表示自定义会话邀请的模板标识
@@ -201,42 +209,17 @@ onBeforeMount(() => {
   //       console.log('sdk加载失败---', error);
   //   });
 });
-//查询
-const searchbutton = () => {
-  isloading.value = true;
-  let parmes = {
-    condition: searchvalue.value,
-    limit:state.PageSize,
-    pageNum:state.CurrentPage,
-  }
-  queryLog(parmes).then((res)=>{
-    isloading.value = false;
-    if(res.code === 200){
-          let data = res.data;
-          state.tableData1=data&&data.records?data.records:[];
-          state.Total = data&&data.total?data.total:0;
-      } else{
-        ElNotification({
-                title: 'Warning',
-                message: res.msg,
-                type: 'warning',
-              })
-              if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-      }
-  })
-};
+
 
 //切换一页显示多少条数据
 const handleSizeChange = (val) => {
   state.PageSize = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
 // 点击跳转到第几页
 const handleCurrentChange = (val) => {
   state.CurrentPage = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
 const getRowKeys=(row)=> {
     return row.code;

@@ -39,6 +39,18 @@ export const getAllUserInfo = (id) => {
     })
 }
 
+/**
+ * 客户维护与关怀
+ * @param {*} data 
+ * @returns 
+ */
+ export const userCare = (data) => {
+    return http({
+        url: '/User/userCare',
+        method: 'POST',
+        data
+    })
+}
 //客户电站信息
 /**
  * 获取电站列表信息
@@ -63,3 +75,36 @@ export const getUserPowers = (data) => {
     })
 }
 
+/**
+ * 电站保单列表
+ * 获取数据
+ * 
+ */
+ export const getPolicy = (data) => {
+    return http({
+        url: '/policy/getPolicy',
+        method: 'POST',
+        data
+    })
+}
+/**
+ * 新增修改保单
+ * 
+ */
+ export const operatePolicy = (data) => {
+    return http({
+        url: '/policy/operatePolicy',
+        method: 'POST',
+        data
+    })
+}
+/**
+ * 删除保单
+ * 
+ */
+ export const deletePolicy = (id) => {
+    return http({
+        url: `/policy/deletePolicy/${id}`,
+        method: 'DELETE',
+    })
+}

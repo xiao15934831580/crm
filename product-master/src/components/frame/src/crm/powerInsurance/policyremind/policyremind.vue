@@ -18,7 +18,6 @@
         <el-button  class="searchbutton " @click="searchbutton"
         >查询</el-button>
         </el-col>
-      
     </div>
     <div class="chartstyle">
       <el-table
@@ -29,9 +28,7 @@
       >
         <el-table-column label="序号" min-width="7%">
           <template #default="requestscope">
-                    <span >{{
-                      requestscope.$index+1 + (state.PageSize*(state.CurrentPage-1))
-                    }}</span>
+                    <span >{{requestscope.$index+1 + (state.PageSize*(state.CurrentPage-1))}}</span>
               </template>
         </el-table-column>
         <el-table-column prop="powerStationCode" label="电站编号" min-width="10%" />

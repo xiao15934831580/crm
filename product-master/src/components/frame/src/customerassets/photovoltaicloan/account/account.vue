@@ -17,7 +17,6 @@
         <el-button  class="searchbutton" @click="searchbutton"
             >查询</el-button>
       </div>
-
     </div>
     <div class="chartstyle">
       <el-table
@@ -80,7 +79,7 @@
         v-if="dialogFormVisible"
         :dialogFormVisible="dialogFormVisible"
         :dialogTitile="dialogTitile"
-        :dialogTableValue="dialogTableValue"
+        :dialogTableValue="dialogTableValue"  
     ></DiaLog>
 </div>
 </template>

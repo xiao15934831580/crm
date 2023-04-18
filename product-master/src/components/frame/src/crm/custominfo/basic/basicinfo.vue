@@ -259,7 +259,6 @@ let tableData = [
     installationCapacity:'545L'
   },
 ];
-let isQuery = ref(false);
 let dataId = ref()
 // 分页
 const dialogFormVisible = ref(false)
@@ -303,7 +302,6 @@ const showTown =(val)=>{
   }
 }
 const queryTableData = () => {
-    isQuery.value = true;
      isloading.value = true;
      let obj = JSON.parse(JSON.stringify(searchvalue));
      obj.pageindex = state.CurrentPage;

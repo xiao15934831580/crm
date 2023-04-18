@@ -19,7 +19,6 @@
         >查询</el-button>
         <el-button  class="searchbutton mr-16"  @click="handleBuild">新建</el-button>
       </el-col>
-      
     </div>
     <div class="chartstyle">
       <el-table
