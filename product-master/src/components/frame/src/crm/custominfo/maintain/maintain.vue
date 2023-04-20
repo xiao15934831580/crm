@@ -40,6 +40,7 @@
         border
         style="width: 100%"
         @selection-change="handleSelectionChange"
+        @select="handleSelect"
         :row-key="getRowKeys"
       >
       <el-table-column type="selection" width="55" :reserve-selection="true"/>
@@ -103,7 +104,7 @@
   </div>
 </template>
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive, ref,nextTick} from "vue";
 import { markRaw, onBeforeMount } from "vue";
 import { userCare as userCare } from '@/api/index'
 import { ElNotification } from "element-plus";
@@ -180,8 +181,9 @@ const queryTableData = () => {
     if(res.code === 200){
           let data = res.body;
           state.tableData1=data&&data.data?data.data:[];
-          console.log(state.tableData)
+          console.log(state.tableData1)
           state.Total = data&&data.total?data.total:0;
+          handleRowSelection(state.tableData1)
     }else {
              ElNotification({
               title: 'Warning',
@@ -222,19 +224,45 @@ const handleCurrentChange = (val) => {
   queryTableData();
 };
 const getRowKeys=(row)=> {
-    return row.code;
+    return row.id;
+}
+let selectedObj = {}
+const handleSelect = (selection,row)=>{
+  if(!selection.some((item)=>{ item.id === row.id})){
+    delete selectedObj[row.id]
+  }
+}
+const handleRowSelection=(data)=>{
+  if(data){
+      data.forEach((item)=>{
+        if(selectedObj[item.id]){
+          nextTick(()=>{
+            multipleTableRef.value.toggleRowSelection(item,true)
+          })
+        }
+      })
+  }else{
+    multipleTableRef.value.clearSelection()
+  }
+
 }
 const  handleSelectionChange=(val)=> {
-        // this.multipleSelection = val;
-        multipleSelection.value = [];
-        val.forEach((item)=>{
-            const id = item.id
-			// 判断数组中是否包含这个 id 
-          if (multipleSelection.value.indexOf(id) == -1) {
-            multipleSelection.value.push(id)
-          }
+      //全选取消
+      if(val.length === 0){
+        state.tableData1.value.forEach((item)=>{
+          delete selectedObj[item.id]
         })
-        console.log(multipleSelection)
+      }
+      //勾选数据
+      selectedObj={}
+      val.forEach((item) => {
+        selectedObj[item.id] = item
+      })
+      //获取所有分页勾选的数据
+      multipleSelection.value = [];
+        for(const key in selectedObj){
+          multipleSelection.value.push(selectedObj[key])
+        }
       }
 // 批量发送短信
 const sendAll =()=>{

@@ -2,7 +2,7 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col :span="10" >
+      <el-col :span="20" >
         <el-input
           class="w-10 m-2 mr-16"
           v-model="searchvalue.name"
@@ -14,7 +14,7 @@
           placeholder="请输入电站单元名称"
         />
       </el-col>
-      <el-button :span="10" class="searchbutton " @click="searchbutton"
+      <el-button :span="4" class="searchbutton " @click="searchbutton"
         >查询</el-button>
     </div>
     <div class="chartstyle">

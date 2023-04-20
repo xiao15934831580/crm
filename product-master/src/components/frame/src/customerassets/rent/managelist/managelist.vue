@@ -2,7 +2,7 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col :span="10" >
+      <el-col :span="12" >
         <el-input
           class="w-10 m-2 mr-16"
           v-model="searchvalue.name"

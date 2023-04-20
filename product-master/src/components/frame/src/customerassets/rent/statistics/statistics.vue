@@ -2,7 +2,7 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col :span="10" class="searchBox">
+      <el-col :span="20" class="searchBox">
         <el-input
           class="w-10 m-2 mr-16"
           v-model="searchvalue.name"
@@ -17,7 +17,7 @@
           />
         </el-select>
       </el-col>
-      <el-col :span="10">
+      <el-col :span="4">
         <el-button  class="searchbutton " @click="searchbutton"
         >查询</el-button>
         <el-button  class="searchbutton mr-16"  @click="handleBuild">导出</el-button>

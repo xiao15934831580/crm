@@ -4,16 +4,16 @@
     <div class="searchsize">
       <el-col class="searchBox">
         <el-input
-          class="w-10 m-2"
+          class="w-10 m-2 mr-16"
           v-model="searchvalue.userName"
           placeholder="请输入姓名"
         />
         <el-input
-          class="w-10 m-2"
+          class="w-10 m-2 mr-16"
           v-model="searchvalue.phoneNumber"
           placeholder="请输入手机号"
         />
-        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" clearable placeholder="请输入客户等级">
+        <el-select class="w-10 m-2 mr-16" v-model="searchvalue.customerLevel" clearable placeholder="请输入客户等级">
           <el-option
             v-for="item in customerDropdown.value"
             :key="item.numb"
@@ -22,7 +22,7 @@
           />
         </el-select>
         
-        <el-select class="w-10 m-2"  v-model="searchvalue.city" clearable placeholder="请输入住址（市）">
+        <el-select class="w-10 m-2 mr-16"  v-model="searchvalue.city" clearable placeholder="请输入住址（市）">
           <el-option
             v-for="item in cityDropdown.value"
             :key="item.code"
@@ -30,7 +30,7 @@
             :value="item.code"
           />
         </el-select>
-         <el-select class="w-10 m-2" @visible-change ='showCounty' clearable v-model="searchvalue.county" placeholder="请输入住址（县）">
+         <el-select class="w-10 m-2 mr-16" @visible-change ='showCounty' clearable v-model="searchvalue.county" placeholder="请输入住址（县）">
           <el-option
             v-for="item in countyDropdown.value"
             :key="item.code"

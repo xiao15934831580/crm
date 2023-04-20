@@ -2,7 +2,7 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col :span="10" class="searchBox">
+      <el-col :span="20" class="searchBox">
         <el-input
           class="w-10 m-2 mr-16"
           v-model="searchvalue.name"
@@ -14,7 +14,7 @@
           placeholder="请输入电站单元名称"
         />
       </el-col>
-      <el-col :span="10">
+      <el-col :span="4">
         <el-button  class="searchbutton " @click="searchbutton"
         >查询</el-button>
         </el-col>
@@ -27,7 +27,7 @@
         style="width: 100%"
       >
         <el-table-column label="序号" min-width="7%">
-          <template #default="requestscope">
+              <template #default="requestscope">
                     <span >{{requestscope.$index+1 + (state.PageSize*(state.CurrentPage-1))}}</span>
               </template>
         </el-table-column>
@@ -53,8 +53,8 @@
         <el-table-column prop="policyExpirationDate" label="保单失效日期" min-width="12%" />
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-              >编辑</el-button>
+              <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
+                  >编辑</el-button>
           </template>
         </el-table-column>
         <template #empty>
@@ -114,7 +114,7 @@ let tableData = [
   {
     userId: 1235665656,
     userName: "设备副班长",
-    IDNumber: "111",
+    IDNumber: "111",  
     phoneNumber:"13456456",
     customerLevel: "一级",
     city: '西安',

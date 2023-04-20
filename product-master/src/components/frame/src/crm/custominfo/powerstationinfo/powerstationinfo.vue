@@ -2,7 +2,7 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col class="searchBox">
+      <el-col  class="searchBox">
         <el-input
           class="w-10 m-2 mr-16"
           v-model="searchvalue.userName"
@@ -29,7 +29,7 @@
             :value="item.code"
           />
         </el-select>
-         <el-select class="w-10 m-2" @visible-change ='showTown' clearable  v-model="searchvalue.town" placeholder="请输入住址（镇）">
+         <el-select class="w-10 m-2 mr-16" @visible-change ='showTown' clearable  v-model="searchvalue.town" placeholder="请输入住址（镇）">
           <el-option
             v-for="item in townDropdown.value"
             :key="item.code"
@@ -54,9 +54,11 @@
           />
         </el-select>
       </el-col>
-      <el-button  class="searchbutton mt-16 " @click="queryTableData"
-        >查询</el-button
-      >
+       <!-- <el-col :span="4"> -->
+          <el-button  class="searchbutton mt-16 " @click="queryTableData"
+            >查询</el-button
+          >
+       <!-- </el-col> -->
     </div>
     <div class="chartstyle">
       <el-table

@@ -2,7 +2,7 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col :span="11" class="searchBox">
+      <el-col :span="20">
         <el-input
           class="w-10 m-2 mr-16"
           v-model="searchvalue.name"
@@ -22,8 +22,11 @@
           />
         </el-select>
       </el-col>
-      <el-button  class="searchbutton " @click="searchbutton"
-        >查询</el-button>
+      <el-col :span="4">
+            <el-button  class="searchbutton " @click="searchbutton"
+             >查询</el-button>
+      </el-col>
+
     </div>
     <div class="chartstyle">
       <el-table
