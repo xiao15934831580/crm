@@ -81,10 +81,6 @@ const menulist = [
                 path: 'agentinfo',
                 menuName: '代理商信息',
             },
-            {
-                path: 'ratingmodel',
-                menuName: '评级模型设置',
-            },
         ]
     },
     {
