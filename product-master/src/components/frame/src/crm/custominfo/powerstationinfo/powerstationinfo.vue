@@ -13,6 +13,14 @@
           v-model="searchvalue.phoneNumber"
           placeholder="请输入手机号"
         />
+          <el-select class="w-10 m-2 mr-16" v-model="searchvalue.investmentMethod" clearable  placeholder="请选择投资方式">
+          <el-option
+            v-for="item in investmentDropdown.value"
+            :key="item.numb"
+            :label="item.dataName"
+            :value="item.numb"
+          />
+        </el-select>
         <el-select class="w-10 m-2 mr-16" clearable  v-model="searchvalue.city" placeholder="请输入住址（市）">
           <el-option
             v-for="item in cityDropdown.value"
@@ -37,22 +45,7 @@
             :value="item.code"
           />
         </el-select>
-        <el-select class="w-10 m-2 mr-16" v-model="searchvalue.investmentMethod" clearable  placeholder="请选择投资方式">
-          <el-option
-            v-for="item in investmentDropdown.value"
-            :key="item.numb"
-            :label="item.dataName"
-            :value="item.numb"
-          />
-        </el-select>
-         <el-select class="w-10 m-2" v-model="searchvalue.unit" clearable  placeholder="请选择产权方">
-          <el-option
-            v-for="item in unitDropdown.value"
-            :key="item.numb"
-            :label="item.dataName"
-            :value="item.numb"
-          />
-        </el-select>
+
       </el-col>
        <!-- <el-col :span="4"> -->
           <el-button  class="searchbutton mt-16 " @click="queryTableData"

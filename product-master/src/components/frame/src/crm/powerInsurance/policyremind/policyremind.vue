@@ -2,17 +2,17 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col :span="20" class="searchBox">
+      <el-col :span="20">
         <el-input
           class="w-10 m-2 mr-16"
           v-model="searchvalue.name"
           placeholder="请输入保单编码"
         />
-        <el-input
-          class="w-10 m-2"
-          v-model="searchvalue.phoneNumber"
-          placeholder="请输入电站单元名称"
-        />
+        <el-date-picker
+                  placeholder="请选择保单失效日期"
+                  v-model="searchvalue.policyExpirationDate"
+                  type="date"
+                />
       </el-col>
       <el-col :span="4">
         <el-button  class="searchbutton " @click="searchbutton"
@@ -31,8 +31,7 @@
                     <span >{{requestscope.$index+1 + (state.PageSize*(state.CurrentPage-1))}}</span>
               </template>
         </el-table-column>
-        <el-table-column prop="powerStationCode" label="电站编号" min-width="10%" />
-        <el-table-column prop="powerStationTitle" label="电站名称" min-width="18%" />
+
         <!-- :show-overflow-tooltip='true' -->
         <el-table-column prop="policyNo" label="保单编号" min-width="15%">
           <template #default="requestscope">
@@ -51,12 +50,14 @@
           </template>
         </el-table-column>
         <el-table-column prop="policyExpirationDate" label="保单失效日期" min-width="12%" />
+        <el-table-column prop="powerStationName" label="电站单元名称" min-width="18%" />
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
                   >编辑</el-button>
           </template>
         </el-table-column>
+         
         <template #empty>
             <el-empty v-loading="isloading"></el-empty>
         </template>
@@ -96,18 +97,14 @@ import store from '@/store'
 import DiaLog from '../insurancelist/dialog.vue'
 const searchvalue = reactive({
   name:'',
-  phoneNumber:'',
-  customerLevel:'',
-  city:'',
-  county:'',
-  town:''
+  policyExpirationDate:'',
 });
 let dialogTableValue = reactive({});
 let tableData = [
   {
     id:'1212',
     powerStationCode: "电站编号",
-    powerStationTitle: "电站名称",
+    powerStationName: "电站名称",
     policyNo: "保单编号",
     policyExpirationDate:'失效日期',
   },
@@ -292,11 +289,7 @@ const handleDelete = (index, row) => {
     margin: auto;
   }
 }
-.searchBox{
-  // display: flex;
-  // align-items: center;
-  // justify-content: space-between;
-}
+
 .editinfo {
   width: 30%;
   background-color: orange;

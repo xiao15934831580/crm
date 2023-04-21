@@ -126,6 +126,25 @@ const menulist = [
             path: 'system',
             menuName: '系统管理',
             children: [
+
+                {
+                    path:'systemdesign',
+                    menuName:'系统设置',
+                    children: [
+                        {
+                            path: 'ratingmodel',
+                            menuName: '服务评价设置',
+                        },
+                        {
+                            path: 'creditmodel',
+                            menuName: '信用级别设置',
+                        },
+                        {
+                            path: 'powerdate',
+                            menuName: '电站保质期设置',
+                        },
+                    ]
+                },
                 {
                     path: 'user',
                     menuName: '用户管理',
@@ -133,6 +152,10 @@ const menulist = [
                 {
                     path: 'role',
                     menuName: '角色管理',
+                },
+                {
+                    path: 'log',
+                    menuName: '系统日志',
                 },
             ]
         },

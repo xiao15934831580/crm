@@ -48,7 +48,7 @@ const routes = [
       },
       {
         path: '/insurancelist',
-        name: '电站保险与理赔',
+        name: '电站保单列表',
         component: () => import('../components/frame/src/crm/powerInsurance/insurancelist/insurancelist.vue'),
       },
       {
@@ -86,11 +86,7 @@ const routes = [
         name: '代理商信息',
         component: () => import('../components/frame/src/crmagent/agentinfo/agentinfo.vue'),
       },
-      {
-        path: '/ratingmodel',
-        name: '评级模型设置',
-        component: () => import('../components/frame/src/crmagent/ratingmodel/ratingmodel.vue'),
-      },
+
       {
         path: '/account',
         name: '客户账户管理',
@@ -120,6 +116,26 @@ const routes = [
         path: '/role',
         name: '角色管理',
         component: () => import('../components/frame/src/system/role/role.vue'),
+      },
+      {
+        path: '/log',
+        name: '系统日志',
+        component: () => import('../components/frame/src/system/log/log.vue'),
+      },
+      {
+        path: '/ratingmodel',
+        name: '评级模型设置',
+        component: () => import('../components/frame/src/system/systemdesign/ratingmodel/ratingmodel.vue'),
+      },
+      {
+        path: '/creditmodel',
+        name: '信用级别设置',
+        component: () => import('../components/frame/src/system/systemdesign/creditmodel/creditmodel.vue'),
+      },
+      {
+        path: '/powerdate',
+        name: '电站保质期设置',
+        component: () => import('../components/frame/src/system/systemdesign/powerdate/powerdate.vue'),
       },
     ]
   },

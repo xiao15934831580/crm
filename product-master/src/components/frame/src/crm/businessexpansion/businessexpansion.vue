@@ -2,7 +2,7 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col :span="20" class="searchBox">
+      <el-col :span="20" >
         <el-input
           class="w-10 m-2 mr-16"
           v-model="searchvalue.name"
@@ -327,11 +327,7 @@ const handleDelete = (index, row) => {
     margin: auto;
   }
 }
-.searchBox{
-  // display: flex;
-  // align-items: center;
-  // justify-content: space-between;
-}
+
 .editinfo {
   width: 30%;
   background-color: orange;

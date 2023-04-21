@@ -15,10 +15,10 @@
         <div>
           <div class="showinfo">
             <p class="showstyle">姓名：{{ formInline.data.userName }}</p>
-            <p class="showstyle">身份证号：{{ formInline.IDNumber }}</p>
-            <p class="showstyle">手机号码：{{ formInline.phoneNumber }}</p> 
-            <p class="showstyle">产权单位/投资商：{{ formInline.unit }}</p>
-            <p class="showstyle">业务来源：{{ formInline.businessSource }}</p>
+            <p class="showstyle">身份证号：{{ formInline.data.idNumber }}</p>
+            <p class="showstyle">手机号码：{{ formInline.data.phoneNumber }}</p> 
+            <p class="showstyle">产权单位/投资商：{{ formInline.data.unit }}</p>
+            <p class="showstyle">业务来源：{{ formInline.data.businessSource }}</p>
           </div>
           <div class="showinfo">
             <p class="showstyle">住址：{{ formInline.data.address }}</p>
@@ -28,30 +28,30 @@
         <p class="basictitle">电站信息</p>
         <div>
           <div class="showinfo">
-            <p class="showstyle">电站单元名称：{{ formInline.powerStationName }}</p>
-            <p class="showstyle">组件型号：{{ formInline.moduleType }}</p>
-            <p class="showstyle">设备数量：{{ formInline.devicesNumber }}</p> 
-            <p class="showstyle">并网类型：{{ formInline.gridConnectionType }}</p>
-            <p class="showstyle">投资类型：{{ formInline.investmentType }}</p>
+            <p class="showstyle">电站单元名称：{{ formInline.data.powerStationName }}</p>
+            <p class="showstyle">组件型号：{{ formInline.data.moduleType }}</p>
+            <p class="showstyle">设备数量：{{ formInline.data.devicesNumber }}</p> 
+            <p class="showstyle">并网类型：{{ formInline.data.gridConnectionType }}</p>
+            <p class="showstyle">投资类型：{{ formInline.data.investmentType }}</p>
           </div>
           <div class="showinfo">
-            <p class="showstyle">电站类型：{{ formInline.powerStationType }}</p>
-            <p class="showstyle">电站地址：{{ formInline.powerStationAddress }}</p> 
-            <p class="showstyle">采集器厂商：{{ formInline.collectorManufacturer }}</p>
-            <p class="showstyle">采集器编号：{{ formInline.collectorNumber }}</p>
-            <p class="showstyle">逆变器功率：{{ formInline.inverterPower }}</p>
+            <p class="showstyle">电站类型：{{ formInline.data.powerStationType }}</p>
+            <p class="showstyle">电站地址：{{ formInline.data.powerStationAddress }}</p> 
+            <p class="showstyle">采集器厂商：{{ formInline.data.collectorManufacturer }}</p>
+            <p class="showstyle">采集器编号：{{ formInline.data.collectorNumber }}</p>
+            <p class="showstyle">逆变器功率：{{ formInline.data.inverterPower }}</p>
           </div>
           <div class="showinfo">
-            <p class="showstyle">逆变器厂商：{{ formInline.inverterManufacturer }}</p>
-            <p class="showstyle">逆变器型号：{{ formInline.inverterModel }}</p> 
-            <p class="showstyle">逆变器序列号：{{ formInline.inverterSerialNumber }}</p>
-            <p class="showstyle">电站质保期：{{ formInline.powerStationWarranty }}</p>
+            <p class="showstyle">逆变器厂商：{{ formInline.data.inverterManufacturer }}</p>
+            <p class="showstyle">逆变器型号：{{ formInline.data.inverterModel }}</p> 
+            <p class="showstyle">逆变器序列号：{{ formInline.data.inverterSerialNumber }}</p>
+            <p class="showstyle">电站质保期：{{ formInline.data.powerStationWarranty }}</p>
           </div>
         </div>
         <p class="basicinfo"><span>安装及维修记录</span></p>
         <div>
           <el-table
-            :data="formInline.installationData"
+            :data="formInline.data.installationData"
             :header-cell-style="{ background: 'rgba(64, 158, 255, 0.1)' }"
             border
             style="width: 100%"
@@ -61,13 +61,6 @@
                 <span class="elispice">{{ requestscope.$index + 1 }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="powerStationName" label="电站单元名称" min-width="10%"/>
-            <el-table-column prop="userName" label="客户名称" min-width="10%"/>
-            <el-table-column
-              prop="phoneNumber"
-              label="联系方式"
-              min-width="10%"
-            />
             <el-table-column
               prop="repairMan"
               label="维修人员"

@@ -2,34 +2,32 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col class="searchBox">
+      <el-col :span="20" >
         <el-input
-          class="w-10 m-2"
+          class="w-10 m-2 mr-16"
           v-model="searchvalue.name"
           placeholder="请输入姓名"
         />
         <el-input
-          class="w-10 m-2"
+          class="w-10 m-2 mr-16"
           v-model="searchvalue.phoneNumber"
           placeholder="请输入手机号"
         />
-        <el-input
-          class="w-10 m-2"
-          v-model="searchvalue.customerCode"
-          placeholder="请输入客户编码"
-        />
-         <el-input
-          class="w-10 m-2"
-          v-model="searchvalue.IDNumber"
-          placeholder="请输入证件号"
-        />
+         <el-select class="w-10 m-2 mr-16" v-model="searchvalue.customerLevel" clearable placeholder="请选择关怀类型">
+          <el-option
+            v-for="item in customerLevelDropdown"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
       </el-col>
-      <div class="searchButtonBox">
-        <el-button  class="searchbutton mt-16 " @click="sendAll"
-            >批量发送短信</el-button>
-        <el-button  class="searchbutton mt-16 " @click="queryTableData"
+      <el-col :span="4">
+        <el-button  class="searchButtonBox  " @click="sendAll"
+            >一键发送短信</el-button>
+        <el-button  class="searchButtonBox mr-16" @click="queryTableData"
             >查询</el-button>
-      </div>
+      </el-col>
 
     </div>
     <div class="chartstyle">
@@ -43,8 +41,8 @@
         @select="handleSelect"
         :row-key="getRowKeys"
       >
-      <el-table-column type="selection" width="55" :reserve-selection="true"/>
-        <el-table-column label="序号" min-width="7%">
+      <!-- <el-table-column type="selection" width="55" :reserve-selection="true"/> -->
+      <el-table-column label="序号" min-width="7%">
           <template #default="requestscope">
                     <span >{{
                       requestscope.$index+1 + (state.PageSize*(state.CurrentPage-1))
@@ -55,23 +53,6 @@
         <el-table-column prop="userName" label="姓名" min-width="10%" />
         <el-table-column prop="IDNumber" label="证件号" min-width="18%" />
         <el-table-column prop="phoneNumber" label="手机号" min-width="15%" />
-        <!-- :show-overflow-tooltip='true' -->
-        <el-table-column prop="maintainType" label="关怀类型" min-width="15%">
-          <template #default="requestscope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="requestscope.row.maintainType"
-            >
-              <template #reference>
-                <span class="elispice">{{
-                  requestscope.row.maintainType
-                }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
             <el-button size="small" @click="sendMsg(scope.row)"
@@ -115,10 +96,20 @@ import YSF from '@neysf/qiyu-web-sdk';
 // const { APIs } = window.SoftPhoneSDK;
 // const { SoftPhone } = window.SoftPhoneSDK;
 // const softPhone = SoftPhone.getInstance();
+const customerLevelDropdown = [
+  {
+    label: '节假日',
+    value:'0'
+  },
+  {
+    label: '生日',
+    value:'1'
+  },
+]
 const searchvalue = reactive({
   userName:'',
   phoneNumber:'',
-  // customerLevel:'',
+  customerLevel:'0',
   // customerCode:'',
   // IDNumber:'',
   "pageindex": 0,
@@ -249,7 +240,7 @@ const handleRowSelection=(data)=>{
 const  handleSelectionChange=(val)=> {
       //全选取消
       if(val.length === 0){
-        state.tableData1.value.forEach((item)=>{
+        state.tableData1.forEach((item)=>{
           delete selectedObj[item.id]
         })
       }
@@ -269,6 +260,7 @@ const sendAll =()=>{
     
     console.log(multipleSelection._rawValue)  //当前所选中的用户id
     console.log(multipleSelection)
+
     sendSmsList()
 }
 //发送短信
@@ -299,7 +291,7 @@ const callPhone = (item)=>{
   float: right;
 }
 .chartstyle{
-  height: calc(100% - 124px);
+  height: calc(100% - 76px);
 }
 .modal {
   position: fixed;
@@ -340,11 +332,13 @@ const callPhone = (item)=>{
 .searchsize {
     position: relative;
     width: 100%;
-    height: 114px;
+    // height: 114px;
     border: 1px solid #ecf5ff;
     border-radius: 8px;
     padding: 16px;
     box-shadow: 0px 0px 6px #d9ecff;
+    display: flex;
+    justify-content: space-between;
   .batchimport {
     position: absolute;
     right: 24px;

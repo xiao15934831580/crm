@@ -67,11 +67,11 @@
                   type="date"
                 />
               </el-form-item>
-               <el-form-item label="保单地址" prop="policyAddress" required>
+               <el-form-item label="电站地址" prop="powerAddress" required>
                 <el-input
-                  placeholder="请输入保单地址"
+                  placeholder="请输入电站地址"
                   :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.powerStationAddress"
+                  v-model="formInline.powerAddress"
                 />
               </el-form-item> 
                <el-form-item label="保单客户经理" prop="policyAccountManager" required>
@@ -146,7 +146,7 @@ const rules = reactive({
   powerStationName: [{ required: true, message: "请输入电站单元名称", trigger: "blur" }],
   userName: [{ required: true, message: "请输入电站业主名称", trigger: "blur" }],
   policyAmount: [{ required: true, message: "请输入保单金额", trigger: "blur" }],
-  policyAddress: [{ required: true, message: "请输入保单地址", trigger: "blur" }],
+  powerAddress: [{ required: true, message: "请输入电站地址", trigger: "blur" }],
   policyAccountManager: [{ required: true, message: "请输入保单客户经理", trigger: "blur" }],
   policyEffectiveDate : [{ required: true, message: "请选择保单生效日期", trigger: "Change" }],
   policyExpirationDate: [{ required: true, message: "请选择保单失效日期", trigger: "change" }],
@@ -156,42 +156,20 @@ const rules = reactive({
 let titile = ref("");
 const imageUrl = ref("");
 let formInline = reactive({
-  id: '',
-  code: "",
-  carNumber: "",
-  brandType: "",
-  purchaseDate: "",
-  scrapDate: "",
-  motDate: "",
-  engineType: "",
-  gearboxType: "",
-  dieselEngineType: "",
-  tyreType: "",
-  size: "",
-  weight: '',
-  axleType: "",
-  wheelGauge: '',
-  wheelBase: '',
-  liftHeight: '',
-  bucketWidth: '',
-  bucketCapacity: '',
-  unloadDistance: '',
-  unloadHeight: '',
-  clivatNumber: "",
-  clivatCompany: "",
-  clivatDate: "",
-  clivatDeadline: "",
-  clivatAmount: "",
-  ciNumber: "",
-  ciCompany: "",
-  ciDate: "",
-  ciDeadline: "",
-  ciAmount: "",
+  policyNo:'',
+  powerStationName:'',
+  userName:'',
+  policyAmount:'',
+  powerAddress:'',
+  policyAccountManager:'',
+  policyEffectiveDate:'',
+  policyExpirationDate:''
 });
 watch(
   () => props,
   () => {
     titile.value = props.dialogTitile;
+    console.log(titile.value)
     if (titile.value === "编辑" || titile.value === "查看"){
         formInline = props.dialogTableValue.value;
     }
@@ -204,9 +182,15 @@ const close = () => {
   emits("update:modelValue", false);
 };
 const getymd = (dateStr) => {
-    let d = new Date(dateStr);
-    let resDate = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
-    return resDate;
+    let d = new Date(dateStr),
+    month = '' + (d.getMonth() + 1),
+    day = '' + d.getDate(),
+    year = d.getFullYear();
+ 
+  if (month.length < 2) month = '0' + month;
+  if (day.length < 2) day = '0' + day;
+ 
+  return [year, month, day].join('-');
 }
 const success = (addform) => {
   console.log(getymd(formInline.policyExpirationDate))
@@ -214,14 +198,10 @@ const success = (addform) => {
   addform.validate(async (valid) => {
     if (valid) {
       let obj = JSON.parse(JSON.stringify(formInline));
-      obj.purchaseDate = obj.purchaseDate? getymd(obj.purchaseDate):'';
-      obj.scrapDate = obj.scrapDate?getymd(obj.scrapDate):'';
-      obj.motDate = obj.motDate?getymd(obj.motDate):'';
-      obj.clivatDeadline = obj.clivatDeadline?getymd(obj.clivatDeadline):'';
-      obj.clivatDate = obj.clivatDate?getymd(obj.clivatDate):'';
-      obj.ciDeadline = obj.ciDeadline?getymd(obj.ciDeadline):'';
-      obj.ciDate = obj.ciDate?getymd(obj.ciDate):'';
-      saveCar(obj).then((res)=>{
+      obj.policyEffectiveDate = obj.policyEffectiveDate? getymd(obj.policyEffectiveDate):'';
+      obj.policyExpirationDate = obj.policyExpirationDate?getymd(obj.policyExpirationDate):'';
+      console.log(obj)
+      operatePolicy(obj).then((res)=>{
         if(res.code ===200){
             close()
           }else{

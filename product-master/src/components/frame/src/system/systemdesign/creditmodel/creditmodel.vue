@@ -23,7 +23,7 @@
                     }}</span>
               </template>
         </el-table-column>
-        <el-table-column prop="appraise" label="工单评价" min-width="10%" >
+        <el-table-column prop="appraise" label="保证金" min-width="10%" >
             <template #default="scope">
                 <el-input
                   placeholder="请输入工单评价"
@@ -32,7 +32,7 @@
                 />
             </template>
         </el-table-column>
-        <el-table-column prop="score" label="分数" min-width="18%" >
+        <el-table-column prop="score" label="级别" min-width="18%" >
             <template #default="scope">
                 <el-input
                   placeholder="请输入分数"
@@ -45,7 +45,7 @@
           <template #default="scope">
             <el-button size="small" v-if="scope.row.isEdit" @click="saveRow(scope.$index, scope.row)"
               >保存</el-button>
-            <el-button size="small" @click="detail(scope.$index, scope.row)"
+            <el-button size="small" @click="deleteData(scope.$index)"
               >删除</el-button>
           </template>
         </el-table-column>
@@ -212,7 +212,10 @@ const queryTableData = () => {
       }
     })
 };
-
+//删除
+const deleteData=(index)=>{
+    tableData.splice(index, 1);
+}
 onBeforeMount(() => {
   queryTableData();
 });

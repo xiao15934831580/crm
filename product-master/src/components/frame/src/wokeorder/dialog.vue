@@ -23,13 +23,13 @@
             scroll-to-error="true"
           >
             <div class="basicstyle">
-              <el-form-item label="工单编号" prop="wokeOrderCode" required>
+              <!-- <el-form-item v-if="titile === '查看'||titile === '更新' " label="工单编号" prop="wokeOrderCode" required>
                 <el-input
                   placeholder="请输入工单编号"
                   :disabled="titile === '查看'"
                   v-model="formInline.wokeOrderCode"
                 />
-              </el-form-item>
+              </el-form-item> -->
               <el-form-item label="来源" prop="source" required>
                  <el-select
                   :disabled="titile === '查看'"
@@ -40,96 +40,27 @@
                     </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="客户名称" prop="userName" required>
+              <el-form-item label="客户名称" prop="userName">
                 <el-input
                   placeholder="请输入客户名称"
-                  :disabled="titile === '查看'||titile === '更新'"
+                  :disabled="titile === '查看'"
                   v-model="formInline.userName"
                 />
               </el-form-item>
               <el-form-item label="联系电话" prop="phoneNumber" required>
                       <el-input
-                  placeholder="请输入联系电话"
-                  :disabled="titile === '查看'"
-                  v-model="formInline.phoneNumber"
-                />
+                      placeholder="请输入联系电话"
+                      :disabled="titile === '查看'"
+                      v-model="formInline.phoneNumber"
+                    />
               </el-form-item>
-               <el-form-item label="电站名称" prop="powerStationTitle" required>
-                      <el-input
-                  placeholder="请输入电站名称"
-                  :disabled="titile === '查看'"
-                  v-model="formInline.powerStationTitle"
-                />
-              </el-form-item>
-               <el-form-item label="电站单元名称" prop="powerStationName" required>
-                <el-input
-                  placeholder="请输入电站单元名称"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.powerStationName"
-                />
-              </el-form-item> 
-              <el-form-item label="电站地址" prop="policyAddress" required>
-                <el-input
-                  placeholder="请输入电站地址"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.policyAddress"
-                />
-              </el-form-item> 
-              <el-form-item label="电站类型" prop="powerStationType" required>
-                <el-input
-                  placeholder="请输入电站类型"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.powerStationType"
-                />
-              </el-form-item> 
-              <el-form-item label="并网类型" prop="gridConnectionType" required>
-                <el-select
-                  :disabled="titile === '查看'"
-                  v-model="formInline.gridConnectionType"
-                  placeholder="请选择并网类型"
-                >
-                  <el-option v-for="item in dowpdown" :key="item.label" :label="item.label" :value="item.value" required>
-                    </el-option>
-                </el-select>
-              </el-form-item> 
-              <el-form-item label="投资类型" prop="investmentType" required>
-                <el-select
-                  :disabled="titile === '查看'"
-                  v-model="formInline.investmentType"
-                  placeholder="请选择投资类型"
-                >
-                  <el-option v-for="item in dowpdown" :key="item.label" :label="item.label" :value="item.value" required>
-                    </el-option>
-                </el-select>
-              </el-form-item> 
-              <el-form-item label="试运行日期" prop="testRunDate" required>
+              <el-form-item label="预约时间" prop="appointmentTime" required>
                 <el-date-picker
                         :disabled="titile === '查看'"
-                        v-model="formInline.testRunDate"
-                        type="date"
-                        placeholder="请选择试运行日期"
+                        v-model="formInline.appointmentTime"
+                        type="datetime"
+                        placeholder="请选择预约时间"
                     />
-              </el-form-item> 
-              <el-form-item label="逆变器功率" prop="inverterPower" required>
-                <el-input
-                  placeholder="请输入逆变器功率"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.inverterPower"
-                />
-              </el-form-item> 
-              <el-form-item label="逆变器型号" prop="inverterModel" required>
-                <el-input
-                  placeholder="请输入逆变器型号"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.inverterModel"
-                />
-              </el-form-item> 
-              <el-form-item label="逆变器序列号" prop="inverterSerialNumber" required>
-                <el-input
-                  placeholder="请输入逆变器序列号"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.inverterSerialNumber"
-                />
               </el-form-item> 
               <el-form-item label="服务" prop="service" required>
                 <el-select
@@ -141,30 +72,113 @@
                     </el-option>
                 </el-select>
               </el-form-item> 
-              <el-form-item label="预约时间" prop="appointmentTime" required>
+              <el-form-item label="问题描述" prop="problem" required>
+                <el-input
+                    type='textarea'
+                  placeholder="请输入问题描述"
+                  :disabled="titile === '查看'"
+                  v-model="formInline.problem"
+                />
+              </el-form-item> 
+              <div>
+                <p class="basictitle">电站信息</p>
+                <div>
+                <el-form-item label="电站名称" prop="powerStationTitle" >
+                      <el-input
+                        placeholder="请输入电站名称"
+                        disabled
+                        v-model="formInline.powerStationTitle"
+                      />
+              </el-form-item>
+               <el-form-item label="电站单元名称" prop="powerStationName" >
+                <el-input
+                  placeholder="请输入电站单元名称"
+                  disabled
+                  v-model="formInline.powerStationName"
+                />
+              </el-form-item> 
+              <el-form-item label="电站地址" prop="policyAddress" >
+                <el-input
+                  placeholder="请输入电站地址"
+                  disabled
+                  v-model="formInline.policyAddress"
+                />
+              </el-form-item> 
+              <el-form-item label="电站类型" prop="powerStationType" >
+                <el-input
+                  placeholder="请输入电站类型"
+                  disabled
+                  v-model="formInline.powerStationType"
+                />
+              </el-form-item> 
+              <!-- <el-form-item label="并网类型" prop="gridConnectionType" >
+                <el-select
+                  disabled
+                  v-model="formInline.gridConnectionType"
+                  placeholder="请选择并网类型"
+                >
+                  <el-option v-for="item in dowpdown" :key="item.label" :label="item.label" :value="item.value" required>
+                    </el-option>
+                </el-select>
+              </el-form-item> 
+              <el-form-item label="投资类型" prop="investmentType" >
+                <el-select
+                  disabled
+                  v-model="formInline.investmentType"
+                  placeholder="请选择投资类型"
+                >
+                  <el-option v-for="item in dowpdown" :key="item.label" :label="item.label" :value="item.value" required>
+                    </el-option>
+                </el-select>
+              </el-form-item>  -->
+              <el-form-item label="试运行日期" prop="testRunDate" >
                 <el-date-picker
-                        :disabled="titile === '查看'"
-                        v-model="formInline.appointmentTime"
+                        disabled
+                        v-model="formInline.testRunDate"
                         type="date"
-                        placeholder="请选择预约时间"
+                        placeholder="请选择试运行日期"
                     />
               </el-form-item> 
-              <el-form-item label="电站保质期" prop="powerStationWarranty" required>
+              <el-form-item label="逆变器功率" prop="inverterPower" >
+                <el-input
+                  placeholder="请输入逆变器功率"
+                  disabled
+                  v-model="formInline.inverterPower"
+                />
+              </el-form-item> 
+              <el-form-item label="逆变器型号" prop="inverterModel" >
+                <el-input
+                  placeholder="请输入逆变器型号"
+                  disabled
+                  v-model="formInline.inverterModel"
+                />
+              </el-form-item> 
+              <el-form-item label="逆变器序列号" prop="inverterSerialNumber" >
+                <el-input
+                  placeholder="请输入逆变器序列号"
+                  disabled
+                  v-model="formInline.inverterSerialNumber"
+                />
+              </el-form-item> 
+              <el-form-item label="电站保质期" prop="powerStationWarranty" >
                 <el-input
                   placeholder="请输入电站保质期"
-                  :disabled="titile === '查看'||titile === '更新'"
+                  disabled
                   v-model="formInline.powerStationWarranty"
                 />
               </el-form-item> 
-              <el-form-item label="质保期到期时间" prop="expirationDate" required>
+              <el-form-item label="质保期到期时间" prop="expirationDate" >
                 <el-date-picker
-                        :disabled="titile === '查看'"
+                        disabled
                         v-model="formInline.expirationDate"
                         type="date"
                         placeholder="请选择质保期到期时间"
                     />
               </el-form-item> 
-              <el-form-item label="是否收费" prop="isCharge" required>
+                </div>
+              </div>
+
+              <!-- <el-form-item label="是否收费" prop="isCharge" required>
                 <el-select
                   :disabled="titile === '查看'"
                   v-model="formInline.isCharge"
@@ -173,15 +187,8 @@
                   <el-option v-for="item in dowpdown" :key="item.label" :label="item.label" :value="item.value" required>
                     </el-option>
                 </el-select>
-              </el-form-item> 
-              <el-form-item label="问题描述" prop="problem" required>
-                <el-input
-                    type='textarea'
-                  placeholder="请输入问题描述"
-                  :disabled="titile === '查看'||titile === '更新'"
-                  v-model="formInline.problem"
-                />
-              </el-form-item> 
+              </el-form-item>  -->
+
             </div>
           </el-form>
         </div>
@@ -212,6 +219,7 @@ import { defineProps, ref } from "vue";
 import { reactive, watch, defineEmits } from "vue";
 import { ElNotification  } from "element-plus";
 // import { saveCar as saveCar } from '@/api/index'
+import { getymdhms } from '@/utils/auth'
 import store from '@/store'
 const emits = defineEmits(["update:modelValue"]);
 const addform = ref();
@@ -239,26 +247,26 @@ const checkIphonenum = (rule, value, callback) => {
   }
 };
 const rules = reactive({
-  wokeOrderCode: [{ required: true, message: "请输入工单编号", trigger: "blur" }],
+  // wokeOrderCode: [{ required: true, message: "请输入工单编号", trigger: "blur" }],
   source: [{ required: true, message: "请选择来源", trigger: "Change" }],
   userName: [{ required: true, message: "请输入客户名称", trigger: "blur" }],
   phoneNumber: [{ required: true, message: "请输入联系电话", trigger: "blur" }],
-  powerStationTitle: [{ required: true, message: "请输入电站名称", trigger: "blur" }],
-  powerStationName: [{ required: true, message: "请输入电站单元名称", trigger: "blur" }],
-    policyAddress: [{ required: true, message: "请输入电站地址", trigger: "blur" }],
-  powerStationType: [{ required: true, message: "请输入电站类型", trigger: "blur" }],
-  gridConnectionType: [{ required: true, message: "请选择并网类型", trigger: "Change" }],
-  investmentType: [{ required: true, message: "请选择投资类型", trigger: "Change" }],
-  testRunDate: [{ required: true, message: "请选择试运行日期", trigger: "Change" }],
-      inverterPower: [{ required: true, message: "请输入逆变器功率", trigger: "blur" }],
-  inverterModel: [{ required: true, message: "请输入逆变器型号", trigger: "blur" }],
-  inverterSerialNumber: [{ required: true, message: "请输入逆变器序列号", trigger: "blur" }],
+  // powerStationTitle: [{ required: true, message: "请输入电站名称", trigger: "blur" }],
+  // powerStationName: [{ required: true, message: "请输入电站单元名称", trigger: "blur" }],
+    // policyAddress: [{ required: true, message: "请输入电站地址", trigger: "blur" }],
+  // powerStationType: [{ required: true, message: "请输入电站类型", trigger: "blur" }],
+  // gridConnectionType: [{ required: true, message: "请选择并网类型", trigger: "Change" }],
+  // investmentType: [{ required: true, message: "请选择投资类型", trigger: "Change" }],
+  // testRunDate: [{ required: true, message: "请选择试运行日期", trigger: "Change" }],
+      // inverterPower: [{ required: true, message: "请输入逆变器功率", trigger: "blur" }],
+  // inverterModel: [{ required: true, message: "请输入逆变器型号", trigger: "blur" }],
+  // inverterSerialNumber: [{ required: true, message: "请输入逆变器序列号", trigger: "blur" }],
 
   service: [{ required: true, message: "请选择服务", trigger: "Change" }],
   appointmentTime: [{ required: true, message: "请选择预约时间", trigger: "change" }],
-    powerStationWarranty: [{ required: true, message: "请选择电站质保期", trigger: "Change" }],
-  expirationDate: [{ required: true, message: "请选择质保期到期时间", trigger: "change" }],
-    isCharge: [{ required: true, message: "请选择是否收费", trigger: "Change" }],
+    // powerStationWarranty: [{ required: true, message: "请选择电站质保期", trigger: "Change" }],
+  // expirationDate: [{ required: true, message: "请选择质保期到期时间", trigger: "change" }],
+    // isCharge: [{ required: true, message: "请选择是否收费", trigger: "Change" }],
   problem: [{ required: true, message: "请输入问题描述", trigger: "blur" }],
 });
 
@@ -291,9 +299,9 @@ watch(
   () => props,
   () => {
     titile.value = props.dialogTitile;
-    // if (titile.value === "编辑" || titile.value === "查看"){
-    //     formInline = props.dialogTableValue.value;
-    // }
+    if (titile.value === "编辑" || titile.value === "查看"){
+        formInline = props.dialogTableValue.value;
+    }
       
   },
   { deep: true, immediate: true }
@@ -302,23 +310,28 @@ const close = () => {
   addform.value.resetFields();
   emits("update:modelValue", false);
 };
-const getymd = (dateStr) => {
-    let d = new Date(dateStr);
-    let resDate = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
-    return resDate;
-}
+// const getymd = (dateStr) => {
+//   let d = new Date(dateStr),
+//   month = '' + (d.getMonth() + 1),
+//   day = '' + d.getDate(),
+//   year = d.getFullYear(),
+//   hour = ''+d.getHours(),
+//   minute = '' + d.getMinutes(),
+//   second = ''+d.getSeconds()
+//   if (month.length < 2) month = '0' + month;
+//   if (day.length < 2) day = '0' + day;
+//   if (hour.length < 2) hour = '0' + hour;
+//   if (minute.length < 2) minute = '0' + minute;
+//   if (second.length < 2) second = '0' + second;
+//   return [year, month, day].join('-') + ' '+[hour,minute,second].join(':');
+// }
 const success = (addform) => {
   if (!addform) return;
   addform.validate(async (valid) => {
     if (valid) {
       let obj = JSON.parse(JSON.stringify(formInline));
-      obj.purchaseDate = obj.purchaseDate? getymd(obj.purchaseDate):'';
-      obj.scrapDate = obj.scrapDate?getymd(obj.scrapDate):'';
-      obj.motDate = obj.motDate?getymd(obj.motDate):'';
-      obj.clivatDeadline = obj.clivatDeadline?getymd(obj.clivatDeadline):'';
-      obj.clivatDate = obj.clivatDate?getymd(obj.clivatDate):'';
-      obj.ciDeadline = obj.ciDeadline?getymd(obj.ciDeadline):'';
-      obj.ciDate = obj.ciDate?getymd(obj.ciDate):'';
+      obj.appointmentTime = obj.appointmentTime? getymdhms(obj.appointmentTime):'';
+      console.log(obj)
       saveCar(obj).then((res)=>{
         if(res.code ===200){
             close()
@@ -415,6 +428,11 @@ const surelook = () => {
 }
 /deep/ .el-form {
   position: relative;
+}
+.basictitle{
+      font-size: 18px;
+    margin: 16px 0 24px;
+    color: #333333;
 }
 .imgstyle {
   position: absolute;

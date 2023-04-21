@@ -66,55 +66,29 @@
               </template>
         </el-table-column>
         <el-table-column prop="userName" label="姓名" min-width="10%" />
-        <el-table-column prop="IDNumber" label="证件号" min-width="18%" />
-        <el-table-column prop="phoneNumber" label="手机号" min-width="15%" />
-        <!-- :show-overflow-tooltip='true' -->
-        <el-table-column prop="customerLevel" label="客户等级" min-width="15%">
-          <template #default="requestscope">
+        <el-table-column prop="IDNumber" label="证件号" min-width="20%">
+          <template #default="idscope">
             <el-popover
               placement="top-start"
               :width="200"
               trigger="hover"
-              :content="requestscope.row.customerLevel"
+              :content="idscope.row.IDNumber"
             >
               <template #reference>
                 <span class="elispice">{{
-                  requestscope.row.customerLevel
+                  idscope.row.IDNumber
                 }}</span>
               </template>
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="city" label="市" min-width="15%">
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.city"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.city }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="county" label="县" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.county"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.county }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
+        <el-table-column prop="phoneNumber" label="手机号" min-width="15%" />
+        <!-- :show-overflow-tooltip='true' -->
+        <el-table-column prop="customerLevel" label="客户等级" min-width="10%"/>
+        <el-table-column prop="city" label="市" min-width="10%"/>
+        <el-table-column prop="county" label="县" min-width="10%" />
         <el-table-column prop="town" label="镇" min-width="12%" />
-        <el-table-column prop="detailAddress" label="详细地址" min-width="10%" >
+        <el-table-column prop="detailAddress" label="详细地址" min-width="20%" >
           <template #default="scope">
             <el-popover
               placement="top-start"
@@ -128,51 +102,12 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="investmentMethod" label="投资方式" min-width="10%" >
+        <el-table-column prop="investmentMethod" label="投资方式" min-width="10%" />
+        <el-table-column prop="customerType" label="新/老客户" min-width="10%" />
+        <el-table-column prop="installationCapacity" label="安装容量" min-width="10%" />
+        <el-table-column label="操作列" width="100" min-width="28%">
           <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.investmentMethod"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.investmentMethod }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="customerType" label="新/老客户" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.customerType"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.customerType }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="installationCapacity" label="安装容量" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.installationCapacity"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.installationCapacity }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作列" width="250" min-width="28%">
-          <template #default="scope">
-            <el-button size="small" @click="detail(scope.row.id)"
+            <el-button size="small" @click="detail(scope.row.customerCode)"
               >详情</el-button
             >
           </template>

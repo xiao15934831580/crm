@@ -15,14 +15,14 @@
         <div>
           <div class="showinfo">
             <p class="showstyle">姓名：{{ formInline.data.userName }}</p>
-            <p class="showstyle">性别：{{ formInline.data.sex }}</p>
+            <p class="showstyle">性别：{{ formInline.data.sexString }}</p>
             <p class="showstyle">民族：{{ formInline.data.nation }}</p>
             <p class="showstyle">手机号码：{{ formInline.data.phoneNumber }}</p> 
           </div>
           <div class="showinfo">
-            <p class="showstyle">证件类型：{{ formInline.data.IDType }}</p>
-            <p class="showstyle">证件号码：{{ formInline.data.IDNumber }}</p>
-            <p class="showstyle">客户等级：{{ formInline.data.customerLevel }}</p> 
+            <p class="showstyle">证件类型：{{ formInline.data.idType }}</p>
+            <p class="showstyle">证件号码：{{ formInline.data.idNumber }}</p>
+            <p class="showstyle">客户等级：{{ formInline.data.customerLevelStr }}</p> 
             <p class="showstyle">婚姻状态：{{ formInline.data.maritalStatus }}</p>
           </div>
           <div class="showinfo">
@@ -33,7 +33,7 @@
           </div>
           <div class="showinfo">
             <p class="showstyle">消费习惯与计划：{{ formInline.data.consumptionHabitsOrPlans }}</p>
-            <p class="showstyle">住址：{{ formInline.data.address }}</p>
+            <p class="showstyle">住址：{{ formInline.data.adressCascade }}</p>
           </div>
         </div>
         <p class="basicinfo"><span>家庭成员信息</span></p>

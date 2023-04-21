@@ -2,58 +2,87 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col :span="5" class="searchBox">
-        <el-input
-          class="w-10 m-2"
-          v-model="searchvalue.name"
-          placeholder="请输入姓名"
-        />
+      <el-col :span="10">
+        <el-select
+          clearable="true"
+          v-model="searchvalue"
+          placeholder="请选择查询类型"
+        >
+          <el-option label="登录" value="LOGIN" />
+          <el-option label="添加" value="INSERT" />
+          <el-option label="更新" value="UPDATE" />
+          <el-option label="删除" value="DELETE" />
+        </el-select>
       </el-col>
-      <div class="searchButtonBox">
-        <el-button  class="searchbutton " @click="sendAll"
-            >一键外呼</el-button>
-        <el-button  class="searchbutton" @click="sendAll"
-            >一键发送短信</el-button>
-        <el-button  class="searchbutton" @click="searchbutton"
-            >查询</el-button>
-      </div>
+
+      <el-button size="small" class="searchbutton" @click="searchbutton"
+        >查询</el-button
+      >
     </div>
     <div class="chartstyle">
       <el-table
-        ref="multipleTableRef"
         :data="tableData"
         :header-cell-style="{ background: '#d9ecff' }" 
+        
         border
         style="width: 100%"
-        @selection-change="handleSelectionChange"
       >
-      <!-- <el-table-column type="selection" width="55" /> -->
         <el-table-column label="序号" min-width="7%">
           <template #default="requestscope">
-                <span >{{
-                  requestscope.$index+1 + (state.PageSize*(state.CurrentPage-1))
-                }}</span>
-          </template>
+                    <span >{{
+                      requestscope.$index+1 + (state.PageSize*(state.CurrentPage-1))
+                    }}</span>
+              </template>
         </el-table-column>
-        <el-table-column prop="userName" label="客户名称" min-width="10%" />
-        <el-table-column prop="customerAccount" label="客户账号" min-width="10%" />
-        <el-table-column prop="enterAccount" label="入账" min-width="18%" />
-        <el-table-column prop="outerAccount" label="出账" min-width="15%" />
+        <el-table-column prop="username" label="操作人员" min-width="10%" />
+        <el-table-column prop="requestTime" label="请求时间" min-width="18%" />
+        <el-table-column prop="ipAddr" label="IP地址" min-width="15%" />
         <!-- :show-overflow-tooltip='true' -->
-        <el-table-column prop="remainder" label="余额" min-width="15%">
-          <template #default="scope">
-                <span class="elispice underline" @click="showRemainder(scope.$index, scope.row)">{{
-                  scope.row.remainder}}</span>
+        <el-table-column prop="requestMethod" label="请求方法" min-width="15%">
+          <template #default="requestscope">
+            <el-popover
+              placement="top-start"
+              :width="200"
+              trigger="hover"
+              :content="requestscope.row.requestMethod"
+            >
+              <template #reference>
+                <span class="elispice">{{
+                  requestscope.row.requestMethod
+                }}</span>
+              </template>
+            </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="操作列" width="250" min-width="28%">
+        <el-table-column prop="requestParam" label="请求参数" min-width="15%">
           <template #default="scope">
-            <el-button size="small" @click="detail(scope.row.id)"
-              >智能外呼</el-button>
-              <el-button size="small" @click="detail(scope.row.id)"
-              >发送短信</el-button>
+            <el-popover
+              placement="top-start"
+              :width="200"
+              trigger="hover"
+              :content="scope.row.requestParam"
+            >
+              <template #reference>
+                <span class="elispice">{{ scope.row.requestParam }}</span>
+              </template>
+            </el-popover>
           </template>
         </el-table-column>
+        <el-table-column prop="requestDesc" label="请求描述" min-width="10%" >
+          <template #default="scope">
+            <el-popover
+              placement="top-start"
+              :width="200"
+              trigger="hover"
+              :content="scope.row.requestDesc"
+            >
+              <template #reference>
+                <span class="elispice">{{ scope.row.requestDesc }}</span>
+              </template>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="methodType" label="请求类型" min-width="12%" />
         <template #empty>
             <el-empty v-loading="isloading"></el-empty>
         </template>
@@ -74,55 +103,41 @@
       </div>
     </div>
   </div>
-      <DiaLog
-        v-model="dialogFormVisible"
-        v-if="dialogFormVisible"
-        :dialogFormVisible="dialogFormVisible"
-        :dialogTitile="dialogTitile"
-        :dialogTableValue="dialogTableValue"  
-    ></DiaLog>
 </div>
 </template>
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-// import { getLog as getLog,queryLog as queryLog } from '@/api/index'
+import { getLog as getLog,queryLog as queryLog } from '@/api/index'
 import { ElNotification } from "element-plus";
-import { ElTable } from 'element-plus'
 import store from '@/store'
-import DiaLog from './dialog.vue'
-const searchvalue = reactive({
-  name:'',
-  phoneNumber:'',
-  customerLevel:'',
-  customerCode:'',
-  IDNumber:'',
-});
-const multipleSelection=ref ([])
-const multipleTableRef = ref();
-let dialogTableValue = reactive({});
+const searchvalue = ref("");
 let tableData = [
   {
-    id:'0',
-    userName: "用户名称",
-    customerAccount: "客户账号",
-    enterAccount:"300",
-    outerAccount: "100",
-    remainder:'200',
-    rate:'4.5%'
+    userId: 1235665656,
+    userName: "设备副班长",
+    ipAddr: "113.219.138.174",
+    requestMethod:
+      "com.allen.inspection.controller.SysUserController.updateRole",
+    requestTime: "2022-11-16 18:22:30",
+    requestParam: '[{"roleId":7,"username":"17885542585",}]',
+    requestDesc: "更新角色信息",
+    methodType: "更新",
   },
   {
-    id:'1',
-    userName: "用户名称",
-    customerAccount: "客户账号",
-    enterAccount:"入账",
-    outerAccount: "出账",
-    remainder:'100',
+    userId: 1235665656,
+    userName: "点检员",
+    ipAddr: "113.219.138.174",
+    requestMethod:
+      "com.allen.inspection.controller.SysUserController.updateRole",
+    requestTime: "2022-11-16 18:22:30",
+    requestParam: '[{"roleId":7,"username":"17885542585"}]',
+    requestDesc: "更新角色信息",
+    methodType: "INSERT",
   },
 ];
 let isQuery = ref(false);
 // 分页
-const dialogFormVisible = ref(false)
 const state = reactive({
   tableLoading: false,
   CurrentPage: 1,
@@ -136,15 +151,15 @@ const queryTableData = () => {
     isQuery.value = true;
      isloading.value = true;
     let obj = {
-        limit:state.PageSize,
-        pageNum: state.CurrentPage 
-    }
+    limit:state.PageSize,
+    pageNum: state.CurrentPage 
+  }
   getLog(obj).then((res)=>{
     isloading.value = false;
     if(res.code === 200){
       let data = res.data;
-        // state.tableData1=data&&data.records?data.records:[];
-        // state.Total = data&&data.total?data.total:0;
+        state.tableData1=data&&data.records?data.records:[];
+        state.Total = data&&data.total?data.total:0;
     }else {
              ElNotification({
               title: 'Warning',
@@ -159,7 +174,7 @@ const queryTableData = () => {
 };
 
 onBeforeMount(() => {
-//   queryTableData();
+  // queryTableData();
 });
 //查询
 const searchbutton = () => {
@@ -198,28 +213,6 @@ const handleCurrentChange = (val) => {
   state.CurrentPage = val;
   searchvalue.value&&isQuery.value?searchbutton():queryTableData();
 };
-const  handleSelectionChange=(val)=> {
-        // this.multipleSelection = val;
-        multipleSelection.value = [];
-        val.forEach((item)=>{
-            const id = item.id
-			// 判断数组中是否包含这个 id 
-			if (multipleSelection.value.indexOf(id) == -1) {
-				multipleSelection.value.push(id)
-			}
-        })
-        console.log(multipleSelection)
-      }
-// 批量发送短信
-const sendAll =()=>{
-    console.log(multipleSelection._rawValue)  //当前所选中的用户id
-}
-//余额
-const showRemainder=(index,row)=>{
-  console.log('1111122')
-  dialogTableValue.value = row
-  dialogFormVisible.value = true
-}
 </script>
 <style lang = 'less' scoped>
 .tablestyle {
@@ -230,12 +223,6 @@ const showRemainder=(index,row)=>{
   ::v-deep .el-col-3 {
     max-width: none;
   }
-}
-.searchButtonBox{
-  float: right;
-}
-.chartstyle{
-  height: calc(100% - 76px);
 }
 .modal {
   position: fixed;
@@ -258,11 +245,6 @@ const showRemainder=(index,row)=>{
     margin: auto;
   }
 }
-.searchBox{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 .editinfo {
   width: 30%;
   background-color: orange;
@@ -273,15 +255,8 @@ const showRemainder=(index,row)=>{
     margin-left: 16px !important;
   }
 }
-.searchsize {
-    position: relative;
-    width: 100%;
-    border: 1px solid #ecf5ff;
-    border-radius: 8px;
-    padding: 16px;
-    box-shadow: 0px 0px 6px #d9ecff;
-    display: flex;
-    justify-content: space-between;
+.search {
+  position: relative;
   .batchimport {
     position: absolute;
     right: 24px;
@@ -306,8 +281,19 @@ const showRemainder=(index,row)=>{
 ::v-deep .el-table__body-wrapper{
   overflow-y: auto;
 }
-.underline{
-  text-decoration: underline;
-    cursor: pointer;
+.searchsize {
+    position: relative;
+    width: 100%;
+    // height: 114px;
+    border: 1px solid #ecf5ff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0px 0px 6px #d9ecff;
+    display: flex;
+    justify-content: space-between;
+  .batchimport {
+    position: absolute;
+    right: 24px;
+  }
 }
 </style>

@@ -2,7 +2,7 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col :span="20" class="searchBox">
+      <el-col :span="20" >
         <el-input
           class="w-10 m-2 mr-16"
           v-model="searchvalue.name"
@@ -97,6 +97,7 @@
             </el-popover>
           </template>
         </el-table-column>
+        <el-table-column label = '创建时间' min-width="15%"></el-table-column>
         <el-table-column prop="wokeOrderStatus" label="工单状态" min-width="15%" />
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
@@ -172,6 +173,7 @@ let tableData = [
     policyAddress:"电站地址",
     problem:'问题描述',
     wokeOrderStatus:'工单状态',
+
   },
   {
     userId: 1235665656,
@@ -352,11 +354,7 @@ const handleDelete = (index, row) => {
     margin: auto;
   }
 }
-.searchBox{
-  // display: flex;
-  // align-items: center;
-  // justify-content: space-between;
-}
+
 .editinfo {
   width: 30%;
   background-color: orange;

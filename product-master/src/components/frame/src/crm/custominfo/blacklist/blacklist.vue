@@ -2,9 +2,9 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col class="searchBox">
+      <el-col :span="20" >
         <el-input
-          class="w-10 m-2"
+          class="w-10 m-2 mr-16"
           v-model="searchvalue.userName"
           placeholder="请输入姓名"
         />
@@ -13,24 +13,12 @@
           v-model="searchvalue.phoneNumber"
           placeholder="请输入手机号"
         />
-        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" clearable placeholder="请输入客户等级">
-          <el-option
-            v-for="item in customerDropdown.value"
-            :key="item.numb"
-            :label="item.dataName"
-            :value="item.numb"
-          />
-        </el-select>
-        
-        <el-input
-          class="w-10 m-2"
-          v-model="searchvalue.customerCode"
-          placeholder="请输入客户编码"
-        />
       </el-col>
-      <el-button  class="searchbutton mt-16 " @click="queryTableData"
+      <el-col :span="4">
+      <el-button  class="searchbutton " @click="queryTableData"
         >查询</el-button
       >
+      </el-col>
     </div>
     <div class="chartstyle">
       <el-table
@@ -227,7 +215,7 @@ const handleCurrentChange = (val) => {
   float: right;
 }
 .chartstyle{
-  height: calc(100% - 124px);
+  height: calc(100% - 76px);
 }
 .modal {
   position: fixed;
@@ -268,11 +256,13 @@ const handleCurrentChange = (val) => {
 .searchsize {
     position: relative;
     width: 100%;
-    height: 114px;
+    // height: 114px;
     border: 1px solid #ecf5ff;
     border-radius: 8px;
     padding: 16px;
     box-shadow: 0px 0px 6px #d9ecff;
+        display: flex;
+    justify-content: space-between;
   .batchimport {
     position: absolute;
     right: 24px;

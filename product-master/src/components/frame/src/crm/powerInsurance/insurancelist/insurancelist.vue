@@ -2,7 +2,7 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col :span="20" class="searchBox">
+      <el-col :span="20" >
         <el-input
           class="w-10 m-2 mr-16"
           v-model="searchvalue.policyNum"
@@ -68,21 +68,21 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="policyEffectiveDate" label="保单生效日期" min-width="10%" >
+        <el-table-column prop="policyEffectiveDateString" label="保单生效日期" min-width="10%" >
           <template #default="scope">
             <el-popover
               placement="top-start"
               :width="200"
               trigger="hover"
-              :content="scope.row.policyAmount"
+              :content="scope.row.policyEffectiveDateString"
             >
               <template #reference>
-                <span class="elispice">{{ scope.row.policyAmount }}</span>
+                <span class="elispice">{{ scope.row.policyEffectiveDateString }}</span>
               </template>
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="policyExpirationDate" label="保单失效日期" min-width="12%" />
+        <el-table-column prop="policyExpirationDateString" label="保单失效日期" min-width="12%" />
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
           <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
@@ -148,8 +148,8 @@ let tableData = [
     powerAddress:"电站地址",
     policyNo: "保单编号",
     policyAmount: '保单金额',
-    policyEffectiveDate: "生效日期",
-    policyExpirationDate:'失效日期',
+    policyEffectiveDateString: "生效日期",
+    policyExpirationDateString:'失效日期',
     policyAccountManager:'保单客户经理'
   },
   {
@@ -306,11 +306,7 @@ const handleDelete = (index, row) => {
     margin: auto;
   }
 }
-.searchBox{
-  // display: flex;
-  // align-items: center;
-  // justify-content: space-between;
-}
+
 .editinfo {
   width: 30%;
   background-color: orange;

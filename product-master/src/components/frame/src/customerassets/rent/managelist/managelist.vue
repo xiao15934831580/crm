@@ -24,7 +24,7 @@
         <el-button  class="searchbutton " @click="sendAll"
             >一键外呼</el-button>
         <el-button  class="searchbutton" @click="sendAll"
-            >一键发送</el-button>
+            >一键发送短信</el-button>
             <el-button  class="searchbutton " @click="importXlsx"
             >导入</el-button>
             <el-button  class="searchbutton " @click="exportXlsx"
@@ -41,9 +41,8 @@
         :header-cell-style="{ background: '#d9ecff' }" 
         border
         style="width: 100%"
-        @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" />
+        <!-- <el-table-column type="selection" width="55" /> -->
         <el-table-column label="序号" min-width="7%">
           <template #default="requestscope">
                     <span >{{

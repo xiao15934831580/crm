@@ -23,7 +23,7 @@
     <div class="chartstyle">
       <el-table
         :data="state.tableData1"
-        :header-cell-style="{ background: '#d9ecff' }" 
+        :header-cell-style="{ background: '#d9ecff' }"     
         border
         style="width: 100%"
       > 
