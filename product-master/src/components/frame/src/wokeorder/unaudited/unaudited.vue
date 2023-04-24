@@ -5,13 +5,13 @@
       <el-col :span="20" >
         <el-input
           class="w-10 m-2 mr-16"
-          v-model="searchvalue.name"
+          v-model="searchvalue.orderNo"
           placeholder="请输入工单编号"
         />
         <el-input
           class="w-10 m-2"
-          v-model="searchvalue.phoneNumber"
-          placeholder="请输入工单名称"
+          v-model="searchvalue.userName"
+          placeholder="请输入客户名称"
         />
       </el-col>
       <el-col :span="4">
@@ -23,7 +23,7 @@
     </div>
     <div class="chartstyle">
       <el-table
-        :data="tableData"
+        :data="state.tableData1"
         :header-cell-style="{ background: '#d9ecff' }" 
         border
         style="width: 100%"
@@ -101,7 +101,7 @@
         <el-table-column prop="wokeOrderStatus" label="工单状态" min-width="15%" />
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
+            <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
               >编辑</el-button>
             <el-button
               size="small"
@@ -149,17 +149,16 @@
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-// import { getLog as getLog,queryLog as queryLog } from '@/api/index'
+import { getOrders as getOrders} from '@/api/index'
 import { ElNotification } from "element-plus";
 import store from '@/store'
 import DiaLog from '../dialog.vue'
 const searchvalue = reactive({
-  name:'',
-  phoneNumber:'',
-  customerLevel:'',
-  city:'',
-  county:'',
-  town:''
+  userName:'',
+  orderNo:'',
+  "orderStatus": "0",
+  "pageindex": 0,
+  "pagesize": 10,
 });
 let dialogTableValue = reactive({});
 let tableData = [
@@ -206,31 +205,30 @@ const isloading = ref('false')
 const queryTableData = () => {
     isQuery.value = true;
      isloading.value = true;
-    let obj = {
-        limit:state.PageSize,
-        pageNum: state.CurrentPage 
-    }
-  getLog(obj).then((res)=>{
-    isloading.value = false;
-    if(res.code === 200){
-      let data = res.data;
-        // state.tableData1=data&&data.records?data.records:[];
-        // state.Total = data&&data.total?data.total:0;
-    }else {
-             ElNotification({
-              title: 'Warning',
-              message: res.msg,
-              type: 'warning',
-            })
-            if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-    }
-  })
+     let obj = JSON.parse(JSON.stringify(searchvalue));
+     obj.pageindex = state.CurrentPage;
+     obj.pagesize = state.PageSize;
+    getOrders(obj).then((res)=>{
+      isloading.value = false;
+      if(res.code === 200){
+          let data = res.body;
+          state.tableData1=data&&data.data?data.data:[];
+          state.Total = data&&data.total?data.total:0;
+      }else {
+              ElNotification({
+                title: 'Warning',
+                message: res.message,
+                type: 'warning',
+              })
+              // if(res.message.indexOf('token已过期')>-1  ){
+              //         store.dispatch('app/logout')
+              //     }
+      }
+    })
 };
 
 onBeforeMount(() => {
-//   queryTableData();
+  queryTableData();
 });
 //查询
 const searchbutton = () => {

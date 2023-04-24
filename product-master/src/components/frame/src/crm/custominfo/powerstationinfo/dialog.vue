@@ -161,10 +161,10 @@ watch(
       }else {
         ElNotification({
                 title: 'Warning',
-                message: res.msg,
+                message: res.message,
                 type: 'warning',
               })
-              if(res.msg.indexOf('token已过期')>-1  ){
+              if(res.message.indexOf('token已过期')>-1  ){
                       store.dispatch('app/logout')
                   }
       }
@@ -197,10 +197,10 @@ const savebutton = () => {
      }else{
        ElNotification({
               title: 'Warning',
-              message: res.msg,
+              message: res.message,
               type: 'warning',
             })
-        if(res.msg.indexOf('token已过期')>-1  ){
+        if(res.message.indexOf('token已过期')>-1  ){
                     store.dispatch('app/logout')
                 }
      }
@@ -239,10 +239,10 @@ const distribution = () => {
      }else{
        ElNotification({
               title: 'Warning',
-              message: res.msg,
+              message: res.message,
               type: 'warning',
             })
-        if(res.msg.indexOf('token已过期')>-1  ){
+        if(res.message.indexOf('token已过期')>-1  ){
                     store.dispatch('app/logout')
                 }
      }
@@ -263,10 +263,10 @@ const saveInspectorbutton = () => {
      }else{
        ElNotification({
               title: 'Warning',
-              message: res.msg,
+              message: res.message,
               type: 'warning',
             })
-        if(res.msg.indexOf('token已过期')>-1  ){
+        if(res.message.indexOf('token已过期')>-1  ){
                     store.dispatch('app/logout')
                 }
      }
@@ -285,10 +285,10 @@ const exit = () => {
      }else{
        ElNotification({
               title: 'Warning',
-              message: res.msg,
+              message: res.message,
               type: 'warning',
             })
-        if(res.msg.indexOf('token已过期')>-1  ){
+        if(res.message.indexOf('token已过期')>-1  ){
                     store.dispatch('app/logout')
                 }
      }
@@ -313,10 +313,10 @@ const saveExit = () => {
      }else{
        ElNotification({
               title: 'Warning',
-              message: res.msg,
+              message: res.message,
               type: 'warning',
             })
-        if(res.msg.indexOf('token已过期')>-1  ){
+        if(res.message.indexOf('token已过期')>-1  ){
                     store.dispatch('app/logout')
                 }
      }

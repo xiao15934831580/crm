@@ -1,5 +1,6 @@
 <template>
-    <div class="header">
+<div>
+        <div class="header">
         <div class="headleft">
             <!-- <span class="headerimg"></span> -->
             <span class="name">{{message}}</span>
@@ -118,6 +119,8 @@
             </template>
         </el-dialog>
     </div>
+</div>
+
 </template>
 <script setup>
 import { useRouter, useRoute } from "vue-router";

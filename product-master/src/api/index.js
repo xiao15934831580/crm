@@ -108,3 +108,41 @@ export const getUserPowers = (data) => {
         method: 'DELETE',
     })
 }
+/**
+ * 获取工单列表
+ */
+ export const getOrders = (data) => {
+    return http({
+        url: '/workOrder/getOrders',
+        method: 'POST',
+        data
+    })
+}
+/**
+ * 获取工单详情数据
+ */
+ export const getOrderInfo = (id) => {
+    return http({
+        url: '/workOrder/getOrderInfo?orderId='+id,
+        method: 'GET',
+    })
+}
+/**
+ * 获取保单提醒列表
+ */
+ export const getPolicyWarn = (data) => {
+    return http({
+        url: '/policy/getPolicyWarn',
+        method: 'POST',
+        data
+    })
+}
+/**
+ * 获取保单提醒详情
+ */
+ export const getPolicyWarnInfo = (id) => {
+    return http({
+        url: '/policy/getPolicyWarnInfo?policyNo='+id,
+        method: 'GET',
+    })
+}

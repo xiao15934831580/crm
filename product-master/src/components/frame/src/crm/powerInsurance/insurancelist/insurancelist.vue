@@ -35,54 +35,13 @@
               </template>
         </el-table-column>
         <el-table-column prop="userName" label="电站业主" min-width="10%" />
-        <el-table-column prop="powerStationName" label="电站单元名称" min-width="18%" />
+        <el-table-column prop="powerStationName" label="电站单元名称" min-width="15%" />
         <el-table-column prop="powerAddress" label="电站地址" min-width="15%" />
         <!-- :show-overflow-tooltip='true' -->
-        <el-table-column prop="policyNo" label="保单编号" min-width="15%">
-          <template #default="requestscope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="requestscope.row.policyNo"
-            >
-              <template #reference>
-                <span class="elispice">{{
-                  requestscope.row.policyNo
-                }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="policyAmount" label="保单金额" min-width="15%">
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.policyAmount"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.policyAmount }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="policyEffectiveDateString" label="保单生效日期" min-width="10%" >
-          <template #default="scope">
-            <el-popover
-              placement="top-start"
-              :width="200"
-              trigger="hover"
-              :content="scope.row.policyEffectiveDateString"
-            >
-              <template #reference>
-                <span class="elispice">{{ scope.row.policyEffectiveDateString }}</span>
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="policyExpirationDateString" label="保单失效日期" min-width="12%" />
+        <el-table-column prop="policyNo" label="保单编号" min-width="15%"/>
+        <el-table-column prop="policyAmount" label="保单金额" min-width="15%"/>
+        <el-table-column prop="policyEffectiveDateString" label="保单生效日期" min-width="15%" />
+        <el-table-column prop="policyExpirationDateString" label="保单失效日期" min-width="15%" />
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
           <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
@@ -128,9 +87,10 @@
 </template>
 <script setup>
 import { reactive, ref } from "vue";
-import { markRaw, onBeforeMount } from "vue";
+import { markRaw, onBeforeMount,watch } from "vue";
 import { getPolicy as getPolicy,deletePolicy as deletePolicy } from '@/api/index'
-import { ElNotification } from "element-plus";
+import { ElMessage,ElNotification,ElMessageBox } from "element-plus";
+import { Delete } from "@element-plus/icons-vue";
 import store from '@/store'
 import DiaLog from './dialog.vue'
 const searchvalue = reactive({
@@ -195,10 +155,10 @@ const queryTableData = () => {
     }else {
              ElNotification({
               title: 'Warning',
-              message: res.msg,
+              message: res.message,
               type: 'warning',
             })
-            if(res.msg.indexOf('token已过期')>-1){
+            if(res.message.indexOf('token已过期')>-1){
                     store.dispatch('app/logout')
                 }
     }
@@ -208,6 +168,15 @@ const queryTableData = () => {
 onBeforeMount(() => {
   queryTableData();
 });
+watch(
+    () => dialogFormVisible.value,
+    () => {
+      if(!dialogFormVisible.value){
+        queryTableData();
+      }
+    },
+    { deep: true, immediate: true }
+)
 
 //切换一页显示多少条数据
 const handleSizeChange = (val) => { 
@@ -243,14 +212,14 @@ const handleDelete = (index, row) => {
     icon: markRaw(Delete),
   })
     .then(() => {
-      deletePolicy(row.id).then((res)=>{
+      deletePolicy(row.policyId).then((res)=>{
         if(res.code === 200){
             state.tableData1.splice(index, 1);
             if(state.tableData1.length === 0&& state.CurrentPage>1){
               state.CurrentPage = state.CurrentPage -1;
             }
-            queryTableData();
-            console.log('111111')
+            // queryTableData();
+            // console.log('111111')
             ElMessage({
               type: "success",
               message: "删除成功",
@@ -258,15 +227,21 @@ const handleDelete = (index, row) => {
         }else{
             ElNotification({
               title: 'Warning',
-              message: res.msg,
+              message: res.message,
               type: 'warning',
             })
-             if(res.msg.indexOf('token已过期')>-1  ){
+             if(res.message.indexOf('token已过期')>-1  ){
                     store.dispatch('app/logout')
                 }
         }
       })
       })
+      .catch(() => {
+        ElMessage({
+          type: "info",
+          message: "取消删除",
+        });
+    });
 };
 </script>
 <style lang = 'less' scoped>

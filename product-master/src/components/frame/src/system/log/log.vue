@@ -163,10 +163,10 @@ const queryTableData = () => {
     }else {
              ElNotification({
               title: 'Warning',
-              message: res.msg,
+              message: res.message,
               type: 'warning',
             })
-            if(res.msg.indexOf('token已过期')>-1  ){
+            if(res.message.indexOf('token已过期')>-1  ){
                     store.dispatch('app/logout')
                 }
     }
@@ -193,10 +193,10 @@ const searchbutton = () => {
       } else{
         ElNotification({
                 title: 'Warning',
-                message: res.msg,
+                message: res.message,
                 type: 'warning',
               })
-              if(res.msg.indexOf('token已过期')>-1  ){
+              if(res.message.indexOf('token已过期')>-1  ){
                     store.dispatch('app/logout')
                 }
       }

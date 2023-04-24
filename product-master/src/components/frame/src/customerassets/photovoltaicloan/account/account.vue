@@ -10,6 +10,8 @@
         />
       </el-col>
       <div class="searchButtonBox">
+        <el-button  class="searchbutton " @click="setRent"
+            >利率设置</el-button>
         <el-button  class="searchbutton " @click="sendAll"
             >一键外呼</el-button>
         <el-button  class="searchbutton" @click="sendAll"
@@ -81,6 +83,53 @@
         :dialogTitile="dialogTitile"
         :dialogTableValue="dialogTableValue"  
     ></DiaLog>
+    <el-dialog
+      ref="ruleFormRef"
+      :model-value="dialogRentVisible"
+      title="公司利率"
+      :before-close="close"
+      :width="formLabelWidth"
+      draggable
+    >
+      <div>
+        <!-- 基础信息 -->
+        <!-- <p class="basicinfo"><span>车辆信息</span></p> -->
+        <div style="margin:24px 48px">
+            <el-form
+            :model="formInline"
+            :inline="true"
+            label-width="160px"
+            :rules="rules"
+            ref="ruleFormRef"
+            require-asterisk-position="left"
+            size="default"
+            scroll-to-error="true"
+          >
+            <div class="basicstyle">
+              <el-form-item label="公司利率" prop="rentData" required>
+                <el-input
+                  placeholder="请输入公司利率"
+                  v-model="formInline.rentData"
+                />
+              </el-form-item>
+            </div>
+            </el-form>
+        </div>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button
+            class="btn-mixins-clear-default"
+            @click="close"
+            >取消</el-button
+          >
+          <el-button
+            class="btn-mixins dia-suc"
+            @click="surelook(ruleFormRef)"
+            >确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
 </div>
 </template>
 <script setup>
@@ -101,6 +150,17 @@ const searchvalue = reactive({
 const multipleSelection=ref ([])
 const multipleTableRef = ref();
 let dialogTableValue = reactive({});
+const dialogRentVisible = ref(false);
+const formLabelWidth = '40%'
+const ruleFormRef = ref();
+const errorMsg = ref('请输入公司利率');
+const formInline = reactive({
+  rentData:''
+})
+const rules = reactive({
+  rentData: [{ required: true, message: "请输入公司利率", trigger: "blur" }],
+
+});
 let tableData = [
   {
     id:'0',
@@ -148,10 +208,10 @@ const queryTableData = () => {
     }else {
              ElNotification({
               title: 'Warning',
-              message: res.msg,
+              message: res.message,
               type: 'warning',
             })
-            if(res.msg.indexOf('token已过期')>-1  ){
+            if(res.message.indexOf('token已过期')>-1  ){
                     store.dispatch('app/logout')
                 }
     }
@@ -178,10 +238,10 @@ const searchbutton = () => {
       } else{
         ElNotification({
                 title: 'Warning',
-                message: res.msg,
+                message: res.message,
                 type: 'warning',
               })
-              if(res.msg.indexOf('token已过期')>-1  ){
+              if(res.message.indexOf('token已过期')>-1  ){
                     store.dispatch('app/logout')
                 }
       }
@@ -219,6 +279,23 @@ const showRemainder=(index,row)=>{
   console.log('1111122')
   dialogTableValue.value = row
   dialogFormVisible.value = true
+}
+const setRent = ()=>{
+  dialogRentVisible.value = true;
+}
+const close = ()=>{
+  dialogRentVisible.value = false;
+}
+const surelook = (ruleFormRef)=>{
+  
+    if (!ruleFormRef) return;
+    ruleFormRef.validate(async (valid) => {
+      if (valid) {
+          dialogRentVisible.value = false;
+      }else {
+      return false;
+      }
+    })
 }
 </script>
 <style lang = 'less' scoped>
@@ -309,5 +386,9 @@ const showRemainder=(index,row)=>{
 .underline{
   text-decoration: underline;
     cursor: pointer;
+}
+.errorStyle{
+  color: red;
+
 }
 </style>

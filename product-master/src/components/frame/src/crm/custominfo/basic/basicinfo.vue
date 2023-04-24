@@ -107,7 +107,7 @@
         <el-table-column prop="installationCapacity" label="安装容量" min-width="10%" />
         <el-table-column label="操作列" width="100" min-width="28%">
           <template #default="scope">
-            <el-button size="small" @click="detail(scope.row.customerCode)"
+            <el-button size="small" @click="detail(scope.row.userId)"
               >详情</el-button
             >
           </template>
@@ -251,12 +251,12 @@ const queryTableData = () => {
       }else {
                ElNotification({
                 title: 'Warning',
-                message: res.msg,
+                message: res.message,
                 type: 'warning',
               })
-              if(res.msg.indexOf('token已过期')>-1  ){
-                      store.dispatch('app/logout')
-                  }
+              // if(res.message.indexOf('token已过期')>-1  ){
+              //         store.dispatch('app/logout')
+              //     }
       }
     })
 };
@@ -273,10 +273,10 @@ const getCustomerLevelFun = () => {
     }else {
       ElNotification({
                 title: 'Warning',
-                message: res.msg,
+                message: res.message,
                 type: 'warning',
               })
-              if(res.msg.indexOf('token已过期')>-1  ){
+              if(res.message.indexOf('token已过期')>-1  ){
                       store.dispatch('app/logout')
                   }
     }

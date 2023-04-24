@@ -67,18 +67,18 @@
                     }}</span>
               </template>
         </el-table-column>
-        <el-table-column prop="customerCode" label="客户编码" min-width="10%" />
+        <el-table-column prop="customerCode" label="客户编码" min-width="12%" />
         <el-table-column prop="userName" label="姓名" min-width="10%" />
-        <el-table-column prop="investmentMethod" label="投资方式" min-width="18%" />
-        <el-table-column prop="installationCapacity" label="安装容量" min-width="18%" />
-        <el-table-column prop="installationAmount" label="投资金额" min-width="18%" />
-        <el-table-column prop="IDNumber" label="证件号码" min-width="18%" />
+        <el-table-column prop="investmentMethod" label="投资方式" min-width="12%" />
+        <el-table-column prop="installationCapacity" label="安装容量" min-width="12%" />
+        <el-table-column prop="installationAmount" label="投资金额" min-width="12%" />
+        <el-table-column prop="IDNumber" label="证件号码" min-width="22%" />
         <el-table-column prop="phoneNumber" label="手机号" min-width="15%" />
         <el-table-column prop="powerStationName" label="电站单元名称" min-width="15%" />
         <el-table-column prop="powerStationScale" label="电站规模" min-width="15%" />
-        <el-table-column prop="moduleType" label="组件型号" min-width="15%" />
-        <el-table-column prop="testRunDate" label="试运行日期" min-width="15%" />
-        <el-table-column label="操作列" width="250" min-width="28%">
+        <el-table-column prop="moduleType" label="组件型号" min-width="12%" />
+        <el-table-column prop="testRunDate" label="试运行日期" min-width="20%" />
+        <el-table-column label="操作列" width="100" min-width="28%">
           <template #default="scope">
             <el-button size="small" @click="detail(scope.row.pid)"
               >详情</el-button
@@ -227,12 +227,12 @@ const queryTableData = () => {
       }else {
               ElNotification({
                 title: 'Warning',
-                message: res.msg,
+                message: res.message,
                 type: 'warning',
               })
-              if(res.msg.indexOf('token已过期')>-1  ){
-                      store.dispatch('app/logout')
-                  }
+              // if(res.message.indexOf('token已过期')>-1  ){
+              //         store.dispatch('app/logout')
+              //     }
       }
     })
 };
