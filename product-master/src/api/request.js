@@ -18,7 +18,7 @@ http.interceptors.request.use(
       return Promise.reject(config)
     }
     // config.headers.loginClient = 'pc'
-    // config.headers.Authorization = localStorage.getItem('token')
+    config.headers.token = localStorage.getItem('token')
     return config
   },
   (error) => {

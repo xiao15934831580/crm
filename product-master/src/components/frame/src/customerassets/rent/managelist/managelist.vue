@@ -21,13 +21,32 @@
       <div class="searchButtonBox">
         <el-button  class="searchbutton" @click="searchbutton"
             >查询</el-button>
-        <el-button  class="searchbutton " @click="sendAll"
+        <el-button  class="searchbutton" @click="sendAll"
             >一键外呼</el-button>
         <el-button  class="searchbutton" @click="sendAll"
             >一键发送短信</el-button>
-            <el-button  class="searchbutton " @click="importXlsx"
+            <el-button  class="searchbutton " @click="batchimport"
             >导入</el-button>
-            <el-button  class="searchbutton " @click="exportXlsx"
+            <!-- <span class="searchbutton"> -->
+              <!-- @change='handle' -->
+                <!-- <el-upload
+                  ref="uploadRef"
+                  class="upload-demo m-12"
+                  action=""
+                  :show-file-list = 'false'
+                  :before-upload = 'beforeAvatarUpload'
+                  :on-success = 'uploadSuccess'
+                  :http-request="handleUpload"
+                  :on-change="handleChange" 
+                  
+                >
+                  <template #trigger>
+                    <el-button>导入</el-button>
+                  </template>
+              </el-upload> -->
+            <!-- </span> -->
+
+            <el-button  class="searchbutton" @click="exportXlsx"
             >导出</el-button>
             <el-button  class="searchbutton" @click="addButton"
             >新建</el-button>
@@ -88,6 +107,51 @@
         :dialogTitile="dialogTitile"
         :dialogTableValue="dialogTableValue"
     ></DiaLog>
+      <!-- 批量导入 -->
+  <div class="lz-dialog">
+    <el-dialog
+      :model-value="dialogUploadVisible"
+      :before-close="cancle"
+      :width="dialogUploadWidth"
+      draggable
+    >
+      <div style="float: left">
+        <el-upload
+          class="upload-demo"
+          ref="upload"
+          :limit="10"
+          :multiple="true"
+          action=" "
+          :on-change="handleFileChange"
+          :on-remove="onRemove"
+          :before-remove="beforeRemove"
+          :on-exceed="fileExceed"
+          :auto-upload="false"
+          :file-list="fileList"
+        >
+          <el-button size="small" type="primary">选取附件</el-button>
+          <el-button
+            style="margin-left: 10px"
+            v-if="fileList && fileList.length > 0"
+            size="small"
+            type="success"
+            @click="submitFileForm"
+            >上传附件</el-button
+          >
+        </el-upload>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button class="btn-mixins-clear-default" @click="cancle"
+            >取消</el-button
+          >
+          <el-button class="btn-mixins dia-suc" @click="submitFileForm"
+            >上传</el-button
+          >
+        </span>
+      </template>
+    </el-dialog>
+  </div>
 </div>
 </template>
 <script setup>
@@ -99,6 +163,11 @@ import { ElTable } from 'element-plus'
 import store from '@/store'
 import DiaLog from './dialog.vue'
 import * as XLSX from 'xlsx' 
+const uploadRef = ref()
+const dialogUploadVisible = ref(false);
+const dialogUploadWidth = "20%";
+let fileList = reactive([]);
+let files = reactive([]);
 const searchvalue = reactive({
   name:'',
   phoneNumber:'',
@@ -259,6 +328,137 @@ const exportXlsx = ()=>{
   // 生成文件并下载
   XLSX.writeFile(wb, '返还金管理列表.xlsx')
 }
+//上传
+// 批量导入
+const batchimport = () => {
+  dialogUploadVisible.value = true;
+};
+const cancle = () => {
+  dialogUploadVisible.value = false;
+};
+// 上传前对文件的格式和大小的判断
+// const beforeAvatarUpload = (file) =>{
+//   console.log(file)
+// 	const extension = file.name.split(".")[1] === "xls";
+// 	const extension2 = file.name.split(".")[1] === "xlsx";
+// 	const isLt2M = file.size / 1024 / 1024 < 100;
+// 	if (!extension && !extension2) {
+// 		// this.$message({
+// 		// 	message: '上传模板只能是 xls、xlsx格式!',
+// 		// 	type: 'error'
+// 		// });
+// 		return false // return false就不会走上传接口
+// 	}
+// 	if (!isLt2M) {
+// 		console.log("上传模板大小不能超过 10MB!");
+// 		// this.$message({
+// 		// 	message: '上传模板大小不能超过 10MB!',
+// 		// 	type: 'error'
+// 		// });
+// 		return false
+// 	}
+// 	// return extension || extension2 || extension3 || (extension4 && isLt2M);
+// 	return extension || extension2 // 必须要有返回值
+// }
+
+//上传文件之前
+const beforeUpload = (file) => {
+  fileList.forEach((item) => {
+    if (isEquael(item.fileName, file.name)) {
+      return ElMessageBox.confirm("该文件已存在", {
+        type: "warning",
+      });
+    }
+  });
+};
+// 上传发生变化钩子
+const handleFileChange = (file, fileList) => {
+  console.log(file, fileList);
+  files = fileList;
+  fileList.push(file);
+};
+//文件个数超过最大限制时
+const fileExceed = (file, fileList) => {
+  if (fileList.length > 10) {
+    ElMessageBox.confirm("附件个数不能超过十个", {
+      type: "warning",
+    });
+  }
+};
+//删除前的钩子
+const beforeRemove = (file, fileList) => {
+  return ElMessageBox.confirm(`你确定删除${file.name}?`);
+};
+const handleUpload = (file)=> {
+      console.log(177, file);
+      let formData = new FormData(); // 新建一个FormData()对象，这就相当于你新建了一个表单
+      console.log(187, formData);
+      formData.append("fileName", file.file); // 将文件保存到formData对象中
+      // console.log(111, this.selectValue);
+ 
+      // if (this.selectValue) {
+      //   formData.append("id", this.selectValue);
+      //   console.log(111, this.selectValue);
+      // }
+      console.log(188, formData.get("file"), formData.get("id"));
+      // 调用上传接口
+      // uniReq({
+      //   path:'/doc/upload',
+      //   method:'post',
+      //   data:formData
+      // }).then(res=>{
+      //   console.log(109,res);
+      // })
+    }
+// 上传成功回调
+const submitFileForm = () => {
+  //判断是否有文件再上传
+  // if (this.files.length === 0) {
+  //     return this.$message.warning('请选取文件后再上传')
+  // }
+  // //-- 创建新的数据对象 -->
+  let formData = new FormData();
+  // //-- 将上传的文件放到数据对象中 -->
+  files.forEach((file) =>{
+    formData.append('files',file.raw)
+  })
+  console.log(files)
+  console.log(formData)
+  //   //拿到文章id
+  // var articleid=store.state.articleMsg.row.id
+  // formData.append('articleid',articleid)
+  // this.$store.dispatch('fileManage/uploadFile',formData)
+  //   .then(res => {
+  //     if(res.succeeded){
+  //       this.$message.success('上传成功！');
+  //       this.fileList=[]
+  //       this.getFiles()
+  //     }else{
+  //       this.$message.error('上传失败');
+  //     }
+  //   })
+  //   .catch(error => {
+  //     this.$message.error('上传失败！');
+  //   });
+  // this.dialogVisible=false
+  console.log("上传成功");
+};
+
+const handle=(event)=>{
+    const file = event.target.files[0]
+    console.log('111111111')
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const data = e.target.result
+      const workbook = XLSX.read(data, { type: 'binary' })
+      const sheetName = workbook.SheetNames[0]
+      const worksheet = workbook.Sheets[sheetName]
+      const json = XLSX.utils.sheet_to_json(worksheet)
+      console.log(json)
+      // this.sendDataToBackend(json)
+    }
+    reader.readAsBinaryString(file)
+}
 </script>
 <style lang = 'less' scoped>
 .tablestyle {
@@ -348,5 +548,11 @@ const exportXlsx = ()=>{
 .underline{
   text-decoration: underline;
     cursor: pointer;
+}
+.searchButtonBox{
+  display: flex;
+}
+.m-12{
+  margin: 0 12px;
 }
 </style>

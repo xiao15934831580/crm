@@ -15,7 +15,7 @@
         />
       </el-col>
       <el-col :span="4">
-        <el-button  class="searchbutton " @click="searchbutton"
+        <el-button  class="searchbutton " @click="queryTableData"
         >查询</el-button>
         <el-button  class="searchbutton mr-16"  @click="handleBuild">新建</el-button>
         </el-col>
@@ -108,7 +108,7 @@
               type="danger"
               @click="handleDelete(scope.$index, scope.row)"
               >删除</el-button>
-            <el-button size="small" @click="detail(scope.$index, scope.row)"
+            <el-button size="small" @click="lookData(scope.$index, scope.row)"
               >查看</el-button>
               <el-button size="small" @click="detail(scope.$index, scope.row)"
               >提交</el-button>
@@ -141,7 +141,7 @@
         v-model="dialogFormVisible"
         v-if="dialogFormVisible"
         :dialogFormVisible="dialogFormVisible"
-            :dialogTableValue="dialogTableValue"
+            :orderId="orderId"
         :dialogTitile="dialogTitile"
     ></DiaLog>
 </div>
@@ -160,7 +160,7 @@ const searchvalue = reactive({
   "pageindex": 0,
   "pagesize": 10,
 });
-let dialogTableValue = reactive({});
+let orderId = ref();
 let tableData = [
   {
     id:'1212',
@@ -230,58 +230,31 @@ const queryTableData = () => {
 onBeforeMount(() => {
   queryTableData();
 });
-//查询
-const searchbutton = () => {
-  isloading.value = true;
-  let parmes = {
-    condition: searchvalue.value,
-    limit:state.PageSize,
-    pageNum:state.CurrentPage,
-  }
-  queryLog(parmes).then((res)=>{
-    isloading.value = false;
-    if(res.code === 200){
-          let data = res.data;
-          state.tableData1=data&&data.records?data.records:[];
-          state.Total = data&&data.total?data.total:0;
-      } else{
-        ElNotification({
-                title: 'Warning',
-                message: res.msg,
-                type: 'warning',
-              })
-              if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-      }
-  })
-};
-
 //切换一页显示多少条数据
 const handleSizeChange = (val) => {
   state.PageSize = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
 // 点击跳转到第几页
 const handleCurrentChange = (val) => {
   state.CurrentPage = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
 //新建
 const handleBuild = () => {
   dialogTitile.value = "新建";
   dialogFormVisible.value = true;
 };
-//详情
-const detail = (index, row)=>{
+//查看
+const lookData = (index, row)=>{
     dialogTitile.value = "查看";
-    dialogTableValue.value = JSON.parse(JSON.stringify(row));
+    orderId.value =row.orderId;
     dialogFormVisible.value = true;
 }
 //编辑
 const handleEdit = (index, row) => {
   dialogTitile.value = "编辑";
-  dialogTableValue.value = JSON.parse(JSON.stringify(row));
+  orderId.value = row.id;
   dialogFormVisible.value = true;
 };
 //删除

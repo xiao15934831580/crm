@@ -10,7 +10,7 @@
             <span class="headpig"></span>
             <el-dropdown>
                 <span class="el-dropdown-link">
-                    {{realName}}
+                    {{nickname}}
                     <el-icon class="el-icon--right">
                         <arrow-down />
                     </el-icon>
@@ -97,7 +97,7 @@
             >
             <div>
                 <div class="showinfo">
-                    <p class="showstyle">姓名：{{ info.realName }}</p>
+                    <p class="showstyle">姓名：{{ info.nickname }}</p>
                     <p class="showstyle">用户名：{{ info.username }}</p>
             </div>
             <div class="showinfo">
@@ -128,15 +128,15 @@ import { useStore } from 'vuex';
 import { reactive, ref, getCurrentInstance } from "vue";
 import store from '@/store'
 import { ElNotification } from "element-plus";
-// import { loginOut as exit,updatePassword as updatePassword,getUserInfo as getUserInfo } from '@/api/index'
+import { loginOut as exit} from '@/api/index'
     const message = '港口流动机械维修保养综合管理数字化平台'
     const {proxy} = getCurrentInstance();
     const passwordform = ref('');
     let dialogPasswordVisible  = ref(false);
     let dialogInfoVisible = ref(false);
     const router = useRouter();
-    let realName =  ref('');
-    realName.value = JSON.parse(localStorage.getItem('userData')).realName
+    let nickname =  ref('');
+    nickname.value = JSON.parse(localStorage.getItem('userData')).nickname
     const rules = reactive({
         original:[{ required: true, message: '请输入原始密码', trigger: 'blur' },],
         new:[{ required: true, message: '请输入新密码', trigger: 'blur' },],
@@ -152,14 +152,17 @@ import { ElNotification } from "element-plus";
             // "id": "",
             // "username": "",
             // "loginClientLbl": '',
-            // "realName": "",
+            // "nickname": "",
             // "sexLbl": "",
             // "phoneNum": "",
             // "statusLbl": "",
             // "roleLbl": ""
     })
     const loginOut=()=>{
-        exit().then((res)=>{
+        let obj ={
+            userName:'admin1'
+        }
+        exit(obj).then((res)=>{
             store.dispatch('app/logout')
         })
     }

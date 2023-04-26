@@ -145,10 +145,10 @@ const handleLogin = () => {
 
       let obj = {
         username: form.value.username,
-        password: proxy.$md5(
-          form.value.password + "b459dcbe8a3d46d49dfdc39c12df854e"
-        ),
-        loginClient: "pc",
+        // password: proxy.$md5(
+        //   form.value.password + "b459dcbe8a3d46d49dfdc39c12df854e"
+        // ),
+        password: form.value.password
       };
       console.log(obj);
       store.dispatch("app/login", obj);

@@ -2,15 +2,16 @@ import http from './request'
 
 export const login = (data) => {
     return http({
-        url: '/system/login',
+        url: '/admin/login',
         method: 'POST',
         data
     })
 }
-export const loginOut = () => {
+export const loginOut = (data) => {
     return http({
-        url: '/system/logout',
+        url: '/admin/exitUser',
         method: 'POST',
+        data
     })
 }
 // 客户基本信息

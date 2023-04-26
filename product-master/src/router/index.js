@@ -5,17 +5,17 @@ import ManageMent from '../components/management.vue';
 const routes = [
   {
     path: '/',
-    redirect: '/manageMent',
+    redirect: '/login',
   },
-  // {
-  //   path: '/login',
-  //   name: 'Login',
-  //   meta: {
-  //     title: '登录',
-  //     requiresAuth: false, // false表示不需要登录
-  //     },
-  //   component: () => import('../components/frame/src/login/login.vue'),
-  // },
+  {
+    path: '/login',
+    name: 'Login',
+    meta: {
+      title: '登录',
+      requiresAuth: false, // false表示不需要登录
+      },
+    component: () => import('../components/frame/src/login/login.vue'),
+  },
   {
     path: '/manageMent',
     name: 'manageMent',

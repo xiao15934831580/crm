@@ -214,6 +214,15 @@ const showCity = ()=>{
     if(res.code === 200){
       cityDropdown.value = res.body;
       console.log(cityDropdown.value)
+    }else{
+       ElNotification({
+                title: 'Warning',
+                message: res.message,
+                type: 'warning',
+              })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
     }
   })
 }
@@ -223,6 +232,15 @@ const showCounty=(val)=>{
         getCountys(searchvalue.city).then((res)=>{
           if (res.code === 200) {
             countyDropdown.value = res.body;
+          }else{
+            ElNotification({
+                title: 'Warning',
+                message: res.message,
+                type: 'warning',
+              })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
           }
         })
   }
@@ -232,6 +250,15 @@ const showTown =(val)=>{
         getTowns(searchvalue.county).then((res)=>{
           if (res.code === 200) {
             townDropdown.value = res.body;
+          }else{
+            ElNotification({
+                title: 'Warning',
+                message: res.message,
+                type: 'warning',
+              })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
           }
         })
   }
@@ -254,9 +281,9 @@ const queryTableData = () => {
                 message: res.message,
                 type: 'warning',
               })
-              // if(res.message.indexOf('token已过期')>-1  ){
-              //         store.dispatch('app/logout')
-              //     }
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
       }
     })
 };
@@ -272,13 +299,13 @@ const getCustomerLevelFun = () => {
       customerDropdown.value = res.body;
     }else {
       ElNotification({
-                title: 'Warning',
-                message: res.message,
-                type: 'warning',
-              })
-              if(res.message.indexOf('token已过期')>-1  ){
-                      store.dispatch('app/logout')
-                  }
+        title: 'Warning',
+        message: res.message,
+        type: 'warning',
+      })
+      if(res.code === 100007 ||  res.code === 100008){
+              store.dispatch('app/logout')
+          }
     }
   })
 }

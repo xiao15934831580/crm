@@ -77,7 +77,7 @@
         <el-table-column prop="powerStationName" label="电站单元名称" min-width="15%" />
         <el-table-column prop="powerStationScale" label="电站规模" min-width="15%" />
         <el-table-column prop="moduleType" label="组件型号" min-width="12%" />
-        <el-table-column prop="testRunDate" label="试运行日期" min-width="20%" />
+        <el-table-column prop="testRunDateString" label="试运行日期" min-width="20%" />
         <el-table-column label="操作列" width="100" min-width="28%">
           <template #default="scope">
             <el-button size="small" @click="detail(scope.row.pid)"
@@ -152,7 +152,7 @@ let tableData = [
     powerStationName:'sdfsd',
     powerStationScale:'sdf',
     moduleType:'',
-    testRunDate:''
+    testRunDateString:''
   },
 ];
 // 分页
@@ -220,9 +220,6 @@ const queryTableData = () => {
       if(res.code === 200){
             let data = res.body;
             state.tableData1=data&&data.data?data.data:[];
-            state.tableData1.forEach((item)=>{
-              item.testRunDate = getymd(item.testRunDate)
-            })
             state.Total = data&&data.total?data.total:0;
       }else {
               ElNotification({

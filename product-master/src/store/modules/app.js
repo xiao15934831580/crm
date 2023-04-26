@@ -40,8 +40,8 @@ export default {
           .then((res) => {
             if(res.code === 200){
               console.log(res)
-              commit('SetUserData', res.data)
-              commit('setToken', res.msg)
+              commit('SetUserData', res.body)
+              commit('setToken', res.body.token)
               setTokenTime()
               router.replace('/manageMent')
               resolve()
