@@ -13,7 +13,7 @@
     </div>
     <div class="chartstyle">
       <el-table
-        :data="tableData"
+        :data="state.tableData1"
         :header-cell-style="{ background: '#d9ecff' }" 
         
         border
@@ -58,7 +58,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="roleCode" label="角色编码" min-width="10%" />
-        <el-table-column prop="createdDate" label="创建时间" min-width="20%" />
+        <el-table-column prop="createdTime" label="创建时间" min-width="20%" />
         <el-table-column prop="statusLbl" label="角色状态" min-width="10%">
           <template #default="scope">
             <el-tag
@@ -119,7 +119,7 @@ import { reactive, ref, markRaw } from "vue";
 import { ElMessage, ElMessageBox,ElNotification } from "element-plus";
 import { Delete } from "@element-plus/icons-vue";
 import store from '@/store'
-// import { getAllRole as getAllRole,deleteRole as deleteRole } from '@/api/index'
+import { getRoleAuthorityList as getRoleAuthorityList } from '@/api/user'
 const searchvale = ref("");
 const dialogFormVisible = ref(false);
 let dialogTitile = ref("编辑");
@@ -159,24 +159,23 @@ const state = reactive({
 const queryTableData = () => {
   isloading.value = true;
   let obj = {
-    limit:state.PageSize,
-    pageNum: state.CurrentPage 
+    pagesize:state.PageSize,
+    pageindex: state.CurrentPage 
   }
-  getAllRole(obj)
+  getRoleAuthorityList(obj)
     .then((res)=>{
       isloading.value = false;
       if(res.code ===200){
-        let data = res.data;
-        state.tableData1=data&&data.records?data.records:[];
-        state.Total = data&&data.total?data.total:0;
-        dropdownValue.value = res.data.dropDowns
+        let data = res.body;
+          state.tableData1=data&&data.data?data.data:[];
+          state.Total = data&&data.total?data.total:0;
       }else{
-        ElNotification({
+            ElNotification({
               title: 'Warning',
-              message: res.message,
+              message: res.message?res.message:'服务器异常',
               type: 'warning',
             })
-            if(res.message.indexOf('token已过期')>-1  ){
+            if(res.code === 100007 ||  res.code === 100008){
                     store.dispatch('app/logout')
                 }
       }
@@ -186,7 +185,7 @@ watch(
     () => dialogFormVisible.value,
     () => {
       if(!dialogFormVisible.value){
-        // queryTableData();
+        queryTableData();
       }
     },
     { deep: true, immediate: true }

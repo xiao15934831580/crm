@@ -5,17 +5,17 @@
       <el-col :span="20" class="searchBox">
         <el-input
           class="w-10 m-2 mr-16"
-          v-model="searchvalue.name"
-          placeholder="请输入工单编号"
+          v-model="searchvalue.username"
+          placeholder="请输入用户名"
         />
         <el-input
-          class="w-10 m-2"
-          v-model="searchvalue.phoneNumber"
-          placeholder="请输入工单名称"
+          class="w-10 m-2 mr-16"
+          v-model="searchvalue.realname"
+          placeholder="请输入姓名"
         />
       </el-col>
       <el-col :span="4">
-        <el-button  class="searchbutton " @click="searchbutton"
+        <el-button  class="searchbutton " @click="queryTableData"
         >查询</el-button>
         <el-button  class="searchbutton mr-16"  @click="handleBuild">新建</el-button>
       </el-col>
@@ -35,23 +35,13 @@
               </template>
         </el-table-column>
         <el-table-column prop="username" label="用户名" min-width="10%" />
-        <el-table-column prop="realName" label="姓名" min-width="10%" />
-        <el-table-column prop="sexLbl" label="性别" min-width="7%" />
-        <el-table-column prop="roleLbl" label="角色" min-width="15%" />
-        <el-table-column prop="loginClientLbl" label="登录设备" min-width="10%" />
-        <el-table-column prop="phoneNum" label="电话号码" min-width="15%" />
-        <el-table-column prop="statusLbl" label="账号状态" min-width="10%">
-          <template #default="scope">
-            <el-tag
-              :type="scope.row.statusLbl === '启用' ? 'success' : ''"
-              disable-transitions
-              >{{ scope.row.statusLbl }}</el-tag
-            >
-          </template>
-        </el-table-column>
+        <el-table-column prop="realname" label="姓名" min-width="10%" />
+        <el-table-column prop="sexString" label="性别" min-width="7%" />
+        <el-table-column prop="rolename" label="角色" min-width="15%" />
+        <el-table-column prop="phone" label="电话号码" min-width="15%" />
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
-            <el-button size="small" @click="changePassword(scope.row.id)"
+            <el-button size="small" @click="changePassword(scope.row.username)"
               >重置密码</el-button
             >
             <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
@@ -154,9 +144,14 @@ import { reactive, ref, markRaw } from "vue";
 import { ElMessage, ElMessageBox,ElNotification } from "element-plus";
 import { Delete } from "@element-plus/icons-vue";
 import store from '@/store'
-// import { getUserInfo as getUserInfo,resetPassword as resetPassword ,queryUser as queryUser ,deleteUser as deleteUser} from '@/api/index'
+import { resetPasswords as resetPasswords,getAdminUser as getAdminUser, deleteUser as deleteUser} from '@/api/user'
 const {proxy} = getCurrentInstance();
-const searchvalue = ref("");
+const searchvalue = reactive({
+  username:"",
+  realname:'',
+  pageindex:'',
+  pagesize:''
+});
 const dialogFormVisible = ref(false);
 let dialogTitile = ref("编辑");
 let dialogPasswordVisible  = ref(false);
@@ -167,11 +162,11 @@ let isQuery = ref(false);
 let formPassword = reactive({
   new:'',
   confirm:'',
-  id:''
+  username:''
 })
 const rules = reactive({
-  new: [{  required: true, message: "密码必须是6-12位，不能有连续或者重复的字母或者数字并且大小写字母,数字,特殊符号必须包含两种以上",  trigger: "blur" }],
-  confirm: [{ required: true, message: "密码必须是6-12位，不能有连续或者重复的字母或者数字并且大小写字母,数字,特殊符号必须包含两种以上",trigger: "blur" }],
+  new: [{  required: true, message: "密码必须是6-12位并且不能有空格",  trigger: "blur" }],
+  confirm: [{ required: true, message: "密码必须是6-12位并且不能有空格",trigger: "blur" }],
 });  
 let state = reactive({
             tableLoading: false,
@@ -179,52 +174,33 @@ let state = reactive({
             PageSize: 10,
             Total:0,
             tableData1: [
-              {
-                  "createdDate": null,
-                  "creator": "",
-                  "id": "5001",
-                  "loginClient": "ALL",
-                  "loginClientLbl": "全部",
-                  "phoneNum": "15555555555",
-                  "realName": "超级管理员1",
-                  "role": "JS002",
-                  "roleLbl": "操作司机",
-                  "sex": "WOMAN",
-                  "sexLbl": "女",
-                  "status": "ENABLE",
-                  "statusLbl": "启用",
-                  "updatedDate": null,
-                  "updater": "",
-                  "username": "admin1",
-                  "version": 1
-              }
             ],
           });
 const isloading = ref('false')
 const queryTableData = () => {
   isloading.value = true;
-  const parms = {
-    limit:state.PageSize,
-    pageNum:state.CurrentPage,
-  }
-  getUserInfo(parms)
+  let obj = JSON.parse(JSON.stringify(searchvalue));
+  obj.username = obj.username.trim();
+  obj.realname = obj.realname.trim();
+  obj.pageindex = state.CurrentPage;
+  obj.pagesize = state.PageSize;
+  getAdminUser(obj)
     .then((res)=>{
       isloading.value = false;
       if(res.code === 200){
-        let data = res.data;
-        state.tableData1=data.records;
-        state.Total = data.total;
-        dropdownValue.value = data.dropDowns;
-      }else{
-        ElNotification({
+        let data = res.body;
+          state.tableData1=data&&data.data?data.data:[];
+          state.Total = data&&data.total?data.total:0;
+        }else{
+            ElNotification({
               title: 'Warning',
-              message: res.msg,
+              message: res.message?res.message:'服务器异常',
               type: 'warning',
             })
-            if(res.msg.indexOf('token已过期')>-1  ){
+            if(res.code === 100007 ||  res.code === 100008){
                     store.dispatch('app/logout')
                 }
-      }
+        }
     })
     .catch(()=>{})
 };
@@ -232,7 +208,7 @@ watch(
     () => dialogFormVisible.value,
     () => {
       if(!dialogFormVisible.value){
-        // queryTableData();
+        queryTableData();
       }
     },
     { deep: true, immediate: true }
@@ -243,43 +219,17 @@ onBeforeMount(() => {
   // getdata();
   // queryTableData();
 });
-//点击查询
-const searchUserData = ()=>{
-  isQuery.value = true;
-  isloading.value = true;
-  let parmes = {
-    limit:state.PageSize,
-    pageNum:state.CurrentPage,
-    query: searchvalue.value
-  }
-    queryUser(parmes).then((res)=>{
-      isloading.value = false;
-      if(res.code === 200){
-          let data = res.data;
-          state.tableData1=data&&data.records?data.records:[];
-          state.Total = data&&data.total?data.total:0;
-      } else{
-        ElNotification({
-                title: 'Warning',
-                message: res.msg,
-                type: 'warning',
-              })
-              if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-      }
-    })
-}
+
 //切换一页显示多少条数据
 const handleSizeChange = (val) => {
   state.PageSize = val;
-  searchvalue.value&&isQuery.value?searchUserData():queryTableData();
+  queryTableData();
 
 };
 // 点击跳转到第几页
 const handleCurrentChange = (val) => {
   state.CurrentPage = val;
-  searchvalue.value&&isQuery.value?searchUserData():queryTableData();
+  queryTableData();
 };
 //新建
 const handleBuild = () => {
@@ -301,11 +251,11 @@ const handleDelete = (index, row) => {
     .then(() => {
       deleteUser(row.id).then((res)=>{
         if(res.code === 200){
-            state.tableData1.splice(index, 1);
+            // state.tableData1.splice(index, 1);
             if(state.tableData1.length === 0&& state.CurrentPage>1){
               state.CurrentPage = state.CurrentPage -1;
             }
-            searchvalue.value&&isQuery.value?searchUserData():queryTableData();
+            queryTableData();
             ElMessage({
               type: "success",
               message: "删除成功",
@@ -313,10 +263,10 @@ const handleDelete = (index, row) => {
         }else{
             ElNotification({
               title: 'Warning',
-              message: res.msg,
+              message: res.message?res.message:'服务器异常',
               type: 'warning',
             })
-            if(res.msg.indexOf('token已过期')>-1  ){
+            if(res.code === 100007 ||  res.code === 100008){
                     store.dispatch('app/logout')
                 }
         }
@@ -324,34 +274,36 @@ const handleDelete = (index, row) => {
     })
 };
 //修改密码
-const changePassword = (id) => {
-  formPassword.id = id;
+const changePassword = (username) => {
+  formPassword.username = username;
   dialogPasswordVisible.value = true;
 } 
 const savePassword = (posswordRef)=>{
   console.log(posswordRef)
   if(!posswordRef) return false
-  // posswordRef.validate(async (valid) => {
-    // if(valid){
-      let obj = {
-      "confirmPassword": proxy.$Base64.encode(formPassword.confirm),
-      "newPassword": proxy.$Base64.encode(formPassword.new),
-      "oldPassword": "",
-      "userId": formPassword.id
+  posswordRef.validate(async (valid) => {
+    if(valid){
+            let obj = {
+            "confirmPassword": formPassword.new,
+            "newPassword": formPassword.new,
+            "oldPassword": "",
+            "userName": formPassword.username
+        }
+        resetPasswords(obj).then((res)=>{
+            if(res.code !== 200){
+              ElNotification({
+                    title: 'Warning',
+                    message: res.message?res.message:'服务器异常',
+                    type: 'warning',
+                  })
+                  if(res.code === 100007 ||  res.code === 100008){
+                          store.dispatch('app/logout')
+                      }
+            }else{
+              dialogPasswordVisible.value = false;
+            }
+        })
   }
-  resetPassword(obj).then((res)=>{
-      if(res.code !== 200){
-        ElNotification({
-              title: 'Warning',
-              message: res.msg,
-              type: 'warning',
-            })
-            if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-      }else{
-        dialogPasswordVisible.value = false;
-      }
   })
 }
 const closePassword = ()=>{
@@ -462,4 +414,5 @@ const closePassword = ()=>{
 .searchbutton{
   float: right;
 }
+
 </style>

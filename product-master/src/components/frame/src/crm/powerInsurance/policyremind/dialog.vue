@@ -198,17 +198,18 @@ watch(
         if (res.code === 200) {
           formInline.data = res.body;
           console.log(formInline.data);
-        }
+        }else {
+            ElNotification({
+              title: "Warning",
+              message: res.message?res.message:'服务器异常',
+              type: "warning",
+            });
+             if(res.code === 100007 ||  res.code === 100008){
+                          store.dispatch('app/logout')
+                      }
+              }
       });
-    } else {
-      ElNotification({
-        title: "Warning",
-        message: res.message,
-        type: "warning",
-      });
-      if (res.message.indexOf("token已过期") > -1) {
-        store.dispatch("app/logout");
-      }
+    
     }
   },
   { deep: true, immediate: true }
@@ -247,13 +248,14 @@ const success = (addform) => {
         } else {
           ElNotification({
             title: "Warning",
-            message: res.message,
+            message: res.message?res.message:'服务器异常',
             type: "warning",
           });
-          if (res.message.indexOf("token已过期") > -1) {
-            store.dispatch("app/logout");
-          }
-        }
+             if(res.code === 100007 ||  res.code === 100008){
+                          store.dispatch('app/logout')
+                      }
+              }
+        
       });
     } else {
       return false;

@@ -7,11 +7,10 @@ export const login = (data) => {
         data
     })
 }
-export const loginOut = (data) => {
+export const loginOut = (userName) => {
     return http({
-        url: '/admin/exitUser',
-        method: 'POST',
-        data
+        url: '/admin/exitUser?userName='+userName,
+        method: 'GET',
     })
 }
 // 客户基本信息

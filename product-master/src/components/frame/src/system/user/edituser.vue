@@ -29,58 +29,47 @@
                   v-model="formInline.username"
                 />
               </el-form-item>
-              <el-form-item label="姓名" prop="realName" required>
+              <el-form-item label="姓名" prop="realname" required>
                 <el-input
                   placeholder="请输入姓名"
                   :disabled="titile === '编辑'"
-                  v-model="formInline.realName"
+                  v-model="formInline.realname"
+                />
+              </el-form-item>
+              <el-form-item label="昵称" prop="nickname" required>
+                <el-input
+                  placeholder="请输入昵称"
+                  v-model="formInline.nickname"
                 />
               </el-form-item>
               <el-form-item label="性别" required >
-                <!-- <el-select
+                <el-select
                   v-model="formInline.sex"
                   placeholder="请选择性别"
                 >
-                  <el-option v-for="item in dowpdown.sex" :key="item.label" :label="item.label" :value="item.value" required>
+                  <el-option v-for="item in sexDropdown" :key="item.label" :label="item.label" :value="item.value" required>
                     </el-option>
-                </el-select> -->
+                </el-select>
               </el-form-item>
-              <el-form-item label="手机号码" prop="phoneNum" required>
+              <el-form-item label="手机号码" prop="phone" required>
                 <el-input
                   placeholder="请输入手机号码"
-                  v-model="formInline.phoneNum"
+                  v-model="formInline.phone"
                 />
               </el-form-item>
-              <el-form-item label="角色" prop="role" required>
-                <!-- <el-select
-                  v-model="formInline.role"
+              <el-form-item label="角色" prop="roleId" required>
+                <el-select
+                  v-model="formInline.roleId"
                   placeholder="请选择角色"
                 >
-                  <el-option v-for="item in dowpdown.role" :key="item.label" :label="item.label" :value="item.value" required>
+                  <el-option v-for="item in roleDropdown.value" :key="item.id" :label="item.rolename" :value="item.id" required>
                     </el-option>
-                </el-select> -->
-              </el-form-item>
-              <el-form-item label="登录设备" prop="loginClient" required>
-                <!-- <el-select
-                  v-model="formInline.loginClient"
-                  placeholder="请选择登录设备"
-                >
-                   <el-option v-for="item in dowpdown.loginClient" :key="item.label" :label="item.label" :value="item.value" required>
-                    </el-option>
-                </el-select> -->
-              </el-form-item>
-              <el-form-item label="账号状态" prop="status" required>
-                <!-- <el-select
-                  v-model="formInline.status"
-                  placeholder="请选择账号状态"
-                >
-                   <el-option v-for="item in dowpdown.status" :key="item.label" :label="item.label" :value="item.value" required>
-                    </el-option>
-                </el-select> -->
+                </el-select>
               </el-form-item>
             </div>
           </el-form>
         </div>
+        <p class="remarkStyle">备注：创建的新用户初始密码默认为：123456,为了您的账户安全请尽快修改密码</p>
       </div>
       <template #footer>
         <span class="dialog-footer">
@@ -99,7 +88,7 @@
 import { defineProps, ref } from "vue";
 import { reactive, watch, defineEmits } from "vue";
 import { ElMessage } from "element-plus";
-// import { saveOrUpdateUser as saveOrUpdateUser } from '@/api/index'
+import { operateAdminUser as operateAdminUser,getRoleList as getRoleList } from '@/api/user'
 import { ElNotification } from "element-plus";
 import store from '@/store'
 const emits = defineEmits(['update:modelValue','inituserlist']);
@@ -124,7 +113,7 @@ let props = defineProps({
     type:Boolean
   }
 });
-const checkIphonenum = (rule, value, callback) => {
+const checkIphone = (rule, value, callback) => {
   if (value === "") {
     callback(new Error("请输入电话号码"));
   } else if (!/^[0-9]*$/.test(value)) {
@@ -135,14 +124,24 @@ const checkIphonenum = (rule, value, callback) => {
     callback()
   }
 };
+const sexDropdown = reactive([
+  {
+    label: '女',
+    value: 0
+  },
+    {
+    label: '男',
+    value:1
+  }
+])
+const roleDropdown = reactive([])
 const rules = reactive({
-  realName: [{ required: true, message: "请输入姓名", trigger: "blur" }],
+  realname: [{ required: true, message: "请输入姓名", trigger: "blur" }],
   username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
-  status: [{ required: true, message: "请选择账号状态", trigger: "change" }],
-  role: [{ required: true, message: "请选择角色", trigger: "change" }],
-  loginClient: [{ required: true, message: "请选择设备名称", trigger: "change" }],
+  nickname: [{ required: true, message: "请输入昵称", trigger: "blur" }],
+  roleId: [{ required: true, message: "请选择角色", trigger: "change" }],
   sex:[{ required: true, message: "请选择性别", trigger: "change" }],
-  phoneNum: [{ validator: checkIphonenum, trigger: "blur" },],
+  phone: [{ validator: checkIphone, trigger: "blur" },],
 });
 
 let titile = ref("");
@@ -150,20 +149,35 @@ const imageUrl = ref("");
 let dowpdown = props.dropdownValue.value
 let formInline = reactive({
     id:'',
-    "loginClient": "",
-    "phoneNum": "",
-    "realName": "",
-    "role": "",
+    "phone": "",
+    "roleId": "",
     "sex": "",
-    "status": "",
-    "username": ""
+    "realname": "",
+    username:'',
+    nickname:'',
+    password:'123456'
 });
 watch(
   () => props,
   () => {
     titile.value = props.dialogTitile;
-    if (titile.value === "编辑" )
+    if (titile.value === "编辑" ){
       formInline = props.dialogTableValue.value;
+    }
+     getRoleList().then((res)=>{
+       if(res.code === 200){
+         roleDropdown.value = res.body;
+       }else{
+           ElNotification({
+                title: 'Warning',
+                message: res.message?res.message:'服务器异常',
+                type: 'warning',
+              })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
+       }
+     }) 
   },
   { deep: true, immediate: true }
 );
@@ -175,17 +189,17 @@ const success = (addform) => {
   if (!addform) return;
   addform.validate(async (valid) => {
     if (valid) {
-      saveOrUpdateUser(JSON.parse(JSON.stringify(formInline)))
+      operateAdminUser(JSON.parse(JSON.stringify(formInline)))
         .then((res)=>{
           if(res.code ===200){
             close()
           }else{
               ElNotification({
                 title: 'Warning',
-                message: res.message,
+                message: res.message?res.message:'服务器异常',
                 type: 'warning',
               })
-              if(res.message.indexOf('token已过期')>-1  ){
+            if(res.code === 100007 ||  res.code === 100008){
                     store.dispatch('app/logout')
                 }
           }
@@ -342,5 +356,10 @@ const success = (addform) => {
     position: absolute;
     margin-top: 5px;
   }
+}
+.remarkStyle{
+  color: #8c939d;
+    margin-left: 36px;
+    margin-top: 24px;
 }
 </style>

@@ -202,12 +202,12 @@ const queryTableData = () => {
     } else {
       ElNotification({
         title: "Warning",
-        message: res.message,
+        message: res.message?res.message:'服务器异常',
         type: "warning",
       });
-      if (res.message.indexOf("token已过期") > -1) {
-        store.dispatch("app/logout");
-      }
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
     }
   });
 };
@@ -274,12 +274,12 @@ const handleDelete = (index, row) => {
         } else {
           ElNotification({
             title: "Warning",
-            message: res.message,
+            message: res.message?res.message:'服务器异常',
             type: "warning",
           });
-          if (res.message.indexOf("token已过期") > -1) {
-            store.dispatch("app/logout");
-          }
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
         }
       });
     })

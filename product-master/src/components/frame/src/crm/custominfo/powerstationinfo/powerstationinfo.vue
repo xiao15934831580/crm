@@ -174,7 +174,16 @@ const showCity = ()=>{
     if(res.code === 200){
       cityDropdown.value = res.body;
       console.log(cityDropdown.value)
-    }
+    }else {
+              ElNotification({
+                title: 'Warning',
+                message: res.message?res.message:'服务器异常',
+                type: 'warning',
+              })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
+      }
   })
 }
 const showCounty=(val)=>{
@@ -183,7 +192,16 @@ const showCounty=(val)=>{
         getCountys(searchvalue.city).then((res)=>{
           if (res.code === 200) {
             countyDropdown.value = res.body;
-          }
+          }else {
+              ElNotification({
+                title: 'Warning',
+                message: res.message?res.message:'服务器异常',
+                type: 'warning',
+              })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
+      }
         })
   }
 }
@@ -192,7 +210,16 @@ const showTown =(val)=>{
         getTowns(searchvalue.county).then((res)=>{
           if (res.code === 200) {
             townDropdown.value = res.body;
-          }
+          }else {
+              ElNotification({
+                title: 'Warning',
+                message: res.message?res.message:'服务器异常',
+                type: 'warning',
+              })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
+      }
         })
   }
 }
@@ -200,14 +227,32 @@ const getInvestmentTemplateFun =(val)=>{
       getInvestmentTemplate().then((res)=>{
         if (res.code === 200) {
           investmentDropdown.value = res.body;
-        }
+        }else {
+              ElNotification({
+                title: 'Warning',
+                message: res.message?res.message:'服务器异常',
+                type: 'warning',
+              })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
+      }
       })
 }
 const getUnitFun =(val)=>{
       getUnit().then((res)=>{
         if (res.code === 200) {
           unitDropdown.value = res.body;
-        }
+        }else {
+              ElNotification({
+                title: 'Warning',
+                message: res.message?res.message:'服务器异常',
+                type: 'warning',
+              })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
+      }
       })
 }
 const queryTableData = () => {
@@ -224,12 +269,12 @@ const queryTableData = () => {
       }else {
               ElNotification({
                 title: 'Warning',
-                message: res.message,
+                message: res.message?res.message:'服务器异常',
                 type: 'warning',
               })
-              // if(res.message.indexOf('token已过期')>-1  ){
-              //         store.dispatch('app/logout')
-              //     }
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
       }
     })
 };

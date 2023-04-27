@@ -97,19 +97,16 @@
             >
             <div>
                 <div class="showinfo">
-                    <p class="showstyle">姓名：{{ info.nickname }}</p>
+                    <p class="showstyle">姓名：{{ info.realname }}</p>
                     <p class="showstyle">用户名：{{ info.username }}</p>
             </div>
             <div class="showinfo">
-                    <p class="showstyle">性别：{{ info.sexLbl }}</p>
-                    <p class="showstyle">手机号码：{{ info.phoneNum }}</p>
+                    <p class="showstyle">昵称：{{ info.nickname }}</p>
+                    <p class="showstyle">性别：{{ info.sexString }}</p>
             </div>
             <div class="showinfo">
-                <p class="showstyle">角色：{{ info.roleLbl }}</p>
-                <p class="showstyle">登录设备：{{ info.loginClientLbl }}</p>
-            </div>
-            <div class="showinfo">
-                <p class="showstyle">账号状态：{{ info.statusLbl }}</p>
+                <p class="showstyle">手机号码：{{ info.phone }}</p>
+                <p class="showstyle">角色：{{ info.rolename }}</p>
             </div>
             </div>
             <template #footer>
@@ -129,6 +126,7 @@ import { reactive, ref, getCurrentInstance } from "vue";
 import store from '@/store'
 import { ElNotification } from "element-plus";
 import { loginOut as exit} from '@/api/index'
+import {resetPasswords as resetPasswords, getOrderInfo as getOrderInfo } from '@/api/user'
     const message = '港口流动机械维修保养综合管理数字化平台'
     const {proxy} = getCurrentInstance();
     const passwordform = ref('');
@@ -143,6 +141,7 @@ import { loginOut as exit} from '@/api/index'
         confirm:[{ required: true, message: '请输入确认密码', trigger: 'blur' },],
         
     })
+     let userData = JSON.parse(localStorage.getItem('userData'))
     const formPassword = reactive({
         original:'',
         new:'',
@@ -159,11 +158,20 @@ import { loginOut as exit} from '@/api/index'
             // "roleLbl": ""
     })
     const loginOut=()=>{
-        let obj ={
-            userName:'admin1'
-        }
-        exit(obj).then((res)=>{
-            store.dispatch('app/logout')
+        exit(userData.username).then((res)=>{
+            if(res.code === 200){
+                store.dispatch('app/logout')
+            }else {
+                ElNotification({
+                    title: 'Warning',
+                    message: res.message?res.message:'服务器异常',
+                    type: 'warning',
+                })
+                if(res.code === 100007 ||  res.code === 100008){
+                        store.dispatch('app/logout')
+                }
+            }
+            
         })
     }
     const changePassword = ()=>{
@@ -173,25 +181,25 @@ import { loginOut as exit} from '@/api/index'
         if(!passwordform) return
          passwordform.validate(async(valid) => {
             if(valid){
-                let userData = JSON.parse(JSON.stringify(store.getters.userData))
+                // let userData = JSON.parse(JSON.stringify(store.getters.userData))
                let obj = {
-                    "confirmPassword": proxy.$Base64.encode(formPassword.confirm),
-                    "newPassword": proxy.$Base64.encode(formPassword.new),
-                    "oldPassword":  proxy.$Base64.encode(formPassword.original),
-                    "userId":userData.id
+                    "confirmPassword": formPassword.confirm,
+                    "newPassword": formPassword.new,
+                    "oldPassword":  formPassword.original,
+                    "userName":userData.username
                 }
-                updatePassword(obj).then((res)=>{
+                resetPasswords(obj).then((res)=>{
                     if(res.code === 200){
                         closePassword()
                     }else{
                         ElNotification({
                             title: 'Warning',
-                            message: res.msg,
+                            message: res.message?res.message:'服务器异常',
                             type: 'warning',
                             })
-                        if(res.msg.indexOf('token已过期')>-1  ){
-                            store.dispatch('app/logout')
-                        }
+                        if(res.code === 100007 ||  res.code === 100008){
+                                store.dispatch('app/logout')
+                            }
                     }
                 })
                
@@ -205,19 +213,19 @@ import { loginOut as exit} from '@/api/index'
         dialogPasswordVisible.value = false;
     }
     const lookinfo = ()=>{
-        getUserInfo().then((res)=>{
+        getOrderInfo(userData.username).then((res)=>{
             if(res.code === 200){
-                info.value = res.data
+                info.value = res.body
                 dialogInfoVisible.value = true;
             }else{
                 ElNotification({
                     title: 'Warning',
-                    message: res.msg,
+                    message: res.message?res.message:'服务器异常',
                     type: 'warning',
                     })
-                if(res.msg.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
+                        if(res.code === 100007 ||  res.code === 100008){
+                                store.dispatch('app/logout')
+                            }
             }
             
             

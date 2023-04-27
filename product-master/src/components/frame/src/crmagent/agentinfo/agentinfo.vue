@@ -219,7 +219,7 @@ const searchbutton = () => {
       } else{
         ElNotification({
                 title: 'Warning',
-                message: res.message,
+                message: res.message?res.message:'服务器异常',
                 type: 'warning',
               })
               if(res.message.indexOf('token已过期')>-1  ){

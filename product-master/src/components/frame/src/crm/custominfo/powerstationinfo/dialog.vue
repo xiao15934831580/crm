@@ -102,230 +102,40 @@ let props = defineProps({
   },
   dataId: {
   },
-//   dialogTableValue: {
-//     type: Object,
-//     default: () => {},
-//   },
-//   dropdownValue:{
-//     type: Object,
-//     default: () => {},
-//   },
 });
 let titile = ref("");
 const imageUrl = ref("");
 let formInline = reactive({
   data:{}
-    // userName:'',
-    // IDNumber:'',
-    // phoneNumber:'手机号码',
-    // unit:'产权单位/投资商',
-    // businessSource:'业务来源',
-    // address:'地址',
-    // powerStationName:'电站单元名称',
-    // moduleType:'组件型号',
-    // devicesNumber:'设备数量',
-    // gridConnectionType:'并网类型',
-    // investmentType:'投资类型',
-    // powerStationType:'电站类型',
-    // powerStationAddress:'电站地址',
-    // collectorManufacturer:'采集器厂商',
-    // collectorNumber:'采集器编号',
-    // inverterPower:'逆变器功率',
-    // inverterManufacturer:'逆变器厂商',
-    // inverterModel:'逆变器型号',
-    // inverterSerialNumber:'',//逆变器序列号
-    // powerStationWarranty:'', //电站质保期
-    // installationData:[ //安装及维修详情
-    //     {
-    //         powerStationName:'ssd',
-    //         userName:'客户名称',
-    //         phoneNumber:'联系方式',
-    //         repairMan:'维修人员',
-    //         reason:'原因',
-    //     }
-    // ]
+
 });
-const inspector = ref("");
-const exitvalue = ref("");
-const isinspector = ref(false);
-// let dowpdown = props.dropdownValue.value
 watch(
   () => props,
   () => {
     titile.value = '查看';
-    // formInline = props.dialogTableValue.value;
     getUserPowerInfo(props.dataId).then((res)=>{
       if(res.code === 200){
         formInline.data = res.body;
-        console.log(formInline.data)
       }else {
         ElNotification({
                 title: 'Warning',
-                message: res.message,
+                message: res.message?res.message:'服务器异常',
                 type: 'warning',
               })
-              if(res.message.indexOf('token已过期')>-1  ){
-                      store.dispatch('app/logout')
-                  }
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
       }
     })
   },
   { deep: true, immediate: true }
 );
 const close = () => {
-  // addform.value.resetFields();
   emits("update:modelValue", false);
 };
-const isvoild = () => {
-  let isclick = ref(true);
-  if (formInline.repairDetails.length == 0) {
-    isclick.value = false;
-  }
-  formInline.repairDetails.forEach((item, index) => {
-    if (!item.faultType || !item.faultPart || !item.faultSituation||!item.urgencyLevel) {
-      isclick.value = false;
-    }
-  });
-  return isclick;
-};
-const savebutton = () => {
-  let isclick = isvoild();
-  if(isclick.value){
-    saveRepDatails(JSON.parse(JSON.stringify(formInline)).repairDetails).then((res)=>{
-     if(res.code ===200){
-        close();
-     }else{
-       ElNotification({
-              title: 'Warning',
-              message: res.message,
-              type: 'warning',
-            })
-        if(res.message.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-     }
-    })
-  }else{
-    alert("请检查故障明细是否有未选择的故障");
-  }
-};
 
-const handleRemove = (index) => {
-  formInline.repairDetails.splice(index, 1);
-};
-const addcolum = () => {
-  console.log(formInline.repairDetails);
-  let obj = {
-    faultType: "",
-    faultPart: "",
-    faultSituation: "",
-    otherDesc: "",
-    urgencyLevel: "",
-    billMainId:JSON.parse(JSON.stringify(formInline)).id,
-    faultTypeOption: formInline.faultTypeOption,
-    faultPartOption: formInline.faultPartOption,
-    faultSituationOption: formInline.faultSituationOption,
-  };
-  formInline.repairDetails.push(obj);
-};
 
-const distribution = () => {
-  let voild = isvoild();
-  console.log(voild);
-  if (voild.value) {
-    saveRepDatails(JSON.parse(JSON.stringify(formInline)).repairDetails).then((res)=>{
-     if(res.code ===200){
-        dialogInspectorVisible.value = true;
-     }else{
-       ElNotification({
-              title: 'Warning',
-              message: res.message,
-              type: 'warning',
-            })
-        if(res.message.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-     }
-    })
-    
-  } else {
-    alert("请检查故障明细是否有未选择的故障");
-  }
-};
-const closeInspector = () => {
-  dialogInspectorVisible.value = false;
-};
-const saveInspectorbutton = () => {
-  if (inspector.value !== "") {
-    saveInspector(JSON.parse(JSON.stringify(formInline)).id,inspector.value).then((res)=>{
-      if(res.code ===200){
-        emits("update:modelValue", false);
-     }else{
-       ElNotification({
-              title: 'Warning',
-              message: res.message,
-              type: 'warning',
-            })
-        if(res.message.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-     }
-    })
-    
-  } else {
-    alert("请选择点检员");
-  }
-};
-const exit = () => {
-  let voild = isvoild();
-  if (voild.value) {
-    saveRepDatails(JSON.parse(JSON.stringify(formInline)).repairDetails).then((res)=>{
-     if(res.code ===200){
-        dialogExitVisible.value = true
-     }else{
-       ElNotification({
-              title: 'Warning',
-              message: res.message,
-              type: 'warning',
-            })
-        if(res.message.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-     }
-    })
-    ;
-  } else {
-    alert("请检查故障明细是否有未选择的故障");
-  }
-};
-const closeExit = () => {
-  dialogExitVisible.value = false;
-};
-const saveExit = () => {
-  if(exitvalue.value!==''){
-    let params={
-      billMainId:JSON.parse(JSON.stringify(formInline)).id,
-      desc:exitvalue.value
-    }
-    saveGoback(params).then((res)=>{
-       if(res.code ===200){
-         emits("update:modelValue", false);
-     }else{
-       ElNotification({
-              title: 'Warning',
-              message: res.message,
-              type: 'warning',
-            })
-        if(res.message.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-     }
-    })
-  } else {
-    alert("请输入退回说明");
-  }
- 
-};
+
 </script>
 
 

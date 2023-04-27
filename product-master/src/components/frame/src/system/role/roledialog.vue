@@ -45,7 +45,7 @@
                 />
               </el-form-item>
               <el-form-item label="角色菜单" prop="menu" required>
-                  <!-- <el-select
+                  <el-select
                     v-model="formInline.menu"
                     multiple
                     collapse-tags
@@ -53,15 +53,15 @@
                     placeholder="请选择角色菜单"
                     >
                     <el-option
-                        v-for="item in dropdown.menu"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
+                        v-for="item in dropdown.value"
+                        :key="item.menuNo"
+                        :label="item.menuName"
+                        :value="item.menuNo"
                     />
-                    </el-select> -->
+                    </el-select>
               </el-form-item>
-              <el-form-item label="角色状态" prop="status" required>
-                <!-- <el-select
+              <!-- <el-form-item label="角色状态" prop="status" required>
+                <el-select
                   v-model="formInline.status"
                   placeholder="请选择角色状态"
                 >
@@ -70,8 +70,8 @@
                         :label="item.label"
                         :value="item.value"
                   />
-                </el-select> -->
-              </el-form-item>
+                </el-select>
+              </el-form-item> -->
             </div>
           </el-form>
         </div>
@@ -93,7 +93,7 @@
 import { defineProps, ref } from "vue";
 import { reactive, watch, defineEmits } from "vue";
 import { ElNotification } from "element-plus";
-// import { saveOrUpdate as saveOrUpdate } from '@/api/index'
+import { getMenuList as getMenuList } from '@/api/user'
 import store from '@/store'
 const emits = defineEmits(["update:modelValue"]);
 const addform = ref();
@@ -141,13 +141,28 @@ let formInline = reactive({
   // "statusLbl": "启用"
 // }
 });
-let dropdown = props.dropdownValue.value
+let dropdown = reactive({})
 watch(
   () => props,
   () => {
     titile.value = props.dialogTitile;
-    if (titile.value === "编辑" )
-      formInline = props.dialogTableValue.value;
+    if (titile.value === "编辑" ){
+        formInline = props.dialogTableValue.value;
+    }
+      getMenuList().then((res)=>{
+        if(res.code === 200){
+            dropdown.value = res.body;
+        }else{
+           ElNotification({
+                title: 'Warning',
+                message: res.message?res.message:'服务器异常',
+                type: 'warning',
+              })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
+       }
+      })
   },
   { deep: true, immediate: true }
 );

@@ -217,7 +217,7 @@ const showCity = ()=>{
     }else{
        ElNotification({
                 title: 'Warning',
-                message: res.message,
+                message: res.message?res.message:'服务器异常',
                 type: 'warning',
               })
             if(res.code === 100007 ||  res.code === 100008){
@@ -235,7 +235,7 @@ const showCounty=(val)=>{
           }else{
             ElNotification({
                 title: 'Warning',
-                message: res.message,
+                message: res.message?res.message:'服务器异常',
                 type: 'warning',
               })
             if(res.code === 100007 ||  res.code === 100008){
@@ -253,7 +253,7 @@ const showTown =(val)=>{
           }else{
             ElNotification({
                 title: 'Warning',
-                message: res.message,
+                message:res.message?res.message:'服务器异常',
                 type: 'warning',
               })
             if(res.code === 100007 ||  res.code === 100008){
@@ -278,7 +278,7 @@ const queryTableData = () => {
       }else {
                ElNotification({
                 title: 'Warning',
-                message: res.message,
+                message:res.message?res.message:'服务器异常',
                 type: 'warning',
               })
             if(res.code === 100007 ||  res.code === 100008){
@@ -300,7 +300,7 @@ const getCustomerLevelFun = () => {
     }else {
       ElNotification({
         title: 'Warning',
-        message: res.message,
+        message:res.message?res.message:'服务器异常',
         type: 'warning',
       })
       if(res.code === 100007 ||  res.code === 100008){

@@ -97,7 +97,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label = '创建时间' min-width="15%"></el-table-column>
+        <el-table-column prop = 'createTime' label = '创建时间' min-width="15%"></el-table-column>
         <el-table-column prop="wokeOrderStatus" label="工单状态" min-width="15%" />
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
