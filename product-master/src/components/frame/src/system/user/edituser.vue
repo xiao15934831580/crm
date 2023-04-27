@@ -42,7 +42,7 @@
                   v-model="formInline.nickname"
                 />
               </el-form-item>
-              <el-form-item label="性别" required >
+              <el-form-item label="性别" prop="sexString" required >
                 <el-select
                   v-model="formInline.sex"
                   placeholder="请选择性别"
@@ -140,7 +140,7 @@ const rules = reactive({
   username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
   nickname: [{ required: true, message: "请输入昵称", trigger: "blur" }],
   roleId: [{ required: true, message: "请选择角色", trigger: "change" }],
-  sex:[{ required: true, message: "请选择性别", trigger: "change" }],
+  sexString:[{ required: true, message: "请选择性别", trigger: "change" }],
   phone: [{ validator: checkIphone, trigger: "blur" },],
 });
 
