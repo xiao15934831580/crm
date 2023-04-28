@@ -214,12 +214,6 @@ watch(
     { deep: true, immediate: true }
 )
 
-  
-onBeforeMount(() => {
-  // getdata();
-  // queryTableData();
-});
-
 //切换一页显示多少条数据
 const handleSizeChange = (val) => {
   state.PageSize = val;
