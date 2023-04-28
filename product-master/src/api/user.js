@@ -75,3 +75,22 @@ import http from './request'
         data
     })
 }
+/**
+ * 保存角色信息
+ */
+ export const operateRole = (data) => {
+    return http({
+        url: '/role/operateRole',
+        method: 'POST',
+        data
+    })
+}
+/**
+ * 删除角色信息
+ */
+ export const deleteRole = (id) => {
+    return http({
+        url: `/role/deleteRole/${id}`,
+        method: 'DELETE',
+    })
+}

@@ -44,9 +44,9 @@
                   v-model="formInline.roleCode"
                 />
               </el-form-item>
-              <el-form-item label="角色菜单" prop="menu" required>
+              <el-form-item label="角色菜单" prop="menuNumLbl" required>
                   <el-select
-                    v-model="formInline.menu"
+                    v-model="formInline.menuNumLbl"
                     multiple
                     collapse-tags
                     collapse-tags-tooltip
@@ -60,18 +60,18 @@
                     />
                     </el-select>
               </el-form-item>
-              <!-- <el-form-item label="角色状态" prop="status" required>
+              <el-form-item label="角色状态" prop="status" required>
                 <el-select
                   v-model="formInline.status"
                   placeholder="请选择角色状态"
                 >
-                  <el-option  v-for="item in dropdown.status"
+                  <el-option  v-for="item in roleDropdown"
                         :key="item.value"
                         :label="item.label"
                         :value="item.value"
                   />
                 </el-select>
-              </el-form-item> -->
+              </el-form-item>
             </div>
           </el-form>
         </div>
@@ -90,10 +90,10 @@
   </div>
 </template>
 <script  setup>
-import { defineProps, ref } from "vue";
+import { defineProps, ref,onBeforeMount } from "vue";
 import { reactive, watch, defineEmits } from "vue";
 import { ElNotification } from "element-plus";
-import { getMenuList as getMenuList } from '@/api/user'
+import { getMenuList as getMenuList, operateRole as operateRole } from '@/api/user'
 import store from '@/store'
 const emits = defineEmits(["update:modelValue"]);
 const addform = ref();
@@ -117,8 +117,9 @@ let props = defineProps({
 const rules = reactive({
   roleName: [{ required: true, message: "请输入角色名称", trigger: "blur" }],
   status: [{ required: true, message: "请选择角色状态", trigger: "change" }],
-  menu: [{ required: true, message: "请选择角色菜单", trigger: "change" }],
+  menuNumLbl: [{ required: true, message: "请选择角色菜单", trigger: "change" }],
   roleCode: [{ required: true, message: "请输入角色编码", trigger: "blur" }],
+  
 });
 
 let titile = ref("");
@@ -126,46 +127,47 @@ let formInline = reactive({
         'roleName':"",
         "roleDesc": "",
         "status": "",
-        "menu": [],
-        // createdDate:'',
+        "menuNumLbl": [],
         roleCode:''
-        // {
-  // "createdDate": "2022-12-14 15:32:35",
-  // "id": "string",
-  // "menu": ["carrepair", "/system", "role", "bararchives", "maintenance", "dispatch", "/barrepair", "workhour",…]
-  // "menuLbl":["车辆维修记录", "系统管理", "角色管理", "车辆档案", "车辆保养明细", "车辆派修记录", "车辆维修管理", "维修人员工时记录", "车辆基础信息管理", "车辆报修记录",…]
-  // "roleCode": "JS001",
-  // "roleDesc": "string",
-  // "roleName": "测试管理员",
-  // "status": "ENABLE",
-  // "statusLbl": "启用"
-// }
 });
 let dropdown = reactive({})
+const roleDropdown = reactive([
+  {
+    label: '启用',
+    value:1
+  },{
+    label: '关闭',
+    value:0
+  }
+])
 watch(
   () => props,
   () => {
     titile.value = props.dialogTitile;
     if (titile.value === "编辑" ){
         formInline = props.dialogTableValue.value;
+        console.log(formInline)
     }
-      getMenuList().then((res)=>{
-        if(res.code === 200){
-            dropdown.value = res.body;
-        }else{
-           ElNotification({
-                title: 'Warning',
-                message: res.message?res.message:'服务器异常',
-                type: 'warning',
-              })
-            if(res.code === 100007 ||  res.code === 100008){
-                    store.dispatch('app/logout')
-                }
-       }
-      })
+
   },
   { deep: true, immediate: true }
 );
+onBeforeMount(() => {
+        getMenuList().then((res)=>{
+          if(res.code === 200){
+              dropdown.value = res.body;
+          }else{
+              ElNotification({
+                  title: 'Warning',
+                  message: res.message?res.message:'服务器异常',
+                  type: 'warning',
+                })
+              if(res.code === 100007 ||  res.code === 100008){
+                      store.dispatch('app/logout')
+                  }
+          }
+      })
+});
 const close = () => {
   addform.value.resetFields();
   emits("update:modelValue", false);
@@ -176,16 +178,16 @@ const success = (addform) => {
   addform.validate(async (valid) => {
     if (valid) {
       let obj = JSON.parse(JSON.stringify(formInline))
-      saveOrUpdate(obj).then((res)=>{
+      operateRole(obj).then((res)=>{
         if(res.code === 200){
           close();
         }else{
-          ElNotification({
-              title: 'Warning',
-              message: res.message,
-              type: 'warning',
-            })
-            if(res.message.indexOf('token已过期')>-1  ){
+           ElNotification({
+                title: 'Warning',
+                message: res.message?res.message:'服务器异常',
+                type: 'warning',
+              })
+            if(res.code === 100007 ||  res.code === 100008){
                     store.dispatch('app/logout')
                 }
         }

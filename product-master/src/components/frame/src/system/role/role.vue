@@ -2,25 +2,18 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <el-col :span="10" class="searchBox">
-        <el-input
-          class="w-10 m-2 mr-16"
-          v-model="searchvalue"
-          placeholder="请输入角色名称"
-        />
-      </el-col>
+      <span></span>
       <el-button size="small" @click="handleBuild">新建</el-button>
     </div>
     <div class="chartstyle">
       <el-table
         :data="state.tableData1"
         :header-cell-style="{ background: '#d9ecff' }" 
-        
         border
         style="width: 100%"
       >
         <el-table-column label="序号" min-width="7%">
-          <template #default="requestscope">
+              <template #default="requestscope">
                     <span >{{
                       requestscope.$index+1 + (state.PageSize*(state.CurrentPage-1))
                     }}</span>
@@ -48,11 +41,11 @@
               placement="top-start"
               :width="200"
               trigger="hover"
-              :content="menuLblScope.row.menuLbl"
+              :content="menuLblScope.row.menuLbl.toString()"
             >
               <template #reference>
                 <span class="elispice">{{
-                  menuLblScope.row.menuLbl}}</span>
+                  menuLblScope.row.menuLbl.toString()}}</span>
               </template>
             </el-popover>
           </template>
@@ -119,7 +112,7 @@ import { reactive, ref, markRaw } from "vue";
 import { ElMessage, ElMessageBox,ElNotification } from "element-plus";
 import { Delete } from "@element-plus/icons-vue";
 import store from '@/store'
-import { getRoleAuthorityList as getRoleAuthorityList } from '@/api/user'
+import { getRoleAuthorityList as getRoleAuthorityList,deleteRole as deleteRole } from '@/api/user'
 const searchvale = ref("");
 const dialogFormVisible = ref(false);
 let dialogTitile = ref("编辑");
@@ -221,9 +214,8 @@ const handleDelete = (index, row) => {
     icon: markRaw(Delete),
   })
     .then(() => {
-      deleteRole(row.id).then((res)=>{
+      deleteRole(row.roleId).then((res)=>{
         if(res.code === 200){
-            state.tableData1.splice(index, 1);
             if(state.tableData1.length === 0&& state.CurrentPage>1){
               state.CurrentPage = state.CurrentPage -1;
             }
@@ -233,12 +225,12 @@ const handleDelete = (index, row) => {
               message: "删除成功",
             });
         }else{
-          ElNotification({
+            ElNotification({
               title: 'Warning',
-              message: res.message,
+              message: res.message?res.message:'服务器异常',
               type: 'warning',
             })
-            if(res.message.indexOf('token已过期')>-1  ){
+            if(res.code === 100007 ||  res.code === 100008){
                     store.dispatch('app/logout')
                 }
       }

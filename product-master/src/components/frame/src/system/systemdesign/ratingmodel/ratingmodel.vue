@@ -2,12 +2,13 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
+      <span></span>
       <el-button  class="searchbutton " @click="addButton"
         >新建</el-button>
-        <el-button  class="searchbutton" v-if="!isSave" @click="editButton"
+        <!-- <el-button  class="searchbutton" v-if="!isSave" @click="editButton"
         >编辑</el-button>
         <el-button  class="searchbutton" v-if="isSave" @click="saveButton"
-        >保存</el-button>
+        >保存</el-button> -->
     </div>
     <div class="chartstyle">
       <el-table
@@ -43,7 +44,9 @@
         </el-table-column>
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
-            <el-button size="small" v-if="scope.row.isEdit" @click="saveRow(scope.$index, scope.row)"
+          <el-button size="small" @click="editRow(scope.$index, scope.row)"
+              >编辑</el-button>
+            <el-button size="small"  @click="saveRow(scope.$index, scope.row)"
               >保存</el-button>
             <el-button size="small" @click="deleteData(scope.$index)"
               >删除</el-button>
@@ -159,18 +162,8 @@ const state = reactive({
 });
 const isloading = ref('false')
 //编辑
-const editButton = ()=>{
-    isSave.value = true;
-    tableData.forEach((item)=>{
-        item.isEdit = true;
-    })
-}
-//保存
-const saveButton = ()=>{
-    isSave.value = false;
-    tableData.forEach((item)=>{
-        item.isEdit = false;
-    })
+const editRow =(index,row)=>{
+  tableData[index].isEdit = true;
 }
 const saveRow =(index,row)=>{
   tableData[index].isEdit = false
@@ -182,7 +175,7 @@ const addButton = ()=>{
         score: "9",
         isEdit:'true'
     }
-    tableData.push(obj)
+    tableData.unshift(obj)
     console.log(tableData)
 }
 const queryTableData = () => {
@@ -281,6 +274,7 @@ onBeforeMount(() => {
     padding: 16px;
     box-shadow: 0px 0px 6px #d9ecff;
     display: flex;
+    justify-content: space-between;
   .batchimport {
     position: absolute;
     right: 24px;
