@@ -122,11 +122,13 @@
 <script setup>
 import { useRouter, useRoute } from "vue-router";
 import { useStore } from 'vuex';
-import { reactive, ref, getCurrentInstance } from "vue";
+import { reactive, ref, getCurrentInstance ,onMounted} from "vue";
 import store from '@/store'
 import { ElNotification } from "element-plus";
 import { loginOut as exit} from '@/api/index'
 import {resetPasswords as resetPasswords, getOrderInfo as getOrderInfo } from '@/api/user'
+// import mitt from 'mitt';
+// const emitter = mitt();
     const message = '港口流动机械维修保养综合管理数字化平台'
     const {proxy} = getCurrentInstance();
     const passwordform = ref('');
@@ -174,6 +176,15 @@ import {resetPasswords as resetPasswords, getOrderInfo as getOrderInfo } from '@
             
         })
     }
+    onMounted(() => {
+
+            window.addEventListener('setItemEvent', function(e) {
+                    if (e.key === 'userData') {
+                        console.log('##', e.newValue)
+                        nickname.value = JSON.parse(e.newValue).nickname
+                    }
+                })
+    });
     const changePassword = ()=>{
         dialogPasswordVisible.value = true;
     }

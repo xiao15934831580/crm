@@ -89,6 +89,7 @@
       title="公司利率"
       :before-close="close"
       :width="formLabelWidth"
+      :close-on-click-modal="false"
       draggable
     >
       <div>

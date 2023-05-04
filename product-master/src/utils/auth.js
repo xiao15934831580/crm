@@ -42,3 +42,14 @@ export const getymdhms = (dateStr)=>{
   if (second.length < 2) second = '0' + second;
   return [year, month, day].join('-') + ' '+[hour,minute,second].join(':');
 }
+
+export const dispatchEventStorage = () => {
+  const signSetItem = localStorage.setItem
+  localStorage.setItem = function(key, val) {
+      let setEvent = new Event('setItemEvent')
+      setEvent.key = key
+      setEvent.newValue = val
+      window.dispatchEvent(setEvent)
+      signSetItem.apply(this, arguments)
+  }
+}

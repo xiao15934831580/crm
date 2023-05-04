@@ -113,6 +113,7 @@
       :model-value="dialogUploadVisible"
       :before-close="cancle"
       :width="dialogUploadWidth"
+      :close-on-click-modal="false"
       draggable
     >
       <div style="float: left">

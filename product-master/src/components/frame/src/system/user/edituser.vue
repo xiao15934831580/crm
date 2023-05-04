@@ -6,6 +6,7 @@
       :title="titile"
       :before-close="close"
       :width="formLabelWidth"
+      :close-on-click-modal="false"
       draggable
     >
       <div>
@@ -192,6 +193,10 @@ const success = (addform) => {
       operateAdminUser(JSON.parse(JSON.stringify(formInline)))
         .then((res)=>{
           if(res.code ===200){
+            let obj = JSON.parse(localStorage.getItem('userData'));
+            obj.nickname = JSON.parse(JSON.stringify(formInline)).nickname
+            localStorage.setItem('userData',JSON.stringify(obj))
+            console.log(JSON.parse(JSON.stringify(formInline)).nickname)
             close()
           }else{
               ElNotification({

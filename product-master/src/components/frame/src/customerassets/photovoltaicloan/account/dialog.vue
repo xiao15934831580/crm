@@ -6,6 +6,7 @@
       :title="titile"
       :before-close="close"
       :width="formLabelWidth"
+      :close-on-click-modal="false"
       draggable
     >
       <div>

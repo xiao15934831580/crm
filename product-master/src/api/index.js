@@ -146,3 +146,13 @@ export const getUserPowers = (data) => {
         method: 'GET',
     })
 }
+/**
+ * 获取日志信息
+ */
+ export const getLogs = (data) => {
+    return http({
+        url: 'systemlog/getLogs',
+        method: 'POST',
+        data
+    })
+}

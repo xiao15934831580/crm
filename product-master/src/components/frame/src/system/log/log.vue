@@ -3,25 +3,25 @@
   <div class="tablestyle">
     <div class="searchsize">
       <el-col :span="10">
-        <el-select
-          clearable="true"
-          v-model="searchvalue"
-          placeholder="请选择查询类型"
-        >
-          <el-option label="登录" value="LOGIN" />
-          <el-option label="添加" value="INSERT" />
-          <el-option label="更新" value="UPDATE" />
-          <el-option label="删除" value="DELETE" />
-        </el-select>
+        <el-input
+          class="w-10 m-2 mr-16"
+          v-model="searchvalue.userName"
+          placeholder="请输入操作人员"
+        />
+        <el-date-picker
+        v-model="searchvalue.requestTime"
+        type="datetime"
+        placeholder="请输入请求时间"
+      />
       </el-col>
 
-      <el-button size="small" class="searchbutton" @click="searchbutton"
+      <el-button size="small" class="searchbutton" @click="queryTableData"
         >查询</el-button
       >
     </div>
     <div class="chartstyle">
       <el-table
-        :data="tableData"
+        :data="state.tableData1"
         :header-cell-style="{ background: '#d9ecff' }" 
         
         border
@@ -82,7 +82,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="methodType" label="请求类型" min-width="12%" />
+        <el-table-column prop="requestType" label="请求类型" min-width="12%" />
         <template #empty>
             <el-empty v-loading="isloading"></el-empty>
         </template>
@@ -108,10 +108,16 @@
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-// import { getLog as getLog,queryLog as queryLog } from '@/api/index'
+import { getLogs as getLogs } from '@/api/index'
 import { ElNotification } from "element-plus";
+import { getymdhms } from '@/utils/auth'
 import store from '@/store'
-const searchvalue = ref("");
+const searchvalue = reactive({
+  userName:'',
+  requestTime:'',
+  "pageindex": '',
+  "pagesize": '',
+});
 let tableData = [
   {
     userId: 1235665656,
@@ -150,23 +156,24 @@ const isloading = ref('false')
 const queryTableData = () => {
     isQuery.value = true;
      isloading.value = true;
-    let obj = {
-    limit:state.PageSize,
-    pageNum: state.CurrentPage 
-  }
-  getLog(obj).then((res)=>{
+  let obj = JSON.parse(JSON.stringify(searchvalue));
+  obj.userName = obj.userName.trim();
+  obj.requestTime = obj.requestTime?getymdhms(obj.requestTime):'';
+  obj.pageindex = state.CurrentPage;
+  obj.pagesize = state.PageSize;
+  getLogs(obj).then((res)=>{
     isloading.value = false;
     if(res.code === 200){
-      let data = res.data;
-        state.tableData1=data&&data.records?data.records:[];
-        state.Total = data&&data.total?data.total:0;
+        let data = res.body;
+          state.tableData1=data&&data.data?data.data:[];
+          state.Total = data&&data.total?data.total:0;
     }else {
-             ElNotification({
+            ElNotification({
               title: 'Warning',
-              message: res.message,
+              message: res.message?res.message:'服务器异常',
               type: 'warning',
             })
-            if(res.message.indexOf('token已过期')>-1  ){
+            if(res.code === 100007 ||  res.code === 100008){
                     store.dispatch('app/logout')
                 }
     }
@@ -174,44 +181,19 @@ const queryTableData = () => {
 };
 
 onBeforeMount(() => {
-  // queryTableData();
+  queryTableData();
 });
-//查询
-const searchbutton = () => {
-  isloading.value = true;
-  let parmes = {
-    condition: searchvalue.value,
-    limit:state.PageSize,
-    pageNum:state.CurrentPage,
-  }
-  queryLog(parmes).then((res)=>{
-    isloading.value = false;
-    if(res.code === 200){
-          let data = res.data;
-          state.tableData1=data&&data.records?data.records:[];
-          state.Total = data&&data.total?data.total:0;
-      } else{
-        ElNotification({
-                title: 'Warning',
-                message: res.message,
-                type: 'warning',
-              })
-              if(res.message.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-      }
-  })
-};
+
 
 //切换一页显示多少条数据
 const handleSizeChange = (val) => {
   state.PageSize = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
 // 点击跳转到第几页
 const handleCurrentChange = (val) => {
   state.CurrentPage = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
 </script>
 <style lang = 'less' scoped>
