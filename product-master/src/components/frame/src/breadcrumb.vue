@@ -18,10 +18,6 @@
     breadcrumbList.value = route.matched
     console.log(route.matched)
     }
-    // const handleRedirect = (path) => {
-    //     router.push(path)
-    // }
-
     watch(
     route,
     () => {

@@ -82,22 +82,15 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const store = useStore()
-    // const list = JSON.parse(localStorage.getItem('userData')) 
-    // const menulist = list.authorityList;
+    const list = JSON.parse(localStorage.getItem('userData')) 
+    const menulist = list.menuTrees;
     console.log(menulist)
     const allRoutes = router.options.routes;
-    // const homeRoute = {menuName:'首页',path:'/home'};
     const activePath = computed(() => {
       return route.path;
     });
     console.log(activePath);
-    const savePath = (item) => {       
-      //调用vuex的selectMenu方法存储数据
-
-      // this.$store.commit("selectMenu", item);
-
-      //跳转路由
-      console.log(item);
+    const savePath = (item) => {
       router.push({ name: item.menuName });
     };
     const handleOpen = (key, keyPath) => {

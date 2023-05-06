@@ -126,7 +126,7 @@ import { reactive, ref, getCurrentInstance ,onMounted} from "vue";
 import store from '@/store'
 import { ElNotification } from "element-plus";
 import { loginOut as exit} from '@/api/index'
-import {resetPasswords as resetPasswords, getOrderInfo as getOrderInfo } from '@/api/user'
+import {resetPasswords as resetPasswords, findMyInformation as findMyInformation } from '@/api/user'
 // import mitt from 'mitt';
 // const emitter = mitt();
     const message = '港口流动机械维修保养综合管理数字化平台'
@@ -224,7 +224,7 @@ import {resetPasswords as resetPasswords, getOrderInfo as getOrderInfo } from '@
         dialogPasswordVisible.value = false;
     }
     const lookinfo = ()=>{
-        getOrderInfo(userData.username).then((res)=>{
+        findMyInformation(userData.username).then((res)=>{
             if(res.code === 200){
                 info.value = res.body
                 dialogInfoVisible.value = true;

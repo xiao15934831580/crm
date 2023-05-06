@@ -60,10 +60,10 @@
               placement="top-start"
               :width="200"
               trigger="hover"
-              :content="scope.row.requestParam"
+              :content="scope.row.requestParam.toString()"
             >
               <template #reference>
-                <span class="elispice">{{ scope.row.requestParam }}</span>
+                <span class="elispice">{{ scope.row.requestParam.toString() }}</span>
               </template>
             </el-popover>
           </template>

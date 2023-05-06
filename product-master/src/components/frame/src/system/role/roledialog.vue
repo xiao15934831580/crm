@@ -46,7 +46,7 @@
                 />
               </el-form-item>
               <el-form-item label="角色菜单" prop="menuNumLbl" required>
-                  <el-select
+                  <!-- <el-select
                     v-model="formInline.menuNumLbl"
                     multiple
                     collapse-tags
@@ -59,7 +59,15 @@
                         :label="item.menuName"
                         :value="item.menuNo"
                     />
-                    </el-select>
+                    </el-select> -->
+                        <el-cascader
+                          :options="roleMenuDropdown.value"
+                          :props="{ value: 'menuId',label: 'menuName',children: 'children',multiple: true}"
+                          v-model="formInline.menuNumLbl"
+                          collapse-tags
+                          collapse-tags-tooltip
+                          clearable
+                        />
               </el-form-item>
               <el-form-item label="角色状态" prop="status" required>
                 <el-select
@@ -131,7 +139,7 @@ let formInline = reactive({
         "menuNumLbl": [],
         roleCode:''
 });
-let dropdown = reactive({})
+let roleMenuDropdown = reactive([])
 const roleDropdown = reactive([
   {
     label: '启用',
@@ -147,7 +155,6 @@ watch(
     titile.value = props.dialogTitile;
     if (titile.value === "编辑" ){
         formInline = props.dialogTableValue.value;
-        console.log(formInline)
     }
 
   },
@@ -156,7 +163,7 @@ watch(
 onBeforeMount(() => {
         getMenuList().then((res)=>{
           if(res.code === 200){
-              dropdown.value = res.body;
+              roleMenuDropdown.value = res.body;
           }else{
               ElNotification({
                   title: 'Warning',
@@ -179,6 +186,7 @@ const success = (addform) => {
   addform.validate(async (valid) => {
     if (valid) {
       let obj = JSON.parse(JSON.stringify(formInline))
+      console.log(obj)
       operateRole(obj).then((res)=>{
         if(res.code === 200){
           close();

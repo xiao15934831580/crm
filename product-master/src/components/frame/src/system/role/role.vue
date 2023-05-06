@@ -7,7 +7,7 @@
     </div>
     <div class="chartstyle">
       <el-table
-        :data="state.tableData1"
+        :data="tableData"
         :header-cell-style="{ background: '#d9ecff' }" 
         border
         style="width: 100%"
@@ -41,11 +41,11 @@
               placement="top-start"
               :width="200"
               trigger="hover"
-              :content="menuLblScope.row.menuLbl.toString()"
+              :content="menuLblScope.row.menuLbl"
             >
               <template #reference>
                 <span class="elispice">{{
-                  menuLblScope.row.menuLbl.toString()}}</span>
+                  menuLblScope.row.menuLbl}}</span>
               </template>
             </el-popover>
           </template>
@@ -126,9 +126,10 @@ let tableData = [
     roleName: "设备副班长",
     roleDesc: "仅部分权限",
     status: "开启",
+    roleCode:'001',
     createdTime: "2022-11-16 18:22:30",
-    rolemenumsg: "车辆派修记录,车辆报修记录",
-    roleMenu: ["1"],
+    menuLbl: "",
+    menuNumLbl: [['crm', 'custominfo', 'basicinfo'],['crm', 'custominfo', 'blacklist']],
   },
   {
     roleId: 12345464654,

@@ -41,7 +41,7 @@ import http from './request'
 /**
  * 查看个人信息
  */
- export const getOrderInfo = (userName) => {
+ export const findMyInformation = (userName) => {
     return http({
         url: '/admin/findMyInformation?userName='+userName,
         method: 'GET',

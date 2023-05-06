@@ -43,7 +43,7 @@
                   v-model="formInline.nickname"
                 />
               </el-form-item>
-              <el-form-item label="性别" prop="sexString" required >
+              <el-form-item label="性别" prop="sex" required >
                 <el-select
                   v-model="formInline.sex"
                   placeholder="请选择性别"
@@ -141,7 +141,7 @@ const rules = reactive({
   username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
   nickname: [{ required: true, message: "请输入昵称", trigger: "blur" }],
   roleId: [{ required: true, message: "请选择角色", trigger: "change" }],
-  sexString:[{ required: true, message: "请选择性别", trigger: "change" }],
+  sex:[{ required: true, message: "请选择性别", trigger: "change" }],
   phone: [{ validator: checkIphone, trigger: "blur" },],
 });
 
@@ -193,10 +193,13 @@ const success = (addform) => {
       operateAdminUser(JSON.parse(JSON.stringify(formInline)))
         .then((res)=>{
           if(res.code ===200){
-            let obj = JSON.parse(localStorage.getItem('userData'));
-            obj.nickname = JSON.parse(JSON.stringify(formInline)).nickname
-            localStorage.setItem('userData',JSON.stringify(obj))
-            console.log(JSON.parse(JSON.stringify(formInline)).nickname)
+            //当编辑的是当前登录账号时
+            if(formInline.username === JSON.parse(localStorage.getItem('userData')).username){
+                  let obj = JSON.parse(localStorage.getItem('userData'));
+                  obj.nickname = JSON.parse(JSON.stringify(formInline)).nickname
+                  localStorage.setItem('userData',JSON.stringify(obj))
+                  console.log(JSON.parse(JSON.stringify(formInline)).nickname)
+            }
             close()
           }else{
               ElNotification({

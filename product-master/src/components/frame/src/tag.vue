@@ -81,42 +81,14 @@ export default {
     $route() {
       this.getThisPage();
     },
-    // tags() {
-    //   this.listenFun(this.$refs.tags, "tags");
-    // },
   },
   mounted() {
-    // this.listenFun(this.$refs.box, "box");
     var that = this;
     document.addEventListener("click", function () {
       that.contextMenu.isShow = false;
     });
   },
   methods: {
-    // 监听可视区域宽,浏览器窗口大小改变执行
-    // listenFun(monitor, dom) {
-    //   let boxWidth = this.$refs.box.offsetWidth,
-    //     tagsWidth = this.$refs.tags.offsetWidth,
-    //     erd = elementResizeDetectorMaker();
-    //     erd.listenTo(monitor, (ele) => {
-    //       this.$nextTick(() => {
-    //         if (
-    //           (dom == "box" && ele.offsetWidth >= tagsWidth) ||
-    //           (dom == "tags" && ele.offsetWidth <= boxWidth)
-    //         ) {
-    //           this.arrowVisible = false;
-    //           this.$refs.box.style.paddingLeft = "16px";
-    //           this.$refs.box.style.paddingRight = "16px";
-    //           this.$refs.box.style.transform = "TranslateX(0px)";
-    //           this.num = 0;
-    //         } else {
-    //           this.arrowVisible = true;
-    //           this.$refs.box.style.paddingLeft = "56px";
-    //           this.$refs.box.style.paddingRight = "56px";
-    //         }
-    //       });
-    //     });
-    // },
     // 判断当前页
     getThisPage() {
       let currentPgae = this.$route;
