@@ -5,14 +5,10 @@
       <span></span>
       <el-button  class="searchbutton " @click="addButton"
         >新建</el-button>
-        <!-- <el-button  class="searchbutton" v-if="!isSave" @click="editButton"
-        >编辑</el-button>
-        <el-button  class="searchbutton" v-if="isSave" @click="saveButton"
-        >保存</el-button> -->
     </div>
     <div class="chartstyle">
       <el-table
-        :data="tableData"
+        :data="state.tableData1"
         :header-cell-style="{ background: '#d9ecff' }" 
         border
         style="width: 100%"
@@ -24,12 +20,12 @@
                     }}</span>
               </template>
         </el-table-column>
-        <el-table-column prop="appraise" label="工单评价" min-width="10%" >
+        <el-table-column prop="grade" label="工单评价" min-width="10%" >
             <template #default="scope">
                 <el-input
                   placeholder="请输入工单评价"
                   :disabled="!scope.row.isEdit"
-                  v-model="scope.row.appraise"
+                  v-model="scope.row.grade"
                 />
             </template>
         </el-table-column>
@@ -48,7 +44,7 @@
               >编辑</el-button>
             <el-button size="small"  @click="saveRow(scope.$index, scope.row)"
               >保存</el-button>
-            <el-button size="small" @click="deleteData(scope.$index)"
+            <el-button size="small" @click="deleteData(scope.row)"
               >删除</el-button>
           </template>
         </el-table-column>
@@ -57,24 +53,15 @@
         </template>
       </el-table>
     </div>
-
   </div>
-    <!-- <DiaLog
-        v-model="dialogFormVisible"
-        v-if="dialogFormVisible"
-        :dialogFormVisible="dialogFormVisible"
-        :dialogTitile="dialogTitile"
-        :dialogTableValue="dialogTableValue"
-    ></DiaLog> -->
 </div>
 </template>
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-import { getAllUserList as getAllUserList } from '@/api/index'
+import { getServiceEvaluation as getServiceEvaluation,operateServiceEvaluation as operateServiceEvaluation, deleteServiceEvaluation as deleteServiceEvaluation } from '@/api/index'
 import { ElNotification } from "element-plus";
 import store from '@/store'
-// import DiaLog from './dialog.vue'
 const searchvalue = reactive({
   name:'',
   phoneNumber:'',
@@ -146,12 +133,8 @@ let tableData = reactive([
     score: "9",
   },
 ]);
-let dialogTitile = ref("编辑");
-let isQuery = ref(false);
+
 let isSave = ref(false)
-// 分页
-const dialogFormVisible = ref(false)
-let dialogTableValue = reactive({});
 const state = reactive({
   tableLoading: false,
   CurrentPage: 1,
@@ -163,51 +146,86 @@ const state = reactive({
 const isloading = ref('false')
 //编辑
 const editRow =(index,row)=>{
-  tableData[index].isEdit = true;
+  state.tableData1[index].isEdit = true;
 }
 const saveRow =(index,row)=>{
-  tableData[index].isEdit = false
+  if(state.tableData1[index].isEdit){
+    let obj={
+      "grade": row.grade,
+      "id": row.id,
+      "score": row.score
+  }
+  operateServiceEvaluation(obj).then((res)=>{
+    if(res.code === 200){
+          state.tableData1[index].isEdit = false
+           ElNotification({
+              title: 'Success',
+              message: '保存成功',
+              type: 'success',
+            })
+      }else {
+            ElNotification({
+              title: 'Warning',
+              message: res.message?res.message:'服务器异常',
+              type: 'warning',
+            })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
+      }
+  })
+  }
 }
 //新建
 const addButton = ()=>{
     let obj={
-        appraise: "优秀",
-        score: "9",
+        "grade": '',
+        "score": '',
         isEdit:'true'
     }
-    tableData.unshift(obj)
-    console.log(tableData)
+    state.tableData1.unshift(obj)
 }
 const queryTableData = () => {
-  console.log('11111')
-    isQuery.value = true;
      isloading.value = true;
-    let obj = {
-        "pageindex":1,
-        "pagesize":10
-    }
-    getAllUserList(obj).then((res)=>{
+    getServiceEvaluation().then((res)=>{
       console.log('11111',res)
       isloading.value = false;
       if(res.code === 200){
-        let data = res.data;
-          // state.tableData1=data&&data.records?data.records:[];
-          // state.Total = data&&data.total?data.total:0;
+        let data = res.body;
+          state.tableData1=data;
       }else {
-              //  ElNotification({
-              //   title: 'Warning',
-              //   message: res.msg,
-              //   type: 'warning',
-              // })
-              // if(res.msg.indexOf('token已过期')>-1  ){
-              //         store.dispatch('app/logout')
-              //     }
+            ElNotification({
+              title: 'Warning',
+              message: res.message?res.message:'服务器异常',
+              type: 'warning',
+            })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
       }
     })
 };
 //删除
-const deleteData=(index)=>{
-    tableData.splice(index, 1);
+const deleteData=(row)=>{
+    deleteServiceEvaluation(row.id).then((res)=>{
+      if(res.code === 200){
+          queryTableData()
+          ElNotification({
+              title: 'Success',
+              message: '删除成功',
+              type: 'success',
+            })
+      }else {
+            ElNotification({
+              title: 'Warning',
+              message: res.message?res.message:'服务器异常',
+              type: 'warning',
+            })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
+      }
+    })
 }
 onBeforeMount(() => {
   queryTableData();

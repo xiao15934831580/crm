@@ -124,7 +124,7 @@ const routes = [
       },
       {
         path: '/ratingmodel',
-        name: '评级模型设置',
+        name: '服务评价设置',
         component: () => import('../components/frame/src/system/systemdesign/ratingmodel/ratingmodel.vue'),
       },
       {

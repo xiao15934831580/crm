@@ -8,6 +8,7 @@
         <div class="headright">
             <!-- <el-icon class="icon"><Bell /></el-icon> -->
             <span class="headpig"></span>
+            
             <el-dropdown>
                 <span class="el-dropdown-link">
                     {{nickname}}

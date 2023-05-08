@@ -2,17 +2,21 @@
 <div class="totalStyle">
   <div class="tablestyle">
     <div class="searchsize">
-      <span></span>
-      <el-button  class="searchbutton " @click="addButton"
-        >新建</el-button>
-        <!-- <el-button  class="searchbutton" v-if="!isSave" @click="editButton"
-        >编辑</el-button>
-        <el-button  class="searchbutton" v-if="isSave" @click="saveButton"
-        >保存</el-button> -->
+      <el-col :span="20">
+        <el-input
+          class="w-10 m-2 mr-16"
+          v-model="searchvalue.powerName"
+          placeholder="请输入电站单元名称"
+        />
+      </el-col>
+      <el-col :span="4">
+      <el-button  class="searchbutton " @click="queryTableData"
+        >查询</el-button>
+      </el-col>
     </div>
     <div class="chartstyle">
       <el-table
-        :data="tableData"
+        :data="state.tableData1"
         :header-cell-style="{ background: '#d9ecff' }" 
         border
         style="width: 100%"
@@ -24,21 +28,13 @@
                     }}</span>
               </template>
         </el-table-column>
-        <el-table-column prop="appraise" label="电站单元名称" min-width="10%" >
-            <template #default="scope">
-                <el-input
-                  placeholder="请输入工单评价"
-                  :disabled="!scope.row.isEdit"
-                  v-model="scope.row.appraise"
-                />
-            </template>
-        </el-table-column>
-        <el-table-column prop="score" label="保质期" min-width="18%" >
+        <el-table-column prop="powerName" label="电站单元名称" min-width="10%" />
+        <el-table-column prop="powerWarranty" label="保质期" min-width="18%" >
             <template #default="scope">
                 <el-input
                   placeholder="请输入分数"
                   :disabled="!scope.row.isEdit"
-                  v-model="scope.row.score"
+                  v-model="scope.row.powerWarranty"
                 />
             </template>
         </el-table-column>
@@ -48,40 +44,44 @@
               >编辑</el-button>
             <el-button size="small"  @click="saveRow(scope.$index, scope.row)"
               >保存</el-button>
-            <el-button size="small" @click="deleteData(scope.$index)"
-              >删除</el-button>
+            <!-- <el-button size="small" @click="deleteData(scope.$index)"
+              >删除</el-button> -->
           </template>
         </el-table-column>
         <template #empty>
             <el-empty v-loading="isloading"></el-empty>
         </template>
       </el-table>
+      <div class="demo-pagination-block">
+        <el-pagination
+          :currentPage="state.currentPage"
+          :page-size="state.pageSize"
+          :page-sizes="[5, 10, 15, 20]"
+          :small="small"
+          :disabled="disabled"
+          :background="background"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="state.Total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
     </div>
 
   </div>
-    <!-- <DiaLog
-        v-model="dialogFormVisible"
-        v-if="dialogFormVisible"
-        :dialogFormVisible="dialogFormVisible"
-        :dialogTitile="dialogTitile"
-        :dialogTableValue="dialogTableValue"
-    ></DiaLog> -->
+
 </div>
 </template>
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-import { getAllUserList as getAllUserList } from '@/api/index'
+import { getWarrantyList as getWarrantyList,setWarranty as setWarranty } from '@/api/index'
 import { ElNotification } from "element-plus";
 import store from '@/store'
-// import DiaLog from './dialog.vue'
 const searchvalue = reactive({
-  name:'',
-  phoneNumber:'',
-  customerLevel:'',
-  city:'',
-  county:'',
-  town:''
+  powerName:'',
+  "pageindex": 0,
+  "pagesize": 0,
 });
 let isShow = ref(true)
 let tableData = reactive([
@@ -163,56 +163,75 @@ const state = reactive({
 const isloading = ref('false')
 //编辑
 const editRow =(index,row)=>{
-  tableData[index].isEdit = true;
+  state.tableData1[index].isEdit = true;
 }
 const saveRow =(index,row)=>{
-  tableData[index].isEdit = false
-}
-//新建
-const addButton = ()=>{
-    let obj={
-        appraise: "优秀",
-        score: "9",
-        isEdit:'true'
-    }
-    tableData.unshift(obj)
-    console.log(tableData)
+  if(state.tableData1[index].isEdit){
+      setWarranty(row.powerId,row.powerWarranty).then((res)=>{
+        if(res.code === 200){
+          state.tableData1[index].isEdit = false
+           ElNotification({
+              title: 'Success',
+              message: '保存成功',
+              type: 'success',
+            })
+      }else {
+            ElNotification({
+              title: 'Warning',
+              message: res.message?res.message:'服务器异常',
+              type: 'warning',
+            })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
+      }
+  })
+  }
+
 }
 const queryTableData = () => {
-  console.log('11111')
+    console.log('11111')
     isQuery.value = true;
      isloading.value = true;
-    let obj = {
-        "pageindex":1,
-        "pagesize":10
-    }
-    getAllUserList(obj).then((res)=>{
+      let obj = JSON.parse(JSON.stringify(searchvalue));
+      obj.powerName = obj.powerName.trim();
+      obj.pageindex = state.CurrentPage;
+      obj.pagesize = state.PageSize;
+    getWarrantyList(obj).then((res)=>{
       console.log('11111',res)
       isloading.value = false;
       if(res.code === 200){
-        let data = res.data;
-          // state.tableData1=data&&data.records?data.records:[];
-          // state.Total = data&&data.total?data.total:0;
+        let data = res.body;
+          state.tableData1=data&&data.data?data.data:[];
+          console.log(state.tableData1)
+          state.Total = data&&data.total?data.total:0;
       }else {
-              //  ElNotification({
-              //   title: 'Warning',
-              //   message: res.msg,
-              //   type: 'warning',
-              // })
-              // if(res.msg.indexOf('token已过期')>-1  ){
-              //         store.dispatch('app/logout')
-              //     }
+            ElNotification({
+              title: 'Warning',
+              message: res.message?res.message:'服务器异常',
+              type: 'warning',
+            })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
       }
     })
 };
-//删除
-const deleteData=(index)=>{
-    tableData.splice(index, 1);
-}
+
 onBeforeMount(() => {
   queryTableData();
 });
+//切换一页显示多少条数据
+const handleSizeChange = (val) => {
+  state.PageSize = val;
+  queryTableData();
 
+};
+// 点击跳转到第几页
+const handleCurrentChange = (val) => {
+  state.CurrentPage = val;
+  queryTableData();
+};
 </script>
 <style lang = 'less' scoped>
 .tablestyle {
@@ -251,11 +270,7 @@ onBeforeMount(() => {
     margin: auto;
   }
 }
-.searchBox{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+
 .editinfo {
   width: 30%;
   background-color: orange;

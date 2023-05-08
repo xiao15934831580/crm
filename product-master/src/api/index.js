@@ -151,8 +151,55 @@ export const getUserPowers = (data) => {
  */
  export const getLogs = (data) => {
     return http({
-        url: 'systemlog/getLogs',
+        url: '/systemlog/getLogs',
         method: 'POST',
         data
+    })
+}
+/**
+ * 获取服务评价
+ */
+ export const getServiceEvaluation = () => {
+    return http({
+        url: '/systemset/getServiceEvaluation',
+        method: 'GET',
+    })
+}
+/**
+ * 新增/编辑服务评价保存
+ */
+ export const operateServiceEvaluation = (data) => {
+    return http({
+        url: '/systemset/operateServiceEvaluation',
+        method: 'POST',
+        data
+    })
+}
+/**
+ * 获取电站保质期列表
+ */
+ export const getWarrantyList = (data) => {
+    return http({
+        url: '/systemset/getWarrantyList',
+        method: 'POST',
+        data
+    })
+}
+/**
+ * 设置电站保质期
+ */
+ export const setWarranty = (powerId,powerWarranty) => {
+    return http({
+        url: `/systemset/setWarranty/${powerId}?powerWarranty=`+powerWarranty,
+        method: 'PUT',
+    })
+}
+/**
+ * 删除服务评价
+ */
+ export const deleteServiceEvaluation = (id) => {
+    return http({
+        url: `/systemset/deleteServiceEvaluation/${id}`,
+        method: 'DELETE',
     })
 }
