@@ -10,8 +10,8 @@
         />
       </el-col>
       <div class="searchButtonBox">
-        <el-button  class="searchbutton " @click="setRent"
-            >利率设置</el-button>
+        <!-- <el-button  class="searchbutton " @click="setRent"
+            >利率设置</el-button> -->
         <el-button  class="searchbutton " @click="sendAll"
             >一键外呼</el-button>
         <el-button  class="searchbutton" @click="sendAll"

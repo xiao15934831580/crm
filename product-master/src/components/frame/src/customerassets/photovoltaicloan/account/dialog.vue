@@ -14,7 +14,7 @@
         <!-- <p class="basicinfo"><span>车辆信息</span></p> -->
         <div style="margin:24px 48px">
             <div class="remainder">余额：<span class="numStyle">{{formInline.remainder}}</span> = 入账：<span class="numStyle">{{formInline.enterAccount}}</span> - 出账：<span class="numStyle">{{formInline.outerAccount}}</span></div>
-            <div class="remainder mt-16">当前公司利率：<span class="numStyle">{{formInline.rate}}</span></div>
+            <!-- <div class="remainder mt-16">当前公司利率：<span class="numStyle">{{formInline.rate}}</span></div> -->
             <div class="remainder mt-16">
               <span class="remarkStyle">备注：余额计算方式</span>
                <div class="remark">
