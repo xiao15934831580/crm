@@ -48,7 +48,7 @@ export default {
             }else{
               ElNotification({
                 title: 'Warning',
-                message: '用户名或密码错误',
+                message: res.message,
                 type: 'warning',
               })
             }
@@ -59,7 +59,7 @@ export default {
             // console.log(err)
             ElNotification({
               title: 'Warning',
-              message: '用户名或密码错误',
+              message: '服务器异常',
               type: 'warning',
             })
             reject(err)

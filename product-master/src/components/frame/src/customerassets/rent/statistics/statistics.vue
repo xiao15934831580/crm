@@ -5,12 +5,12 @@
       <el-col :span="20" >
         <el-input
           class="w-10 m-2 mr-16"
-          v-model="searchvalue.name"
+          v-model="searchvalue.customerName"
           placeholder="请输入客户名称"
         />
-        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" placeholder="请选择年度">
+        <el-select class="w-10 m-2" v-model="searchvalue.year" placeholder="请选择年度">
           <el-option
-            v-for="item in options"
+            v-for="item in yearList.value"
             :key="item.value"
             :label="item.label"
             :value="item.value"
@@ -18,15 +18,15 @@
         </el-select>
       </el-col>
       <el-col :span="4">
-        <el-button  class="searchbutton " @click="searchbutton"
+        <el-button  class="searchbutton " @click="queryTableData"
         >查询</el-button>
-        <el-button  class="searchbutton mr-16"  @click="handleBuild">导出</el-button>
+        <el-button  class="searchbutton mr-16"  @click="exportXlsx">导出</el-button>
         </el-col>
       
     </div>
     <div class="chartstyle">
       <el-table
-        :data="tableData"
+        :data="state.tableData1"
         :header-cell-style="{ background: '#d9ecff' }" 
         border
         style="width: 100%"
@@ -41,7 +41,6 @@
         <el-table-column prop="userName" label="客户名称" min-width="10%" />
         <el-table-column prop="powerStationName" label="电站单元名称" min-width="18%" />
         <el-table-column prop="powerStationTitle" label="电站名称" min-width="15%" />
-        <el-table-column prop="powerStationAddress" label="电站地址" min-width="15%" />
         <el-table-column prop="year" label="年度" min-width="15%" />
         <el-table-column prop="distributionAmount" label="发放金额" min-width="15%" />
         <el-table-column label="操作列" width="250" min-width="28%">
@@ -76,23 +75,24 @@
         v-if="dialogFormVisible"
         :dialogFormVisible="dialogFormVisible"
         :dialogTitile="dialogTitile"
+        :dialogTableValue="dialogTableValue"
     ></DiaLog>
 </div>
 </template>
 <script setup>
 import { reactive, ref } from "vue";
 import { markRaw, onBeforeMount } from "vue";
-// import { getLog as getLog,queryLog as queryLog } from '@/api/index'
+import { refundStatistics as refundStatistics, exportStatistics as exportStatistics } from '@/api/index'
+import {getYearList as getYearList} from '@/api/common'
 import { ElNotification } from "element-plus";
 import store from '@/store'
 import DiaLog from './dialog.vue'
+import * as XLSX from 'xlsx' 
 const searchvalue = reactive({
-  name:'',
-  phoneNumber:'',
-  customerLevel:'',
-  city:'',
-  county:'',
-  town:''
+  customerName:'',
+  year:'2023',
+  "pageindex": 1,
+  "pagesize": 10,
 });
 let dialogTableValue = reactive({});
 let tableData = [
@@ -124,6 +124,7 @@ let isQuery = ref(false);
 // 分页
 const dialogFormVisible = ref(false)
 let dialogExitVisible = ref(false);
+const yearList = reactive([])
 const state = reactive({
   tableLoading: false,
   CurrentPage: 1,
@@ -137,146 +138,122 @@ const isloading = ref('false')
 const queryTableData = () => {
     isQuery.value = true;
      isloading.value = true;
-    let obj = {
-        limit:state.PageSize,
-        pageNum: state.CurrentPage 
-    }
-  getLog(obj).then((res)=>{
+  let obj = JSON.parse(JSON.stringify(searchvalue));
+  obj.customerName = obj.customerName.trim();
+  obj.pageindex = state.CurrentPage;
+  obj.pagesize = state.PageSize;
+  refundStatistics(obj).then((res)=>{
     isloading.value = false;
-    if(res.code === 200){
-      let data = res.data;
-        // state.tableData1=data&&data.records?data.records:[];
-        // state.Total = data&&data.total?data.total:0;
-    }else {
-             ElNotification({
+      if(res.code === 200){
+        let data = res.body;
+          state.tableData1=data&&data.data?data.data:[];
+          state.Total = data&&data.total?data.total:0;
+        }else{
+            ElNotification({
               title: 'Warning',
-              message: res.message,
+              message: res.message?res.message:'服务器异常',
               type: 'warning',
             })
-            if(res.message.indexOf('token已过期')>-1  ){
+            if(res.code === 100007 ||  res.code === 100008){
                     store.dispatch('app/logout')
                 }
-    }
+        }
   })
 };
-
+const getYearListOptions = ()=>{
+  getYearList().then((res)=>{
+      if(res.code === 200){
+           yearList.value = res.body;
+           searchvalue.year = res.body[0].value
+        }
+  })
+}
 onBeforeMount(() => {
-//   queryTableData();
+  queryTableData();
+  getYearListOptions()
 });
-//查询
-const searchbutton = () => {
-  isloading.value = true;
-  let parmes = {
-    condition: searchvalue.value,
-    limit:state.PageSize,
-    pageNum:state.CurrentPage,
-  }
-  queryLog(parmes).then((res)=>{
-    isloading.value = false;
-    if(res.code === 200){
-          let data = res.data;
-          state.tableData1=data&&data.records?data.records:[];
-          state.Total = data&&data.total?data.total:0;
-      } else{
-        ElNotification({
-                title: 'Warning',
-                message: res.message,
-                type: 'warning',
-              })
-              if(res.message.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
-      }
+let allData = [];
+const exportStatisticsData = () => {
+  return new Promise((resolve, reject) => {
+       let obj={
+          customerName:searchvalue.customerName,
+          year:searchvalue.year
+        }
+        exportStatistics(obj).then((res)=>{
+              if(res.code === 200){
+                  // allData = res.body;
+                  // console.log(allData)
+                  resolve(res.body)
+              }else {
+                      ElNotification({
+                        title: 'Warning',
+                        message: res.message?res.message:'服务器异常',
+                        type: 'warning',
+                      })
+                      if(res.code === 100007 ||  res.code === 100008){
+                              store.dispatch('app/logout')
+                          }
+                          reject('err')
+              }
+        })
   })
-};
+ 
+}
+//导出
+const exportXlsx = async()=>{
+  let allData = await exportStatisticsData()
+  console.log(allData)
+  if(allData !='err'){
+      let aoa=[]
+      aoa.push(['客户名称','电站单元名称','电站名称','年度','发放金额'])
+      allData.forEach((item)=>{
+        aoa.push([item.userName,item.powerStationName,item.powerStationTitle,item.year,item.distributionAmount])
+      })
+      const data = XLSX.utils.aoa_to_sheet(aoa)
+      console.log(data)
+      // 创建工作簿
+      const wb = XLSX.utils.book_new()
+      // 将工作表放入工作簿中
+      XLSX.utils.book_append_sheet(wb, data, '返还金发放统计')
+      // 生成文件并下载
+      XLSX.writeFile(wb, '返还金发放统计.xlsx')
+  }
+   // 创建工作表
+  //  let head = {
+  //     powerStationName: "电站单元名称",
+  //     refund: "返还金额",
+  //     refundStateString:'返还状态',
+  //     refundTime:'返还日期',
+  //   }
+  //   const list = allData.map(item => {
+  //     const obj = {}
+  //     for (const k in item) {
+  //       if (head[k]) {
+  //         obj[head[k]] = item[k]
+  //       } 
+  //     }
+  //     return obj
+  //   })
 
+}
 //切换一页显示多少条数据
 const handleSizeChange = (val) => {
   state.PageSize = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
 // 点击跳转到第几页
 const handleCurrentChange = (val) => {
   state.CurrentPage = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
-//新建
-const handleBuild = () => {
-  dialogTitile.value = "新建";
-  dialogFormVisible.value = true;
-};
+
 //详情
 const detail = (index, row)=>{
     dialogTitile.value = "查看";
     dialogFormVisible.value = true;
+    dialogTableValue.value = row
 }
-//编辑
-const handleEdit = (index, row) => {
-  dialogTitile.value = "编辑";
-  dialogTableValue.value = JSON.parse(JSON.stringify(row));
-  dialogFormVisible.value = true;
-};
-//评价
-const appraise = (index, row) => {
-    dialogExitVisible.value = true;
-//   ElMessageBox.confirm("你确定删除此人员信息吗?", "删除", {
-//     type: "warning",
-//     icon: markRaw(Delete),
-//   })
-//     .then(() => {
-      // deleteCar(row.id).then((res)=>{
-      //   if(res.code === 200){
-      //       state.tableData1.splice(index, 1);
-      //       if(state.tableData1.length === 0&& state.CurrentPage>1){
-      //         state.CurrentPage = state.CurrentPage -1;
-      //       }
-      //       searchvalue.value&&isQuery.value?searchCarData():queryTableData();
-      //       console.log('111111')
-      //       ElMessage({
-      //         type: "success",
-      //         message: "删除成功",
-      //       });
-      //   }else{
-      //       ElNotification({
-      //         title: 'Warning',
-      //         message: res.message,
-      //         type: 'warning',
-      //       })
-      //        if(res.message.indexOf('token已过期')>-1  ){
-      //               store.dispatch('app/logout')
-      //           }
-      //   }
-      // })
-    //   })
-};
-const closeExit = () => {
-  dialogExitVisible.value = false;
-};
-const saveExit = () => {
-//   if(exitvalue.value!==''){
-//     let params={
-//       billMainId:JSON.parse(JSON.stringify(formInline)).id,
-//       desc:exitvalue.value
-//     }
-//     saveGoback(params).then((res)=>{
-//        if(res.code ===200){
-//          emits("update:modelValue", false);
-//      }else{
-//        ElNotification({
-//               title: 'Warning',
-//               message: res.message,
-//               type: 'warning',
-//             })
-//         if(res.message.indexOf('token已过期')>-1  ){
-//                     store.dispatch('app/logout')
-//                 }
-//      }
-//     })
-//   } else {
-//     alert("请输入退回说明");
-//   }
- 
-};
+
 </script>
 <style lang = 'less' scoped>
 .tablestyle {

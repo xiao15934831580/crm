@@ -203,3 +203,81 @@ export const getUserPowers = (data) => {
         method: 'DELETE',
     })
 }
+/**
+ * 返还金管理列表
+ */
+ export const getEquityList = (data) => {
+    return http({
+        url: '/equity/getEquityList',
+        method: 'POST',
+        data
+    })
+}
+/**
+ * 返还金删除
+ */
+ export const deleteEquity = (id) => {
+    return http({
+        url: `/equity/deleteEquity/${id}`,
+        method: 'DELETE',
+    })
+}
+/**
+ * 返还金新建
+ */
+ export const addEquity = (data) => {
+    return http({
+        url: '/equity/addEquity',
+        method: 'POST',
+        data
+    })
+}
+/**
+ * 返还金导入
+ */
+ export const equityAllInto = (data) => {
+    return http({
+        url: '/equity/equityAllInto',
+        method: 'POST',
+        headers: {'Content-Type': 'multipart/form-data;charset=UTF-8'},
+        data:data
+    })
+}
+/**
+ * 获取所有返还金导出数据
+ */
+ export const exportRefund = (data) => {
+    return http({
+        url: '/equity/exportRefund',
+        method: 'POST',
+        data
+    })
+}
+/**
+ * 返还金统计列表
+ */
+ export const refundStatistics = (data) => {
+    return http({
+        url: '/equity/refundStatistics',
+        method: 'POST',
+        data
+    })
+}
+/**
+ * 返还金明细
+ */
+ export const refundStatisticsInfo = (obj) => {
+    return http({
+        url: '/equity/refundStatisticsInfo?powerStationName='+obj.powerStationName+'&year='+obj.year,
+        method: 'GET',
+    })
+}
+/**
+ * 返还金发放统计导出
+ */
+ export const exportStatistics = (obj) => {
+    return http({
+        url: '/equity/exportStatistics?customerName='+obj.customerName+'&year='+obj.year,
+        method: 'GET',
+    })
+}

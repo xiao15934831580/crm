@@ -53,3 +53,12 @@ export const dispatchEventStorage = () => {
       signSetItem.apply(this, arguments)
   }
 }
+export const readFile = (file) => {
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader();
+    reader.readAsBinaryString(file.raw);
+    reader.onload = (ev) => {
+      resolve(ev.target.result)
+    }
+  })
+}

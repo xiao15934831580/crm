@@ -14,7 +14,7 @@
                     <el-tab-pane label="表格" name='table'>
                         <div>
                             <el-table
-                                :data="formInline"
+                                :data="tableData.value"
                                 :header-cell-style="{ background: '#d9ecff' }" 
                                 border
                                 style="width: 100%"
@@ -29,10 +29,10 @@
                                 <el-table-column prop="userName" label="客户名称" min-width="10%" />
                                 <el-table-column prop="powerStationName" label="电站单元名称" min-width="18%" />
                                 <el-table-column prop="powerStationTitle" label="电站名称" min-width="15%" />
-                                <el-table-column prop="powerStationAddress" label="电站地址" min-width="15%" />
-                                <el-table-column prop="month" label="月度" min-width="15%" />
+                                <!-- <el-table-column prop="powerStationAddress" label="电站地址" min-width="15%" /> -->
+                                <el-table-column prop="refundMonth" label="月度" min-width="15%" />
                                 <el-table-column prop="distributionAmount" label="发放金额" min-width="15%" />
-                                <el-table-column prop="distributionTime" label="发放时间" min-width="15%" />
+                                <!-- <el-table-column prop="distributionTime" label="发放时间" min-width="15%" /> -->
                                 <template #empty>
                                     <el-empty v-loading="isloading"></el-empty>
                                 </template>
@@ -51,9 +51,9 @@
 </template>
 <script  setup>
 import { defineProps, ref,getCurrentInstance } from "vue";
-import { reactive, watch, defineEmits } from "vue";
+import { reactive, watch, defineEmits,onBeforeMount } from "vue";
 import { ElNotification  } from "element-plus";
-// import { saveCar as saveCar } from '@/api/index'
+import { refundStatisticsInfo as refundStatisticsInfo } from '@/api/index'
 import store from '@/store'
 const { proxy } = getCurrentInstance();
 const emits = defineEmits(["update:modelValue"]);
@@ -64,52 +64,39 @@ let props = defineProps({
   dialogFormVisible: {
     type: Boolean,
   },
-  dialogTitile: {
-    type: String,
-  },
   dialogTableValue: {
     type: Object,
     default: () => {},
   },
-
 });
-const checkIphonenum = (rule, value, callback) => {
-  if (value === "") {
-    callback(new Error("请输入电话号码"));
-  } else if (!/^[0-9]*$/.test(value)) {
-    callback(new Error("电话号码只能输入数字"));
-  } else {
-    callback();
+const chartData = reactive([]);
+const tableData = reactive([]);
+onBeforeMount(() => {
+  getDetail()
+});
+const getDetail=() => {
+  let obj={
+    powerStationName:props.dialogTableValue.value.powerStationName,
+    year:props.dialogTableValue.value.year
   }
-};
-const rules = reactive({
-  userName: [{ required: true, message: "请输入客户名称", trigger: "blur" }],
-  powerStationName: [{ required: true, message: "请输入电站单元名称", trigger: "blur" }],
-  powerStationAddress: [{ required: true, message: "请输入电站地址", trigger: "blur" }],
-  refundAmount: [{ required: true, message: "请输入返还金额", trigger: "blur" }],
-  returnStatus : [{ required: true, message: "请选择返还状态", trigger: "Change" }],
+  refundStatisticsInfo(obj).then((res) => {
+    if(res.code === 200){
+        tableData.value = res.body.refundMonths;
+        chartData.value =  res.body.refundDataList;
+        }else{
+            ElNotification({
+              title: 'Warning',
+              message: res.message?res.message:'服务器异常',
+              type: 'warning',
+            })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
+        }
+  })
+}
+let titile = ref("明细");
 
-});
-
-let titile = ref("");
-const imageUrl = ref("");
-let formInline = [{
-    id: '',
-    userName: "客户名称",
-    powerStationName: "电站单元名称",
-    powerStationTitle:'电站名称',
-    powerStationAddress:"电站地址",
-    month:'月度',
-    distributionAmount: "发放金额",
-    distributionTime:'发放时间',
-}];
-watch(
-  () => props,
-  () => {
-    titile.value = props.dialogTitile;
-  },
-  { deep: true, immediate: true }
-);
 const close = () => {
   emits("update:modelValue", false);
 };
@@ -117,7 +104,6 @@ const tabTitle = (tab,event)=>{
     console.log(tab.props.name)
     if(tab.props.name === "chart"){
         setTimeout(()=>{initbarchart()},100)
-        
     }
 }
 const initbarchart = () => {
@@ -126,10 +112,10 @@ const initbarchart = () => {
   }
   const barchartBox = proxy.$echarts.init(document.getElementById("barchart"));
   console.log(barchartBox)
-//   let barData = JSON.parse(JSON.stringify(repCountChartVo.value));
+  let barData = JSON.parse(JSON.stringify(chartData.value));
   const option = {
     title: {
-      text: "车辆维修统计",
+      text: "返还金发放明细",
       textStyle: {
         color: "#333333",
         fontStyle: "normal",
@@ -142,7 +128,7 @@ const initbarchart = () => {
       formatter:(parmes) =>{
         console.log(parmes)
         return `${parmes.name}<br/> <ul><li class = 'countNum'><i style="display: inline-block;margin-right:16px ;width: 10px;height: 10px;background: 
-                ${parmes.color} ;border-radius: 50%;}"></i>车辆维修统计:&nbsp;&nbsp; ${parmes.data}(车次)<li><ul>`
+                ${parmes.color} ;border-radius: 50%;}"></i>返还金发放明细:&nbsp;&nbsp; ${parmes.data}(元)<li><ul>`
       }
     },
 
@@ -155,8 +141,8 @@ const initbarchart = () => {
     xAxis: [
       {
         type: "category",
-        data: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
-        name: "日",
+        data: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'], 
+        name: "月",
         axisTick: {
           alignWithLabel: true,
         },
@@ -164,16 +150,16 @@ const initbarchart = () => {
     ],
     yAxis: [
       {
-        name: "车次",
+        name: "元",
         type: "value",
-      },
+      }, 
     ],
     series: [
       {
-        name: "车辆维修统计",
+        name: "返还金发放明细",
         type: "bar",
         barWidth: "60%",
-        data: [10,45,45,8,78,45,65,54,452,56,21,21],
+        data: barData,
       },
     ],
   };
@@ -219,7 +205,7 @@ const initbarchart = () => {
   }
   /deep/ .el-dialog__body {
     padding: 0;
-    max-height: 550px;
+    max-height: 750px;
     overflow-y: auto;
     overflow-x: hidden;
   }
@@ -330,11 +316,11 @@ const initbarchart = () => {
 }
 .chartStyle{
     width: 100%;
-    height: 50vh;
+    height: 100%;
 
 }
 #barchart{
     width: 100%;
-    height: calc(50vh - 70px);
+    height: calc(50vh);
 }
 </style>

@@ -5,12 +5,12 @@
       <el-col :span="12" >
         <el-input
           class="w-10 m-2 mr-16"
-          v-model="searchvalue.name"
-          placeholder="请输入姓名"
+          v-model="searchvalue.customerName"
+          placeholder="请输入客户名称"
         />
-        <el-select class="w-10 m-2" v-model="searchvalue.customerLevel" placeholder="请选择返还状态">
+        <el-select class="w-10 m-2" v-model="searchvalue.refundState" placeholder="请选择返还状态">
           <el-option
-            v-for="item in options"
+            v-for="item in returnStatusOptions"
             :key="item.value"
             :label="item.label"
             :value="item.value"
@@ -19,32 +19,23 @@
         
       </el-col>
       <div class="searchButtonBox">
-        <el-button  class="searchbutton" @click="searchbutton"
+        <el-button  class="searchbutton" @click="queryTableData"
             >查询</el-button>
         <el-button  class="searchbutton" @click="sendAll"
             >一键外呼</el-button>
         <el-button  class="searchbutton" @click="sendAll"
             >一键发送短信</el-button>
-            <el-button  class="searchbutton " @click="batchimport"
-            >导入</el-button>
-            <!-- <span class="searchbutton"> -->
-              <!-- @change='handle' -->
-                <!-- <el-upload
-                  ref="uploadRef"
-                  class="upload-demo m-12"
-                  action=""
-                  :show-file-list = 'false'
-                  :before-upload = 'beforeAvatarUpload'
-                  :on-success = 'uploadSuccess'
-                  :http-request="handleUpload"
-                  :on-change="handleChange" 
-                  
-                >
-                  <template #trigger>
-                    <el-button>导入</el-button>
-                  </template>
-              </el-upload> -->
-            <!-- </span> -->
+            <!-- <el-button  class="searchbutton " @click="batchimport"
+            >导入</el-button> -->
+        <el-upload
+            class="upload m-12"
+            action="#"
+            :show-file-list="false"
+            :on-change="handleExcel"
+            accept="'.xlsx','.xls'"
+            :auto-upload="false">
+                <el-button class="searchbutton" >导入</el-button>            
+          </el-upload>
 
             <el-button  class="searchbutton" @click="exportXlsx"
             >导出</el-button>
@@ -56,7 +47,7 @@
     <div class="chartstyle">
       <el-table
         ref="multipleTableRef"
-        :data="tableData"
+        :data="state.tableData1"
         :header-cell-style="{ background: '#d9ecff' }" 
         border
         style="width: 100%"
@@ -69,14 +60,15 @@
                     }}</span>
               </template>
         </el-table-column>
-        <el-table-column prop="userName" label="客户名称" min-width="10%" />
+        <el-table-column prop="customerName" label="客户名称" min-width="10%" />
         <el-table-column prop="powerStationName" label="电站单元名称" min-width="10%" />
-        <el-table-column prop="powerStationAddress" label="电站地址" min-width="10%" />
-        <el-table-column prop="refundAmount" label="返还金额" min-width="18%" />
-        <el-table-column prop="returnStatus" label="返还状态" min-width="15%" />
+        <!-- <el-table-column prop="powerStationAddress" label="电站地址" min-width="10%" /> -->
+        <el-table-column prop="refund" label="返还金额" min-width="18%" />
+        <el-table-column prop="refundStateString" label="返还状态" min-width="15%" />
+        <el-table-column prop="refundTime" label="返还日期" min-width="15%" />
         <el-table-column label="操作列" width="250" min-width="28%">
           <template #default="scope">
-            <el-button size="small" @click="detail(scope.row.id)"
+            <el-button size="small" @click="deliteData(scope.row.id)"
               >删除</el-button>
           </template>
         </el-table-column>
@@ -107,74 +99,44 @@
         :dialogTitile="dialogTitile"
         :dialogTableValue="dialogTableValue"
     ></DiaLog>
-      <!-- 批量导入 -->
-  <div class="lz-dialog">
-    <el-dialog
-      :model-value="dialogUploadVisible"
-      :before-close="cancle"
-      :width="dialogUploadWidth"
-      :close-on-click-modal="false"
-      draggable
-    >
-      <div style="float: left">
-        <el-upload
-          class="upload-demo"
-          ref="upload"
-          :limit="10"
-          :multiple="true"
-          action=" "
-          :on-change="handleFileChange"
-          :on-remove="onRemove"
-          :before-remove="beforeRemove"
-          :on-exceed="fileExceed"
-          :auto-upload="false"
-          :file-list="fileList"
-        >
-          <el-button size="small" type="primary">选取附件</el-button>
-          <el-button
-            style="margin-left: 10px"
-            v-if="fileList && fileList.length > 0"
-            size="small"
-            type="success"
-            @click="submitFileForm"
-            >上传附件</el-button
-          >
-        </el-upload>
-      </div>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button class="btn-mixins-clear-default" @click="cancle"
-            >取消</el-button
-          >
-          <el-button class="btn-mixins dia-suc" @click="submitFileForm"
-            >上传</el-button
-          >
-        </span>
-      </template>
-    </el-dialog>
-  </div>
 </div>
 </template>
 <script setup>
 import { reactive, ref } from "vue";
-import { markRaw, onBeforeMount } from "vue";
-// import { getLog as getLog,queryLog as queryLog } from '@/api/index'
-import { ElNotification } from "element-plus";
+import { markRaw, onBeforeMount ,watch} from "vue";
+import { getEquityList as getEquityList,deleteEquity as deleteEquity, equityAllInto as equityAllInto, exportRefund as exportRefund } from '@/api/index'
+import { ElNotification,ElMessageBox ,ElMessage} from "element-plus";
 import { ElTable } from 'element-plus'
+import { Delete } from "@element-plus/icons-vue";
 import store from '@/store'
 import DiaLog from './dialog.vue'
 import * as XLSX from 'xlsx' 
+import {readFile} from '@/utils/auth.js'
 const uploadRef = ref()
 const dialogUploadVisible = ref(false);
 const dialogUploadWidth = "20%";
 let fileList = reactive([]);
 let files = reactive([]);
+const headers = ''
+const returnStatusOptions = reactive([
+  {
+    label: '未返还',
+    value:'0'
+  },
+  {
+    label: '结算中',
+    value:'1'
+  },
+  {
+    label: '已到账',
+    value:'2'
+  },
+])
 const searchvalue = reactive({
-  name:'',
-  phoneNumber:'',
-  customerLevel:'',
-  customerCode:'',
-  IDNumber:'',
+  "customerName": "",
+  "pageindex": 1,
+  "pagesize": 10,
+  "refundState": ''
 });
 const multipleSelection=ref ([])
 const multipleTableRef = ref();
@@ -182,7 +144,7 @@ const dialogTitile = ref('')
 let tableData = [
   {
     id:'0',
-    userName: "张三",
+    customerName: "张三",
     powerStationName: "电站",
     powerStationAddress:"三峡",
     refundAmount: "100",
@@ -190,7 +152,7 @@ let tableData = [
   },
   {
     id:'0',
-    userName: "李四",
+    customerName: "李四",
     powerStationName: "一号电站",
     powerStationAddress:"三峡",
     refundAmount: "200",
@@ -212,59 +174,63 @@ const isloading = ref('false')
 const queryTableData = () => {
     isQuery.value = true;
      isloading.value = true;
-    let obj = {
-        limit:state.PageSize,
-        pageNum: state.CurrentPage 
-    }
-  getLog(obj).then((res)=>{
+  let obj = JSON.parse(JSON.stringify(searchvalue));
+  obj.customerName = obj.customerName.trim();
+  obj.pageindex = state.CurrentPage;
+  obj.pagesize = state.PageSize;
+  getEquityList(obj).then((res)=>{
     isloading.value = false;
     if(res.code === 200){
-      let data = res.data;
-        // state.tableData1=data&&data.records?data.records:[];
-        // state.Total = data&&data.total?data.total:0;
+        let data = res.body;
+          state.tableData1=data&&data.data?data.data:[];
+          state.Total = data&&data.total?data.total:0;
     }else {
-             ElNotification({
+            ElNotification({
               title: 'Warning',
               message: res.message?res.message:'服务器异常',
               type: 'warning',
             })
-            if(res.message.indexOf('token已过期')>-1  ){
+            if(res.code === 100007 ||  res.code === 100008){
                     store.dispatch('app/logout')
                 }
     }
   })
 };
-
-onBeforeMount(() => {
-//   queryTableData();
-});
-//查询
-const searchbutton = () => {
-  isloading.value = true;
-  let parmes = {
-    condition: searchvalue.value,
-    limit:state.PageSize,
-    pageNum:state.CurrentPage,
-  }
-  queryLog(parmes).then((res)=>{
-    isloading.value = false;
-    if(res.code === 200){
-          let data = res.data;
-          state.tableData1=data&&data.records?data.records:[];
-          state.Total = data&&data.total?data.total:0;
-      } else{
-        ElNotification({
-                title: 'Warning',
-                message: res.message,
-                type: 'warning',
-              })
-              if(res.message.indexOf('token已过期')>-1  ){
-                    store.dispatch('app/logout')
-                }
+watch(
+    () => dialogFormVisible.value,
+    () => {
+      if(!dialogFormVisible.value){
+        queryTableData();
       }
-  })
-};
+    },
+    { deep: true, immediate: true }
+)
+onBeforeMount(() => {
+  getAllData();
+});
+//获取所有数据（导出）
 //新建
+let allData = []
+const getAllData=()=>{
+      let obj = {
+        customerName:searchvalue.customerName,
+        refundState:searchvalue.refundState
+      }
+      exportRefund(obj).then((res)=>{
+        if(res.code === 200){
+            allData = res.body;
+        }else {
+                ElNotification({
+                  title: 'Warning',
+                  message: res.message?res.message:'服务器异常',
+                  type: 'warning',
+                })
+                if(res.code === 100007 ||  res.code === 100008){
+                        store.dispatch('app/logout')
+                    }
+        }
+      })
+}
 const addButton=()=>{
   dialogTitile.value = '新建'
   dialogFormVisible.value = true;
@@ -272,56 +238,78 @@ const addButton=()=>{
 //切换一页显示多少条数据
 const handleSizeChange = (val) => {
   state.PageSize = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
 // 点击跳转到第几页
 const handleCurrentChange = (val) => {
   state.CurrentPage = val;
-  searchvalue.value&&isQuery.value?searchbutton():queryTableData();
+  queryTableData();
 };
-const  handleSelectionChange=(val)=> {
-        // this.multipleSelection = val;
-        multipleSelection.value = [];
-        val.forEach((item)=>{
-            const id = item.id
-			// 判断数组中是否包含这个 id 
-			if (multipleSelection.value.indexOf(id) == -1) {
-				multipleSelection.value.push(id)
-			}
-        })
-        console.log(multipleSelection)
-      }
+// 删除
+const deliteData=(id)=>{
+    ElMessageBox.confirm("你确定删除此电站人员返还金信息吗?", "删除", {
+    type: "warning",
+    icon: markRaw(Delete),
+  })
+    .then(() => {
+      deleteEquity(id).then((res)=>{
+        if(res.code === 200){
+            if(state.tableData1.length === 0&& state.CurrentPage>1){
+              state.CurrentPage = state.CurrentPage -1;
+            }
+            queryTableData();
+            ElMessage({
+              type: "success",
+              message: "删除成功",
+            });
+        }else{
+            ElNotification({
+              title: 'Warning',
+              message: res.message?res.message:'服务器异常',
+              type: 'warning',
+            })
+            if(res.code === 100007 ||  res.code === 100008){
+                    store.dispatch('app/logout')
+                }
+        }
+      })
+    })
+}
+
 // 批量发送短信
 const sendAll =()=>{
     console.log(multipleSelection._rawValue)  //当前所选中的用户id
 }
 //余额
 const showRemainder=(index,row)=>{
-  console.log('1111122')
   dialogTableValue.value = row.remainder
   dialogFormVisible.value = true
 }
-
+//导出
 const exportXlsx = ()=>{
    // 创建工作表
-   let head = {
-      userName: "客户名称",
-      powerStationName: "电站单元名称",
-      powerStationAddress:"电站地址",
-      refundAmount: "返还金额",
-      returnStatus:'返还状态',
-    }
-    const list = tableData.map(item => {
-      const obj = {}
-      for (const k in item) {
-        if (head[k]) {
-          obj[head[k]] = item[k]
-        } 
-      }
-      return obj
-    })
-  const data = XLSX.utils.json_to_sheet(list)
-
+  //  let head = {
+  //     powerStationName: "电站单元名称",
+  //     refund: "返还金额",
+  //     refundStateString:'返还状态',
+  //     refundTime:'返还日期',
+  //   }
+  //   const list = allData.map(item => {
+  //     const obj = {}
+  //     for (const k in item) {
+  //       if (head[k]) {
+  //         obj[head[k]] = item[k]
+  //       } 
+  //     }
+  //     return obj
+  //   })
+  let aoa=[]
+  aoa.push(['电站单元名称','返还金额','返还状态','返还日期'])
+  allData.forEach((item)=>{
+    aoa.push([item.powerStationName,item.refund,item.refundStateString,item.refundTime])
+  })
+  const data = XLSX.utils.aoa_to_sheet(aoa)
+  console.log(data)
   // 创建工作簿
   const wb = XLSX.utils.book_new()
   // 将工作表放入工作簿中
@@ -330,136 +318,33 @@ const exportXlsx = ()=>{
   XLSX.writeFile(wb, '返还金管理列表.xlsx')
 }
 //上传
-// 批量导入
-const batchimport = () => {
-  dialogUploadVisible.value = true;
-};
-const cancle = () => {
-  dialogUploadVisible.value = false;
-};
-// 上传前对文件的格式和大小的判断
-// const beforeAvatarUpload = (file) =>{
-//   console.log(file)
-// 	const extension = file.name.split(".")[1] === "xls";
-// 	const extension2 = file.name.split(".")[1] === "xlsx";
-// 	const isLt2M = file.size / 1024 / 1024 < 100;
-// 	if (!extension && !extension2) {
-// 		// this.$message({
-// 		// 	message: '上传模板只能是 xls、xlsx格式!',
-// 		// 	type: 'error'
-// 		// });
-// 		return false // return false就不会走上传接口
-// 	}
-// 	if (!isLt2M) {
-// 		console.log("上传模板大小不能超过 10MB!");
-// 		// this.$message({
-// 		// 	message: '上传模板大小不能超过 10MB!',
-// 		// 	type: 'error'
-// 		// });
-// 		return false
-// 	}
-// 	// return extension || extension2 || extension3 || (extension4 && isLt2M);
-// 	return extension || extension2 // 必须要有返回值
-// }
 
-//上传文件之前
-const beforeUpload = (file) => {
-  fileList.forEach((item) => {
-    if (isEquael(item.fileName, file.name)) {
-      return ElMessageBox.confirm("该文件已存在", {
-        type: "warning",
-      });
-    }
-  });
-};
-// 上传发生变化钩子
-const handleFileChange = (file, fileList) => {
-  console.log(file, fileList);
-  files = fileList;
-  fileList.push(file);
-};
-//文件个数超过最大限制时
-const fileExceed = (file, fileList) => {
-  if (fileList.length > 10) {
-    ElMessageBox.confirm("附件个数不能超过十个", {
-      type: "warning",
-    });
-  }
-};
-//删除前的钩子
-const beforeRemove = (file, fileList) => {
-  return ElMessageBox.confirm(`你确定删除${file.name}?`);
-};
-const handleUpload = (file)=> {
-      console.log(177, file);
-      let formData = new FormData(); // 新建一个FormData()对象，这就相当于你新建了一个表单
-      console.log(187, formData);
-      formData.append("fileName", file.file); // 将文件保存到formData对象中
-      // console.log(111, this.selectValue);
- 
-      // if (this.selectValue) {
-      //   formData.append("id", this.selectValue);
-      //   console.log(111, this.selectValue);
-      // }
-      console.log(188, formData.get("file"), formData.get("id"));
-      // 调用上传接口
-      // uniReq({
-      //   path:'/doc/upload',
-      //   method:'post',
-      //   data:formData
-      // }).then(res=>{
-      //   console.log(109,res);
-      // })
-    }
-// 上传成功回调
-const submitFileForm = () => {
-  //判断是否有文件再上传
-  // if (this.files.length === 0) {
-  //     return this.$message.warning('请选取文件后再上传')
-  // }
-  // //-- 创建新的数据对象 -->
-  let formData = new FormData();
-  // //-- 将上传的文件放到数据对象中 -->
-  files.forEach((file) =>{
-    formData.append('files',file.raw)
-  })
-  console.log(files)
-  console.log(formData)
-  //   //拿到文章id
-  // var articleid=store.state.articleMsg.row.id
-  // formData.append('articleid',articleid)
-  // this.$store.dispatch('fileManage/uploadFile',formData)
-  //   .then(res => {
-  //     if(res.succeeded){
-  //       this.$message.success('上传成功！');
-  //       this.fileList=[]
-  //       this.getFiles()
-  //     }else{
-  //       this.$message.error('上传失败');
-  //     }
-  //   })
-  //   .catch(error => {
-  //     this.$message.error('上传失败！');
-  //   });
-  // this.dialogVisible=false
-  console.log("上传成功");
-};
-
-const handle=(event)=>{
-    const file = event.target.files[0]
-    console.log('111111111')
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const data = e.target.result
-      const workbook = XLSX.read(data, { type: 'binary' })
-      const sheetName = workbook.SheetNames[0]
-      const worksheet = workbook.Sheets[sheetName]
-      const json = XLSX.utils.sheet_to_json(worksheet)
-      console.log(json)
-      // this.sendDataToBackend(json)
-    }
-    reader.readAsBinaryString(file)
+const  handleExcel = (file)=>{
+      //调用后台导入的接口
+      let obj={
+        file:file.raw
+      }
+      equityAllInto(obj).then(res => {
+        if (res.code === 200) {
+            queryTableData();
+            ElMessage({
+              type: "success",
+              message: "导入成功",
+            });
+        } else {
+          ElMessage({
+              type: "error",
+              message: "导入失败",
+            });
+        }
+      }).catch(err => {
+          ElMessage({
+              type: "error",
+              message: "导入失败",
+            });
+      })
 }
+
 </script>
 <style lang = 'less' scoped>
 .tablestyle {
@@ -556,4 +441,5 @@ const handle=(event)=>{
 .m-12{
   margin: 0 12px;
 }
+
 </style>

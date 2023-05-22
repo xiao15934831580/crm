@@ -24,38 +24,33 @@
             scroll-to-error="true"
           >
             <div class="basicstyle">
-              <el-form-item label="客户名称" prop="userName" required>
-                <el-input
-                  placeholder="请输入客户名称"
-                  v-model="formInline.userName"
-                />
-              </el-form-item>
               <el-form-item label="电站单元名称" prop="powerStationName" required>
                  <el-input
                   placeholder="请输入电站单元名称"
                   v-model="formInline.powerStationName"
                 />
               </el-form-item>
-              <el-form-item label="电站地址" prop="powerStationAddress" required>
-                      <el-input
-                  placeholder="请输入电站地址"
-                  v-model="formInline.powerStationAddress"
-                />
-              </el-form-item>
-              <el-form-item label="返还金额" prop="refundAmount" required>
+              <el-form-item label="返还金额" prop="refund" required>
                       <el-input
                   placeholder="请输入返还金额"
-                  v-model="formInline.refundAmount"
+                  v-model="formInline.refund"
                 />
               </el-form-item>
-              <el-form-item label="返还状态" prop="returnStatus" required>
+              <el-form-item label="返还状态" prop="refundState" required>
                 <el-select
-                  v-model="formInline.returnStatus"
+                  v-model="formInline.refundState"
                   placeholder="请选择返还状态"
                 >
-                  <el-option v-for="item in dowpdown" :key="item.label" :label="item.label" :value="item.value" required>
+                  <el-option v-for="item in returnStatusOptions" :key="item.label" :label="item.label" :value="item.value" required>
                     </el-option>
                 </el-select>
+              </el-form-item>
+              <el-form-item label="返还时间" prop="refundTime" required>
+                  <el-date-picker
+                  placeholder="请选择返还时间"
+                  v-model="formInline.refundTime"
+                  type="date"
+                />
               </el-form-item>
             </div>
           </el-form>
@@ -88,12 +83,25 @@
 import { defineProps, ref } from "vue";
 import { reactive, watch, defineEmits } from "vue";
 import { ElNotification  } from "element-plus";
-// import { saveCar as saveCar } from '@/api/index'
+import { addEquity as addEquity } from '@/api/index'
 import store from '@/store'
 const emits = defineEmits(["update:modelValue"]);
 const addform = ref();
 const formLabelWidth = "40%";
-
+const returnStatusOptions = reactive([
+  {
+    label: '未返还',
+    value:'0'
+  },
+    {
+    label: '结算中',
+    value:'1'
+  },
+    {
+    label: '已到账',
+    value:'2'
+  },
+])
 let props = defineProps({
   dialogFormVisible: {
     type: Boolean,
@@ -117,23 +125,20 @@ const checkIphonenum = (rule, value, callback) => {
   }
 };
 const rules = reactive({
-  userName: [{ required: true, message: "请输入客户名称", trigger: "blur" }],
   powerStationName: [{ required: true, message: "请输入电站单元名称", trigger: "blur" }],
-  powerStationAddress: [{ required: true, message: "请输入电站地址", trigger: "blur" }],
-  refundAmount: [{ required: true, message: "请输入返还金额", trigger: "blur" }],
-  returnStatus : [{ required: true, message: "请选择返还状态", trigger: "Change" }],
-
+  refund: [{ required: true, message: "请输入返还金额", trigger: "blur" }],
+  refundState : [{ required: true, message: "请选择返还状态", trigger: "Change" }],
+  refundTime:[{required: true, message: "请选择返还时间", trigger: "Change"}]
 });
 
 let titile = ref("");
 const imageUrl = ref("");
 let formInline = reactive({
     id: '',
-    userName: "",
-    powerStationName: "",
-    powerStationAddress:"",
-    refundAmount: "",
-    returnStatus:'',
+    powerStationName:"",
+    refund: "",
+    refundState:'',
+    refundTime:''
 });
 watch(
   () => props,
@@ -142,7 +147,6 @@ watch(
     if (titile.value === "编辑" || titile.value === "查看"){
         formInline = props.dialogTableValue.value;
     }
-      
   },
   { deep: true, immediate: true }
 );
@@ -160,14 +164,8 @@ const success = (addform) => {
   addform.validate(async (valid) => {
     if (valid) {
       let obj = JSON.parse(JSON.stringify(formInline));
-      obj.purchaseDate = obj.purchaseDate? getymd(obj.purchaseDate):'';
-      obj.scrapDate = obj.scrapDate?getymd(obj.scrapDate):'';
-      obj.motDate = obj.motDate?getymd(obj.motDate):'';
-      obj.clivatDeadline = obj.clivatDeadline?getymd(obj.clivatDeadline):'';
-      obj.clivatDate = obj.clivatDate?getymd(obj.clivatDate):'';
-      obj.ciDeadline = obj.ciDeadline?getymd(obj.ciDeadline):'';
-      obj.ciDate = obj.ciDate?getymd(obj.ciDate):'';
-      saveCar(obj).then((res)=>{
+      obj.refundTime = obj.refundTime?getymd(obj.refundTime):'';
+      addEquity(obj).then((res)=>{
         if(res.code ===200){
             close()
           }else{

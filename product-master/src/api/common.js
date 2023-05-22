@@ -82,3 +82,12 @@ export const getCitys = (data) => {
         method: 'GET',
     })
 }
+/**
+ * 获取年份
+ */
+ export const getYearList = () => {
+    return http({
+        url: '/common/getYearList',
+        method: 'GET',
+    })
+}
